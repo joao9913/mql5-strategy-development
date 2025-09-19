@@ -21,7 +21,11 @@ input int ServerHourDifference = 2;
 int OnInit()
 {
    //Create HourBreakout object
-   hourBreakout = new HourBreakout(NBars, EntryHour, ServerHourDifference);
+   hourBreakout = new HourBreakout(NBars, EntryHour);
+   
+   // Set the static variable for all strategies
+    CStrategy::SetServerHourDifference(ServerHourDifference);
+   
    if(hourBreakout == NULL)
    {
       Print("Strategy creation failed.");
@@ -40,4 +44,5 @@ void OnDeinit(const int reason)
 void OnTick()
 {
    hourBreakout.ExecuteTrade();
+   hourBreakout.ResetControlVariables();
 }

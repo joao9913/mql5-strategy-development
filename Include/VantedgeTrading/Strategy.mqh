@@ -13,12 +13,14 @@ class CStrategy
    //--------VARIABLES
 
 protected:
-   int m_ServerHourDifference;
+   static int m_ServerHourDifference;
    CTrade trade;
-
-private:
    // New NTrades
    bool tradingAllowed;
+
+private:
+   MqlRates priceData[];
+   MqlDateTime currentTime;
 
    //--------METHODS
 
@@ -62,7 +64,42 @@ protected:
       return true;
    }
 
+   // Get current hour from currentTime()
+   int GetCurrentHour()
+   {
+      TimeCurrent(currentTime);
+      return currentTime.hour;
+   }
+
+   // Get current minute from currentTime()
+   int GetCurrentMinute()
+   {
+      TimeCurrent(currentTime);
+      return currentTime.min;
+   }
+
 public:
    // Abstract method every strategy needs to implement
    virtual void ExecuteTrade() = 0;
+
+   // Setter method to set the Server Hour Difference the same for every strategy
+   static void SetServerHourDifference(int value)
+   {
+      m_ServerHourDifference = value;
+   }
+
+   // Reset control variables if no trades/orders are open
+   void ResetControlVariables()
+   {
+      if (GetCurrentHour() == 20 + m_ServerHourDifference && GetCurrentMinute() <= 5)
+      {
+         if (!CheckOpenPositions() && !CheckOpenTrades())
+         {
+            tradingAllowed = true;
+         }
+      }
+   }
 };
+
+// Define + default value
+int CStrategy::m_ServerHourDifference = 2;

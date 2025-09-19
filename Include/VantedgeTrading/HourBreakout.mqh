@@ -22,25 +22,16 @@ private:
    //--------METHODS
 
 private:
-   // Method for checking if hour is within entry hour range
+   // Check if hour is within entry hour range
    bool CheckEntryHour()
    {
-      // Set variables and get current hour and minute
-      MqlRates priceData[];
-      MqlDateTime currentTime;
-      TimeCurrent(currentTime);
-      int currentHour = currentTime.hour;
-      int currentMinute = currentTime.min;
-
-      if (currentHour == m_entryHour + m_ServerHourDifference && currentMinute <= 5)
-      {
+      if (GetCurrentHour() == m_entryHour + m_ServerHourDifference && GetCurrentMinute() <= 5)
          return true;
-      }
 
       return false;
    }
 
-   // Method for calculating range
+   // Calculate range
    void CalculateRange()
    {
       double high = iHigh(Symbol(), PERIOD_CURRENT, 1);
@@ -62,10 +53,10 @@ private:
       }
    }
 
-   // Method to check if the entry criteria are met
+   // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if (CheckEntryHour())
+      if (CheckEntryHour() && tradingAllowed)
       {
          CalculateRange();
          return true;
@@ -74,19 +65,56 @@ private:
       return false;
    }
 
+   // Place pending orders with correct trade information
+   void PlacePendings()
+   {
+      // Get symbol stop level
+      int stopLevelPoints = (int)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL);
+      double stopLevelPrice = stopLevelPoints * _Point;
+
+      // Get ask and bid price for current symbol
+      double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+      double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+
+      // Variables to define trade information
+      double entryprice, stoploss, takeprofit, rr = 2.05;
+
+      // Place long pending order
+      entryprice = rangeHigh;
+      stoploss = rangeLow;
+      takeprofit = NormalizeDouble(entryprice + (entryprice - stoploss) * rr, _Digits);
+
+      if (entryprice - ask < stopLevelPrice)
+         entryprice = NormalizeDouble(ask + stopLevelPrice, _Digits);
+
+      trade.BuyStop(CalculateLots(stoploss, entryprice, 1, 10000), entryprice, Symbol(), stoploss, takeprofit);
+
+      // Place short pending order
+      entryprice = rangeLow;
+      stoploss = rangeHigh;
+      takeprofit = NormalizeDouble(entryprice - (stoploss - entryprice) * 2.05, _Digits);
+
+      if (bid - entryprice < stopLevelPrice)
+         entryprice = NormalizeDouble(bid - stopLevelPrice, _Digits);
+
+      trade.SellStop(CalculateLots(stoploss, entryprice, 1, 10000), entryprice, Symbol(), stoploss, takeprofit);
+
+      // Set boolean control variable to false
+      tradingAllowed = false;
+   }
+
 public:
    // Constructor for input variables
-   HourBreakout(int rangeBars, int entryHour, int serverHourDifference)
+   HourBreakout(int rangeBars, int entryHour)
    {
       m_rangeBars = rangeBars;
       m_entryHour = entryHour;
-      m_ServerHourDifference = serverHourDifference;
    }
 
    void ExecuteTrade() override
    {
+      Comment(tradingAllowed);
       if (EntryCriteria())
-      {
-      }
+         PlacePendings();
    }
 };
