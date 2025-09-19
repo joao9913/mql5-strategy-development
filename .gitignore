@@ -8,6 +8,10 @@
 #Allow only these folders
 !Experts/
 !Include/
+/Images
+/Profiles
+/Scripts
+/experts.dat
 
 
 # But inside Experts, allow only VantedgeTrading
