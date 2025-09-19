@@ -43,6 +43,5 @@ void OnDeinit(const int reason)
   
 void OnTick()
 {
-   hourBreakout.ExecuteTrade();
-   hourBreakout.ResetControlVariables();
+   hourBreakout.ExecuteStrategy();
 }

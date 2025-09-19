@@ -15,6 +15,7 @@ class CStrategy
 protected:
    static int m_ServerHourDifference;
    CTrade trade;
+
    // New NTrades
    bool tradingAllowed;
 
@@ -27,8 +28,6 @@ private:
 protected:
    // Abstract method every strategy needs to implement
    virtual bool EntryCriteria() = 0;
-
-   // Common methods that any child "Strategy" will use the same way
 
    // Calculate lots depending on stoploss, entryprice, risk, balance, symbol
    double CalculateLots(double stoploss, double entryprice, double risk, double balance)
@@ -78,16 +77,6 @@ protected:
       return currentTime.min;
    }
 
-public:
-   // Abstract method every strategy needs to implement
-   virtual void ExecuteTrade() = 0;
-
-   // Setter method to set the Server Hour Difference the same for every strategy
-   static void SetServerHourDifference(int value)
-   {
-      m_ServerHourDifference = value;
-   }
-
    // Reset control variables if no trades/orders are open
    void ResetControlVariables()
    {
@@ -98,6 +87,16 @@ public:
             tradingAllowed = true;
          }
       }
+   }
+
+public:
+   // Abstract method every strategy needs to implement
+   virtual void ExecuteStrategy() = 0;
+
+   // Setter method to set the Server Hour Difference the same for every strategy
+   static void SetServerHourDifference(int value)
+   {
+      m_ServerHourDifference = value;
    }
 };
 

@@ -13,9 +13,11 @@ class HourBreakout : public CStrategy
    //--------VARIABLES
 
 private:
+   // Member input variables
    int m_rangeBars;
    int m_entryHour;
 
+   // Range variables to use when entering orders
    double rangeHigh;
    double rangeLow;
 
@@ -111,10 +113,12 @@ public:
       m_entryHour = entryHour;
    }
 
-   void ExecuteTrade() override
+   // Execute trades if all conditions are met
+   void ExecuteStrategy() override
    {
-      Comment(tradingAllowed);
       if (EntryCriteria())
          PlacePendings();
+
+      ResetControlVariables();
    }
 };
