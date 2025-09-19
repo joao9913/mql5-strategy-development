@@ -8,24 +8,23 @@
 #property version   "1.00"
 
 #include "..\..\Include\VantedgeTrading\Strategy.mqh"
-#include "..\..\Include\VantedgeTrading\HourBreakout.mqh"
 
-//Pointer to Strategy
+//------ HourBreakout Initialization ------------
+
+#include "..\..\Include\VantedgeTrading\HourBreakout.mqh"
 CStrategy* hourBreakout;
 
-//Dummy inputs to test the strategy HourBreakout
 input int NBars = 3;
 input int EntryHour = 3;
 input int ServerHourDifference = 2;
 
 int OnInit()
 {
-   //Create HourBreakout object
-   hourBreakout = new HourBreakout(NBars, EntryHour);
-   
    // Set the static variable for all strategies
     CStrategy::SetServerHourDifference(ServerHourDifference);
-   
+    
+   //Create HourBreakout object
+   hourBreakout = new HourBreakout(NBars, EntryHour);
    if(hourBreakout == NULL)
    {
       Print("Strategy creation failed.");

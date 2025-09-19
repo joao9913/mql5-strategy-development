@@ -46,7 +46,7 @@ protected:
    }
 
    // Check if there are any open pending orders
-   bool CheckOpenPositions()
+   bool CheckOpenOrders()
    {
       if (OrdersTotal() == 0)
          return false;
@@ -82,10 +82,20 @@ protected:
    {
       if (GetCurrentHour() == 20 + m_ServerHourDifference && GetCurrentMinute() <= 5)
       {
-         if (!CheckOpenPositions() && !CheckOpenTrades())
+         if (!CheckOpenOrders() && !CheckOpenTrades())
          {
             tradingAllowed = true;
          }
+      }
+   }
+
+   // Cancel all open pending orders
+   void CancelOpenOrders()
+   {
+      for (int k = OrdersTotal() - 1; k >= 0; k--)
+      {
+         ulong ticket = OrderGetTicket(k);
+         trade.OrderDelete(ticket);
       }
    }
 

@@ -105,6 +105,13 @@ private:
       tradingAllowed = false;
    }
 
+   // Cancel pending order once opposite one is triggered
+   void CancelPendingOrder()
+   {
+      if (CheckOpenTrades() && CheckOpenOrders() && !tradingAllowed)
+         CancelOpenOrders();
+   }
+
 public:
    // Constructor for input variables
    HourBreakout(int rangeBars, int entryHour)
@@ -120,5 +127,6 @@ public:
          PlacePendings();
 
       ResetControlVariables();
+      CancelPendingOrder();
    }
 };
