@@ -1,23 +1,20 @@
-#MQL5 Compiled files
-*.ex5
+# Ignore everything by default
+*
 
-#Logs or temporary files
-*.log
-*.mqh~
-
-#Allow only these folders
+# Allow only these folders
 !Experts/
 !Include/
-/Images
-/Profiles
-/Scripts
-/experts.dat
 
-
-# But inside Experts, allow only VantedgeTrading
+# But only VantedgeTrading inside them
 Experts/*
 !Experts/VantedgeTrading/
 
-# Inside Include, allow only VantedgeTrading
 Include/*
 !Include/VantedgeTrading/
+
+# Ignore compiled and temp files
+*.ex5
+*.ex4
+*.ex
+*.log
+*.dat

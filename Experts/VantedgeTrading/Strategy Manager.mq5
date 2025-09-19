@@ -7,8 +7,8 @@
 #property link      "https://www.mql5.com"
 #property version   "1.00"
 
-#include "..\Include\Strategy.mqh"
-#include "..\Include\HourBreakout.mqh"
+#include "..\..\Include\VantedgeTrading\Strategy.mqh"
+#include "..\..\Include\VantedgeTrading\HourBreakout.mqh"
 
 //Pointer to Strategy
 CStrategy* hourBreakout;
@@ -16,11 +16,12 @@ CStrategy* hourBreakout;
 //Dummy inputs to test the strategy HourBreakout
 input int NBars = 3;
 input int EntryHour = 3;
+input int ServerHourDifference = 2;
 
 int OnInit()
 {
    //Create HourBreakout object
-   hourBreakout = new HourBreakout(NBars, EntryHour);
+   hourBreakout = new HourBreakout(NBars, EntryHour, ServerHourDifference);
    if(hourBreakout == NULL)
    {
       Print("Strategy creation failed.");
