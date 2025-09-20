@@ -118,9 +118,19 @@ public:
    // Constructor for input variables
    MiddleRange(int rangeBars, int entryHour, int entryMinute)
    {
-      m_rangeBars = rangeBars;
-      m_entryHour = entryHour;
-      m_entryMinute = entryMinute;
+      if (Symbol() == "USDJPY")
+      {
+         m_rangeBars = 3;
+         m_entryHour = 4;
+         m_entryMinute = 30;
+         return;
+      }
+      else
+      {
+         m_rangeBars = rangeBars;
+         m_entryHour = entryHour;
+         m_entryMinute = entryMinute;
+      }
    }
 
    // Execute trades if all conditions are met

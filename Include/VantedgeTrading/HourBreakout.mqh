@@ -116,6 +116,19 @@ public:
    // Constructor for input variables
    HourBreakout(int rangeBars, int entryHour)
    {
+      if (Symbol() == "USDJPY")
+      {
+         m_rangeBars = 3;
+         m_entryHour = 3;
+         return;
+      }
+      else if (Symbol() == "GBPUSD")
+      {
+         m_rangeBars = 5;
+         m_entryHour = 9;
+         return;
+      }
+
       m_rangeBars = rangeBars;
       m_entryHour = entryHour;
    }
