@@ -98,7 +98,7 @@ private:
          entryprice = iClose(Symbol(), PERIOD_M30, 1);
          stoploss = rangeLow;
          takeprofit = NormalizeDouble(entryprice + (entryprice - stoploss) * 2.05, _Digits);
-         trade.Sell(CalculateLots(stoploss, entryprice, 1, 10000), Symbol(), entryprice, stoploss, takeprofit);
+         trade.Buy(CalculateLots(stoploss, entryprice, 1, 10000), Symbol(), entryprice, stoploss, takeprofit);
 
          tradingAllowed = false;
       }
@@ -108,7 +108,7 @@ private:
          entryprice = iClose(Symbol(), PERIOD_M30, 1);
          stoploss = rangeHigh;
          takeprofit = NormalizeDouble(entryprice - (stoploss - entryprice) * 2.05, _Digits);
-         trade.Buy(CalculateLots(stoploss, entryprice, 1, 10000), Symbol(), entryprice, stoploss, takeprofit);
+         trade.Sell(CalculateLots(stoploss, entryprice, 1, 10000), Symbol(), entryprice, stoploss, takeprofit);
 
          tradingAllowed = false;
       }
@@ -128,5 +128,7 @@ public:
    {
       if (EntryCriteria())
          EnterTrade();
+
+      ResetControlVariables();
    }
 };
