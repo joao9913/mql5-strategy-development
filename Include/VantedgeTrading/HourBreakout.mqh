@@ -89,7 +89,7 @@ private:
       if (entryprice - ask < stopLevelPrice)
          entryprice = NormalizeDouble(ask + stopLevelPrice, _Digits);
 
-      trade.BuyStop(CalculateLots(stoploss, entryprice, 1, 10000), entryprice, Symbol(), stoploss, takeprofit);
+      trade.BuyStop(CalculateLots(stoploss, entryprice, 10000), entryprice, Symbol(), stoploss, takeprofit);
 
       // Place short pending order
       entryprice = rangeLow;
@@ -99,7 +99,7 @@ private:
       if (bid - entryprice < stopLevelPrice)
          entryprice = NormalizeDouble(bid - stopLevelPrice, _Digits);
 
-      trade.SellStop(CalculateLots(stoploss, entryprice, 1, 10000), entryprice, Symbol(), stoploss, takeprofit);
+      trade.SellStop(CalculateLots(stoploss, entryprice, 10000), entryprice, Symbol(), stoploss, takeprofit);
 
       // Set boolean control variable to false
       tradingAllowed = false;

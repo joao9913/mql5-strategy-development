@@ -22,6 +22,7 @@ protected:
 private:
    MqlRates priceData[];
    MqlDateTime currentTime;
+   double m_riskPercentage;
 
    //--------METHODS
 
@@ -30,13 +31,13 @@ protected:
    virtual bool EntryCriteria() = 0;
 
    // Calculate lots depending on stoploss, entryprice, risk, balance, symbol
-   double CalculateLots(double stoploss, double entryprice, double risk, double balance)
+   double CalculateLots(double stoploss, double entryprice, double balance)
    {
       double slDistance = MathAbs(stoploss - entryprice);
       double pointSize = SymbolInfoDouble(_Symbol, SYMBOL_POINT);            // Point size instead of tick size
       double tickValue = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE); // Tick value
       double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
-      double lotSize = (risk / 100.0) * balance / (slDistance * tickValue / pointSize);
+      double lotSize = (m_riskPercentage / 100.0) * balance / (slDistance * tickValue / pointSize);
       lotSize = MathMax(lotSize, SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN));
       lotSize = MathMin(lotSize, SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX));
 
@@ -107,6 +108,11 @@ public:
    static void SetServerHourDifference(int value)
    {
       m_ServerHourDifference = value;
+   }
+
+   void SetRisk(double riskPercentage)
+   {
+      m_riskPercentage = riskPercentage;
    }
 };
 

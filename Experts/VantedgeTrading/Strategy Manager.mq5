@@ -7,7 +7,8 @@
 #property link "https://www.mql5.com"
 #property version "1.00"
 
-#include "../../Include/VantedgeTrading/Strategy.mqh"
+#include "../../Include/VantedgeTrading/Strategy.mqh";
+#include "../../Include/VantedgeTrading/PushSimulation.mqh";
 
 //------------ GLOBAL INPUTS ------------
 input group "Global Settings";
@@ -38,11 +39,13 @@ input int EntryMinute_MiddleRange = 30;
 
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
+CPushSimulation *simulation;
 
 int OnInit()
 {
    // Set the static variable for all strategies
    CStrategy::SetServerHourDifference(ServerHourDifference);
+   simulation = new CPushSimulation();
 
    switch (StrategyChoice)
    {
@@ -79,9 +82,15 @@ int OnInit()
 
 void OnDeinit(const int reason)
 {
+   if (activeStrategy != NULL)
+   {
+      delete activeStrategy;
+      activeStrategy = NULL;
+   }
 }
 
 void OnTick()
 {
+   activeStrategy.SetRisk(simulation.GetRisk());
    activeStrategy.ExecuteStrategy();
 }
