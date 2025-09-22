@@ -15,6 +15,7 @@ class CStrategy
 protected:
    static int m_ServerHourDifference;
    CTrade trade;
+   bool m_lastTradeOutcome;
 
    // New NTrades
    bool tradingAllowed;
@@ -113,6 +114,23 @@ public:
    void SetRisk(double riskPercentage)
    {
       m_riskPercentage = riskPercentage;
+   }
+
+   void setLastTradeOutcome(bool outcome)
+   {
+      // true = win / false = loss
+      m_lastTradeOutcome = outcome;
+   }
+
+   bool getLastTradeOutcome()
+   {
+      return m_lastTradeOutcome;
+   }
+
+   // Call this method after a trade closes
+   void UpdateTradeOutcome(bool tradeOutcome)
+   {
+      m_lastTradeOutcome = tradeOutcome;
    }
 };
 
