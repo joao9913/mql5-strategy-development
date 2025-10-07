@@ -8,28 +8,28 @@ The goal is to maintain a complete version-controlled record of all active and e
 
 ## Structure
 
-- ## Experts/
+- ### Experts/
 
-  - ## Trading Strategies/
-    - ## In Development
+  - #### Trading Strategies/
+    - ##### In Development
       - Notes.md
-    - ## Strategy Manager
+    - ##### Strategy Manager
       - Notes.md
 
-- ## Risk Management/
-  - ## Prop Firm Trading/
+- ### Risk Management/
+  - #### Prop Firm Trading/
     - Notes.md
-    - ## In Development
+    - ##### In Development
       - Notes.md
-    - ## Strategy Manager
+    - ##### Strategy Manager
       - Notes.md
-  - ## Personal Account Trading/
-    - ## In Development
-      - ## Risk Management Tests
-        - ## Highest Balance Compounding
-        - ## Highest Balance Compounding + Static Risk Comparison
-        - ## Risk Multiplier Martingale
-        - ## Static Risk Comparison
+  - #### Personal Account Trading/
+    - ##### In Development
+      - ###### Risk Management Tests
+        - ###### Highest Balance Compounding
+        - ###### Highest Balance Compounding + Static Risk Comparison
+        - ###### Multiplier Martingale
+        - ###### Static Risk Comparison
         - Base Report NC.html
         - Base Report NC.png
         - Base Report WC.html
