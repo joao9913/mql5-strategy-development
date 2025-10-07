@@ -6,83 +6,123 @@
 #property copyright "VantedgeTrading, 2025"
 #property link "https://www.mql5.com"
 
-#include "Strategy.mqh"
+#include "/../DevelopmentStrategy.mqh"
 
-class MiddleRange : public CStrategy
+class MACrossover : public CStrategy
 {
    //--------VARIABLES
 
 private:
    // Member input variables
-   int m_rangeBars;
-   int m_entryHour;
-   int m_entryMinute;
-
-   // Range variables to use when entering orders
-   double rangeHigh;
-   double rangeLow;
-   double rangeMiddle;
+   int m_shortMAPeriod;
+   int m_longMAPeriod;
+   int m_lookbackBars;
+   double m_atrMultiplier;
+   
+   //Strategy Variables
+   int shortMADefinition;
+   int longMADefinition;
+   int atrDefinition;
+   double shortMAArray[];
+   double longMAArray[];
+   double priceArray[];
 
    //--------METHODS
 
 private:
-   // Check if hour is within entry hour range
-   bool CheckEntryHour()
+    
+   //Get Short MA Value
+   double GetShortMAValue(int shift)
    {
-      if (GetCurrentHour() == m_entryHour + m_ServerHourDifference && GetCurrentMinute() == m_entryMinute)
-         return true;
-
-      return false;
+      CopyBuffer(shortMADefinition, 0, shift, 1, shortMAArray);
+      return NormalizeDouble(shortMAArray[0], _Digits);
    }
-
-   // Calculate range
-   void CalculateRange()
+   
+   //Get Long MA Value
+   double GetLongMAValue(int shift)
    {
-      double high = iHigh(Symbol(), PERIOD_CURRENT, 1);
-      double low = iLow(Symbol(), PERIOD_CURRENT, 1);
-
-      rangeHigh = high;
-      rangeLow = low;
-
-      for (int i = 1; i < m_rangeBars; i++)
+      CopyBuffer(longMADefinition, 0, shift, 1, longMAArray);
+      return NormalizeDouble(longMAArray[0], _Digits);
+   }
+   
+   //Get ATR Value
+   double GetATRValue()
+   {
+      CopyBuffer(atrDefinition, 0, 0, 3, priceArray);
+      return NormalizeDouble(priceArray[0], _Digits);
+   }
+     
+   //Check if ShortMA was away from LongMA for lookback candles
+   bool CheckMALookback()
+   {
+      double currentLongMAValue = GetLongMAValue(1);
+      double currentShortMAValue = GetShortMAValue(1);
+      
+      if(currentShortMAValue > currentLongMAValue)
       {
-         low = iLow(Symbol(), 0, i);
-         high = iHigh(Symbol(), 0, i);
-
-         if (low < rangeLow)
-            rangeLow = low;
-
-         if (high > rangeHigh)
-            rangeHigh = high;
+         for(int i = 2; i <= m_lookbackBars; i++)
+         {
+            double pastLongMAValue = GetLongMAValue(i);
+            double pastShortMAValue = GetShortMAValue(i);
+            
+            if(pastShortMAValue <= pastLongMAValue)
+               return false;
+         }
       }
-
-      rangeMiddle = NormalizeDouble(rangeHigh - (rangeHigh - rangeLow) / 2, _Digits);
+      else if(currentShortMAValue < currentLongMAValue)
+      {
+         for(int i = 2; i <= m_lookbackBars; i++)
+         {
+            double pastLongMAValue = GetLongMAValue(i);
+            double pastShortMAValue = GetShortMAValue(i);
+            
+            if(pastShortMAValue >= pastLongMAValue)
+               return false;
+         }
+      }
+      else
+         return false;
+      
+      return true;
    }
-
-   // Check if price closed above or below the middle of the range
-   string CheckCloseMiddleRange()
+   
+   //If CheckMALookback is true, checks if there is a crossover of the two MAs
+   string CheckMACrossover()
    {
-      double close = iClose(Symbol(), PERIOD_M30, 1);
-
-      if (close > rangeMiddle)
-         return "Close Above Middle";
-
-      else if (close < rangeMiddle)
-         return "Close Below Middle";
-
-      return NULL;
+      if(CheckMALookback())
+      {
+         double previousLongMAValue = GetLongMAValue(1);
+         double previousShortMAValue = GetShortMAValue(1);
+         double currentLongMAValue = GetLongMAValue(0);
+         double currentShortMAValue = GetShortMAValue(0);
+         
+         if(previousShortMAValue > previousLongMAValue)
+         {
+            if(currentShortMAValue <= previousLongMAValue)
+            {
+               return "Short";
+            }
+         }
+         else if(previousShortMAValue < previousLongMAValue)
+         {
+            if(currentShortMAValue >= previousLongMAValue)
+            {  
+               return "Long";
+            }
+         }
+      }
+      
+      return "";
    }
 
    // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if (CheckEntryHour() && tradingAllowed)
+      if(CheckMACrossover() != "")
       {
-         CalculateRange();
-         if (CheckCloseMiddleRange() != NULL)
-            return true;
+      
       }
-
+      
       return false;
    }
 
@@ -90,47 +130,39 @@ private:
    void EnterTrade()
    {
       // Variables to define trade information
-      double entryprice, stoploss, takeprofit, rr = 2.05;
-
-      // Place long market order
-      if (CheckCloseMiddleRange() == "Close Above Middle")
-      {
-         entryprice = iClose(Symbol(), PERIOD_M30, 1);
-         stoploss = rangeLow;
-         takeprofit = NormalizeDouble(entryprice + (entryprice - stoploss) * 2.05, _Digits);
-         trade.Buy(CalculateLots(stoploss, entryprice, 10000), Symbol(), entryprice, stoploss, takeprofit);
-
-         tradingAllowed = false;
-      }
-      // Place short market order
-      else if (CheckCloseMiddleRange() == "Close Below Middle")
-      {
-         entryprice = iClose(Symbol(), PERIOD_M30, 1);
-         stoploss = rangeHigh;
-         takeprofit = NormalizeDouble(entryprice - (stoploss - entryprice) * 2.05, _Digits);
-         trade.Sell(CalculateLots(stoploss, entryprice, 10000), Symbol(), entryprice, stoploss, takeprofit);
-
-         tradingAllowed = false;
-      }
+      //double entryprice, stoploss, takeprofit, rr = 2.05;
    }
 
 public:
    // Constructor for input variables
-   MiddleRange(int rangeBars, int entryHour, int entryMinute)
+   MACrossover(int shortMAPeriod, int longMAPeriod, int lookbackBars, double atrMultiplier)
    {
-      if (Symbol() == "USDJPY")
-      {
-         m_rangeBars = 3;
-         m_entryHour = 4;
-         m_entryMinute = 30;
-         return;
-      }
-      else
-      {
-         m_rangeBars = rangeBars;
-         m_entryHour = entryHour;
-         m_entryMinute = entryMinute;
-      }
+      m_shortMAPeriod = shortMAPeriod;
+      m_longMAPeriod = longMAPeriod;
+      m_lookbackBars = lookbackBars;
+      m_atrMultiplier = atrMultiplier;
+   }
+   
+   //--- Initialization method (similar to OnInit)
+   bool Init()
+   {
+      shortMADefinition = iMA(Symbol(), PERIOD_CURRENT, m_shortMAPeriod, 0, MODE_SMA, PRICE_CLOSE);
+      if(shortMADefinition == INVALID_HANDLE)
+         return false;
+      
+      longMADefinition = iMA(Symbol(), PERIOD_CURRENT, m_longMAPeriod, 0, MODE_SMA, PRICE_CLOSE);
+      if(longMADefinition == INVALID_HANDLE)
+         return false;
+         
+      atrDefinition = iATR(Symbol(),PERIOD_CURRENT, m_longMAPeriod - m_shortMAPeriod);
+      if(atrDefinition == INVALID_HANDLE)
+         return false;
+         
+      ArraySetAsSeries(shortMAArray, true);
+      ArraySetAsSeries(longMAArray, true);
+      ArraySetAsSeries(priceArray, true);
+      
+      return true;
    }
 
    // Execute trades if all conditions are met
@@ -138,7 +170,5 @@ public:
    {
       if (EntryCriteria())
          EnterTrade();
-
-      ResetControlVariables();
    }
 };

@@ -24,6 +24,7 @@ private:
    MqlRates priceData[];
    MqlDateTime currentTime;
    double m_riskPercentage;
+   datetime lastTime;
 
    //--------METHODS
 
@@ -99,6 +100,18 @@ protected:
          ulong ticket = OrderGetTicket(k);
          trade.OrderDelete(ticket);
       }
+   }
+   
+   //Check if new candle is formed
+   bool IsNewCandle()
+   {
+      datetime actualTime= iTime(Symbol(), PERIOD_CURRENT, 0);
+      if(actualTime != lastTime)
+      {
+         lastTime = actualTime;
+         return true;
+      }
+      return false;
    }
 
 public:

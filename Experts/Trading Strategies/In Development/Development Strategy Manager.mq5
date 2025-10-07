@@ -14,15 +14,15 @@ input group "Global Settings";
 input int ServerHourDifference = 2;
 enum strategyChoice
 {
-   MACrossover = 1,
-   MARetest = 2,
+   MACrossover_Strategy = 1,
+   MARetest_Strategy = 2,
 };
-input strategyChoice StrategyChoice = MACrossover;
+input strategyChoice StrategyChoice = MACrossover_Strategy;
 
-//------------ HourBreakout Initialization ------------
-input group "HourBreakout Strategy Settings";
-//#include "../../Include/VantedgeTrading/HourBreakout.mqh";
-CStrategy *HourBreakoutStrategy;
+//------------ MA Crossover Initialization ------------
+input group "MA Crossover Settings";
+#include "MA Crossover/MA Crossover.mqh";
+CStrategy *MACrossoverStrategy;
 
 //input int RangeBars_HourBreakout = 3;
 //input int EntryHour_HourBreakout = 3;
@@ -39,7 +39,7 @@ int OnInit()
    {
    // MACROSSOVER INITIALIZATION
    case 1:
-      //activeStrategy = new HourBreakout(RangeBars_HourBreakout, EntryHour_HourBreakout);
+      //activeStrategy = new MACrossover(RangeBars_HourBreakout, EntryHour_HourBreakout);
       if (activeStrategy != NULL)
       {
          Print("Strategy creation successfull.");
