@@ -1,17 +1,23 @@
 # Ignore everything by default
-*
+/*
 
-# Allow only these folders
-!Experts/
-!Include/
+# Allow specific folders you care about
+!/Experts/
+!/Include/VantedgeTrading
+!/Code Library/
+!/README.md
+!/.gitignore
 
-# But only VantedgeTrading inside them
-Experts/*
-!Experts/VantedgeTrading/
-Include/*
-!Include/VantedgeTrading/
+# Ignore compiled files
+*.ex5
 
-# But always include these files
-!README.md
-!TODO.md
-!.gitignore
+# Ignore MetaTrader-generated files and folders
+Tester/
+Logs/
+Profiles/
+Bases/
+*.dat
+*.hst
+*.srv
+*.log
+*.tmp
