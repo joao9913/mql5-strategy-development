@@ -7,7 +7,7 @@
 #property link "https://www.mql5.com"
 #property version "1.00"
 
-#include "../../../Include/VantedgeTrading/Trading Strategies/Strategy.mqh";
+#include "DevelopmentStrategy.mqh";
 
 //------------ GLOBAL INPUTS ------------
 input group "Global Settings";
