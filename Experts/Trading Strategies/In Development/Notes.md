@@ -1,3 +1,6 @@
+# New Strategy Ideas
+    - Work out a strategy regarding us30 and nas100 initial momentum on ny session (14:30pm)
+
 # MA Retest
 
 Uses a single MA. Price needs to be above/below the MA for a certain number of candles, enters on the retest, stop-loss with the atr.
