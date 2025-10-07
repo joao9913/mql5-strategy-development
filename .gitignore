@@ -3,6 +3,7 @@
 
 # Allow specific folders you care about
 !/Experts/
+!/Include/
 !/Include/VantedgeTrading
 !/Code Library/
 !/Optimizations/
@@ -10,6 +11,9 @@
 !/.gitignore
 
 # Ignore compiled files
+Include/*
+!Include/VantedgeTrading/
+!Include/VantedgeTrading/**
 *.ex5
 
 # Ignore MetaTrader-generated files and folders
