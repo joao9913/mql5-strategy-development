@@ -89,8 +89,7 @@ private:
    // Enter market order on close direction
    void EnterTrade()
    {
-      // Variables to define trade information
-      double entryprice, stoploss, takeprofit, rr = 2.05;
+      rr = 2.05;
 
       // Place long market order
       if (CheckCloseMiddleRange() == "Close Above Middle")
@@ -98,7 +97,7 @@ private:
          entryprice = iClose(Symbol(), PERIOD_M30, 1);
          stoploss = rangeLow;
          takeprofit = NormalizeDouble(entryprice + (entryprice - stoploss) * 2.05, _Digits);
-         trade.Buy(CalculateLots(stoploss, entryprice, 10000), Symbol(), entryprice, stoploss, takeprofit);
+         trade.Buy(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
 
          tradingAllowed = false;
       }
@@ -108,7 +107,7 @@ private:
          entryprice = iClose(Symbol(), PERIOD_M30, 1);
          stoploss = rangeHigh;
          takeprofit = NormalizeDouble(entryprice - (stoploss - entryprice) * 2.05, _Digits);
-         trade.Sell(CalculateLots(stoploss, entryprice, 10000), Symbol(), entryprice, stoploss, takeprofit);
+         trade.Sell(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
 
          tradingAllowed = false;
       }

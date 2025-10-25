@@ -77,9 +77,8 @@ private:
       // Get ask and bid price for current symbol
       double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
       double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-
-      // Variables to define trade information
-      double entryprice, stoploss, takeprofit, rr = 2.05;
+      
+      rr = 2.05;
 
       // Place long pending order
       entryprice = rangeHigh;
@@ -89,7 +88,7 @@ private:
       if (entryprice - ask < stopLevelPrice)
          entryprice = NormalizeDouble(ask + stopLevelPrice, _Digits);
 
-      trade.BuyStop(CalculateLots(stoploss, entryprice, 10000), entryprice, Symbol(), stoploss, takeprofit);
+      trade.BuyStop(CalculateLots(), entryprice, Symbol(), stoploss, takeprofit);
 
       // Place short pending order
       entryprice = rangeLow;
@@ -99,7 +98,7 @@ private:
       if (bid - entryprice < stopLevelPrice)
          entryprice = NormalizeDouble(bid - stopLevelPrice, _Digits);
 
-      trade.SellStop(CalculateLots(stoploss, entryprice, 10000), entryprice, Symbol(), stoploss, takeprofit);
+      trade.SellStop(CalculateLots(), entryprice, Symbol(), stoploss, takeprofit);
 
       // Set boolean control variable to false
       tradingAllowed = false;

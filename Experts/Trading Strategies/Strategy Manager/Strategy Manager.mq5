@@ -7,35 +7,51 @@
 #property link "https://www.mql5.com"
 #property version "1.00"
 
-#include "../../Include/VantedgeTrading/Strategy.mqh";
-#include "../../Include/VantedgeTrading/PushSimulation.mqh";
+#include "../../../Include/VantedgeTrading/Trading Strategies/Strategy.mqh";
+#include "../../../Include/VantedgeTrading/Risk Management/PushSimulation.mqh";
 
 //------------ GLOBAL INPUTS ------------
 input group "Global Settings";
 input int ServerHourDifference = 2;
+input bool UseCompounding = false;
+input int StartingAccountBalance = 10000;
 enum strategyChoice
 {
    HourBreakout_Strategy = 1,
    MiddleRange_Strategy = 2,
+   MARetest_Strategy = 3,
 };
 input strategyChoice StrategyChoice = HourBreakout_Strategy;
 
-//------------ HourBreakout Initialization ------------
-input group "HourBreakout Strategy Settings";
-#include "../../Include/VantedgeTrading/HourBreakout.mqh";
+//+------------------------------------------------------------------+
+//|                     HourBreakout Initialization                  |
+//+------------------------------------------------------------------+
+#include "../../../Include/VantedgeTrading/Trading Strategies/HourBreakout.mqh";
 CStrategy *HourBreakoutStrategy;
-
+input group "HourBreakout Strategy Settings";
 input int RangeBars_HourBreakout = 3;
 input int EntryHour_HourBreakout = 3;
 
-//------------ MiddleRange Initialization ------------
-input group "MiddleRange Strategy Settings";
-#include "../../Include/VantedgeTrading/MiddleRange.mqh";
+//+------------------------------------------------------------------+
+//|                     MiddleRange  Initialization                  |
+//+------------------------------------------------------------------+
+#include "../../../Include/VantedgeTrading/Trading Strategies/MiddleRange.mqh";
 CStrategy *MiddleRangeStrategy;
-
+input group "MiddleRange Strategy Settings";
 input int RangeBars_MiddleRange = 3;
 input int EntryHour_MiddleRange = 4;
 input int EntryMinute_MiddleRange = 30;
+
+//+------------------------------------------------------------------+
+//|                     MA Retest Initialization                     |
+//+------------------------------------------------------------------+
+#include "../../../Include/VantedgeTrading/Trading Strategies/MARetest.mqh"
+CStrategy *MARetestStrategy;
+input group "MA Retest Strategy Settings";
+input int MAPeriod_MARetest = 3;
+input int Lookback_MARetest = 4;
+input int ATRMultiplier_MARetest = 30;
+
 
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
@@ -45,6 +61,8 @@ int OnInit()
 {
    // Set the static variable for all strategies
    CStrategy::SetServerHourDifference(ServerHourDifference);
+   CStrategy::SetCompounding(UseCompounding);
+   CStrategy::SetStartingBalance(StartingAccountBalance);
    simulation = new CPushSimulation();
 
    switch (StrategyChoice)
@@ -67,6 +85,18 @@ int OnInit()
       if (activeStrategy != NULL)
       {
          Print("MiddleRange Strategy creation successfull.");
+         return (INIT_SUCCEEDED);
+      }
+      break;
+      
+   // MARETEST INITIALIZATION
+   case 3:
+      // Create MARetest object
+      activeStrategy = new MARetest(MAPeriod_MARetest, Lookback_MARetest, ATRMultiplier_MARetest);
+      if (activeStrategy != NULL)
+      {
+         activeStrategy.Init();
+         Print("MARetest Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
       break;

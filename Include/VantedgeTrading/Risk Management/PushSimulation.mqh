@@ -13,7 +13,7 @@ private:
    double m_riskPercentage;
 
 public:
-   CPushSimulation(double initialRisk = 1.4)
+   CPushSimulation(double initialRisk = 1)
    {
       m_riskPercentage = initialRisk;
    }

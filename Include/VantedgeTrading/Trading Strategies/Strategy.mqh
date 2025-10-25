@@ -14,17 +14,23 @@ class CStrategy
 
 protected:
    static int m_ServerHourDifference;
+   static int m_startingBalance;
+   static bool m_setCompounding;
    CTrade trade;
    bool m_lastTradeOutcome;
 
    // New NTrades
    bool tradingAllowed;
+   
+   // Variables to define trade information
+   double entryprice, stoploss, takeprofit, rr;
 
 private:
    MqlRates priceData[];
    MqlDateTime currentTime;
    double m_riskPercentage;
 
+   double currentBalance;
    //--------METHODS
 
 protected:
@@ -32,13 +38,18 @@ protected:
    virtual bool EntryCriteria() = 0;
 
    // Calculate lots depending on stoploss, entryprice, risk, balance, symbol
-   double CalculateLots(double stoploss, double entryprice, double balance)
-   {
+   double CalculateLots()
+   {  
+      double accountBalance = m_startingBalance;
+      
+      if(m_setCompounding)
+         accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+         
       double slDistance = MathAbs(stoploss - entryprice);
       double pointSize = SymbolInfoDouble(_Symbol, SYMBOL_POINT);            // Point size instead of tick size
       double tickValue = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE); // Tick value
       double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
-      double lotSize = (m_riskPercentage / 100.0) * balance / (slDistance * tickValue / pointSize);
+      double lotSize = (m_riskPercentage / 100.0) * accountBalance / (slDistance * tickValue / pointSize);
       lotSize = MathMax(lotSize, SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN));
       lotSize = MathMin(lotSize, SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX));
 
@@ -104,6 +115,7 @@ protected:
 public:
    // Abstract method every strategy needs to implement
    virtual void ExecuteStrategy() = 0;
+   virtual bool Init(){return true;}
 
    // Setter method to set the Server Hour Difference the same for every strategy
    static void SetServerHourDifference(int value)
@@ -114,6 +126,16 @@ public:
    void SetRisk(double riskPercentage)
    {
       m_riskPercentage = riskPercentage;
+   }
+   
+   static void SetStartingBalance(int startingBalance)
+   {
+      m_startingBalance = startingBalance;
+   }
+   
+   static void SetCompounding(bool compounding)
+   {
+      m_setCompounding = compounding;
    }
 
    void setLastTradeOutcome(bool outcome)
@@ -136,3 +158,5 @@ public:
 
 // Define + default value
 int CStrategy::m_ServerHourDifference = 2;
+int CStrategy::m_startingBalance = 10000;
+bool CStrategy::m_setCompounding = false;
