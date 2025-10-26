@@ -1,11 +1,30 @@
-## MARetest.mqh
+# MACrossover.mqh
 
-    - Checks if price is above/below the MA for a certain (lookback) number of candles
-    - If true, checks when price retests the MA
-    - If price was above and touches the MA, enters long
-    - If price was below and touches the MA, enters short
-    - Uses the atr and a multiplier to place the stop loss
+Uses two moving averages to identify a crossover between them.
 
-### Pairs/Markets
+## Entry Criteria
+
+    - Short MA needs to be below/above the Long MA for a certain number of candles
+    - Waits for a crossover of the short MA over the long MA
+    - Enters on the cross
+
+## Stop-Loss
+
+    - If long, below the MAs
+    - If short, above the MAs
+    - Uses atr multiplier to place the stop loss
+
+## Take-Profit
+
+    - 1:2 Risk-To-Reward Ratio
+
+## Input Variables
+
+    - ShortMAPeriod     - Shorter MA Period
+    - LongMAPeriod      - Longer MA Period
+    - Lookback          - How many candles does the short MA need to be above/below the long MA
+    - ATRMultiplier     - Stoploss ATR Multiplier
+
+## Pairs/Markets
 
     - To Be Optimized

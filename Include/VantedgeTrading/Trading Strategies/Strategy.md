@@ -1,35 +1,31 @@
-# Trading Strategies
-
-All include files for each individual finished strategy
-
-## Strategy.mqh
+# Strategy.mqh
 
 Contains methods & variables that most strategies use, and some that every strategy needs to use
 
-### CalculateLots()
+## CalculateLots()
 
     Calculates lots depending on account balance and risk, adjusted per pair
 
-### CheckOpenOrders()
+## CheckOpenOrders()
 
     Check if there are any open pending orders
 
-### CheckOpenTrades()
+## CheckOpenTrades()
 
     Check if there are any open active trades
 
-### GetCurrentMinute()
+## GetCurrentMinute()
 
     Get current minute from currentTime()
 
-### GetCurrentHour()
+## GetCurrentHour()
 
     Get current hour from currentTime()
 
-### ResetControlVariables()
+## ResetControlVariables()
 
     Reset control variables if no trades/orders are open before the next trading day
 
-### CancelOpenOrders()
+## CancelOpenOrders()
 
     Cancel all open pending orders
