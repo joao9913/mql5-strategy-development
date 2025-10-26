@@ -15,6 +15,7 @@ input group "Global Settings";
 input int ServerHourDifference = 2;
 input bool UseCompounding = false;
 input int StartingAccountBalance = 10000;
+input double RiskOverride = 1;
 enum strategyChoice
 {
    HourBreakout_Strategy = 1,
@@ -145,6 +146,9 @@ void OnDeinit(const int reason)
 
 void OnTick()
 {
-   activeStrategy.SetRisk(simulation.GetRisk());
+   if(RiskOverride == 0)
+      activeStrategy.SetRisk(simulation.GetRisk());
+   else
+      activeStrategy.SetRisk(RiskOverride);
    activeStrategy.ExecuteStrategy();
 }
