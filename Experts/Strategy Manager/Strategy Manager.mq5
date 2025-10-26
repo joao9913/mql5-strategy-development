@@ -150,5 +150,27 @@ void OnTick()
       activeStrategy.SetRisk(simulation.GetRisk());
    else
       activeStrategy.SetRisk(RiskOverride);
+      
    activeStrategy.ExecuteStrategy();
+}
+
+void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
+{
+   if(trans.type == TRADE_TRANSACTION_DEAL_ADD)
+   {
+      ulong dealTicket = trans.deal;
+      if(HistoryDealSelect(dealTicket))
+      {
+         long reason = HistoryDealGetInteger(dealTicket, DEAL_REASON);
+         
+         if(reason == DEAL_REASON_SL)
+         {
+            Comment("Stop-Loss");
+         }
+         else if(reason == DEAL_REASON_TP)
+         {
+            Comment("Take-Profit");
+         }
+      }
+   }
 }

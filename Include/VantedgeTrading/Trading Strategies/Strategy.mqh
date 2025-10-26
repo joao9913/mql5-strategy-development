@@ -17,7 +17,6 @@ protected:
    static int m_startingBalance;
    static bool m_setCompounding;
    CTrade trade;
-   bool m_lastTradeOutcome;
 
    // New NTrades
    bool tradingAllowed;
@@ -136,23 +135,6 @@ public:
    static void SetCompounding(bool compounding)
    {
       m_setCompounding = compounding;
-   }
-
-   void setLastTradeOutcome(bool outcome)
-   {
-      // true = win / false = loss
-      m_lastTradeOutcome = outcome;
-   }
-
-   bool getLastTradeOutcome()
-   {
-      return m_lastTradeOutcome;
-   }
-
-   // Call this method after a trade closes
-   void UpdateTradeOutcome(bool tradeOutcome)
-   {
-      m_lastTradeOutcome = tradeOutcome;
    }
 };
 
