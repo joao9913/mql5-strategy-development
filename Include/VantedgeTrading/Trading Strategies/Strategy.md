@@ -33,28 +33,3 @@ Contains methods & variables that most strategies use, and some that every strat
 ### CancelOpenOrders()
 
     Cancel all open pending orders
-
-## HourBreakout.mqh
-
-    - Waits for entry hour
-    - Draws range from highest high to lowest low, from entry hour to lookback bars
-    - Enters two pendings on each side of the range
-    - Stop loss on the opposite side of the range
-    - When one trade is activated, cancels opposite order
-
-### Pairs/Markets
-
-    - USDJPY
-    - GBPUSD
-
-## MiddleRange.mqh
-
-    - Waits for entry hour & entry minute
-    - Draws range from highest high to lowest low, from entry hour to lookback bars
-    - Enters long if price closed above the middle
-    - Enters short if price closed below the middle
-    - Stop loss on the opposite side of the range
-
-### Pairs/Markets
-
-    - USDJPY
