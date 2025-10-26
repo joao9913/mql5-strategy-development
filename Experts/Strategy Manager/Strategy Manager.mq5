@@ -69,7 +69,8 @@ input int ATRMultiplier_MACRossover = 30;
 
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
-CEdgeRiskScaling *EdgeRiskScaling;
+CEdgeRiskScaling *edgeRiskScaling;
+CPropFirmSimulation *propFirmSimulation;
 
 int OnInit()
 {
@@ -77,7 +78,8 @@ int OnInit()
    CStrategy::SetServerHourDifference(ServerHourDifference);
    CStrategy::SetCompounding(UseCompounding);
    CStrategy::SetStartingBalance(StartingAccountBalance);
-   EdgeRiskScaling = new CEdgeRiskScaling();
+   edgeRiskScaling = new CEdgeRiskScaling();
+   propFirmSimulation = new CPropFirmSimulation();
 
    switch (StrategyChoice)
    {
@@ -141,18 +143,24 @@ void OnDeinit(const int reason)
    if (activeStrategy != NULL)
    {
       delete activeStrategy;
+      delete propFirmSimulation;
+      delete edgeRiskScaling;
+      
+      propFirmSimulation = NULL;
+      edgeRiskScaling = NULL;
       activeStrategy = NULL;
    }
 }
 
 void OnTick()
-{
-   if(RiskOverride == 0)
-      activeStrategy.SetRisk(EdgeRiskScaling.GetRisk());
-   else
-      activeStrategy.SetRisk(RiskOverride);
-      
+{    
+   if(RiskOverride > 0)
+        activeStrategy.SetRisk(RiskOverride);  // Fixed risk from input
+    else
+        activeStrategy.SetRisk(edgeRiskScaling.GetRisk());
+        
    activeStrategy.ExecuteStrategy();
+   propFirmSimulation.UpdateDailyEquity();
 }
 
 //Method to check if last closed trade as a win or loss
@@ -161,17 +169,24 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
    if(trans.type == TRADE_TRANSACTION_DEAL_ADD)
    {
       ulong dealTicket = trans.deal;
+      
       if(HistoryDealSelect(dealTicket))
       {
+         double profit = HistoryDealGetDouble(dealTicket, DEAL_PROFIT);
+         double commission = HistoryDealGetDouble(dealTicket, DEAL_COMMISSION);
+         double swap = HistoryDealGetDouble(dealTicket, DEAL_SWAP);
          long reason = HistoryDealGetInteger(dealTicket, DEAL_REASON);
+         double netProfit = NormalizeDouble(profit + commission + swap, 2);
          
          if(reason == DEAL_REASON_SL)
          {
-            EdgeRiskScaling.UpdateOutcome("Stop-Loss");
+            propFirmSimulation.UpdateBalance(netProfit, "Loss");
+            edgeRiskScaling.UpdateOutcome("Stop-Loss");
          }
          else if(reason == DEAL_REASON_TP)
          {
-            EdgeRiskScaling.UpdateOutcome("Take-Profit");
+            propFirmSimulation.UpdateBalance(netProfit, "Win");
+            edgeRiskScaling.UpdateOutcome("Take-Profit");
          }
       }
    }
