@@ -144,6 +144,7 @@ private:
          takeprofit = entryprice + (entryprice - stoploss) * 2;
          trade.Buy(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
          tradingAllowed = false;
+         lookback = false;
       }
       
       else if(CheckRetest() == "Retest Short")
@@ -153,6 +154,7 @@ private:
          takeprofit = entryprice - (stoploss - entryprice) * 2;
          trade.Sell(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
          tradingAllowed = false;
+         lookback = false;
       }
    }
 

@@ -7,8 +7,8 @@
 #property link "https://www.mql5.com"
 #property version "1.00"
 
-#include "../../../Include/VantedgeTrading/Trading Strategies/Strategy.mqh";
-#include "../../../Include/VantedgeTrading/Risk Management/PushSimulation.mqh";
+#include "../../Include/VantedgeTrading/Trading Strategies/Strategy.mqh";
+#include "../../Include/VantedgeTrading/Risk Management/PushSimulation.mqh";
 
 //------------ GLOBAL INPUTS ------------
 input group "Global Settings";
@@ -20,13 +20,14 @@ enum strategyChoice
    HourBreakout_Strategy = 1,
    MiddleRange_Strategy = 2,
    MARetest_Strategy = 3,
+   MACrossover_Strategy = 4,
 };
 input strategyChoice StrategyChoice = HourBreakout_Strategy;
 
 //+------------------------------------------------------------------+
 //|                     HourBreakout Initialization                  |
 //+------------------------------------------------------------------+
-#include "../../../Include/VantedgeTrading/Trading Strategies/HourBreakout.mqh";
+#include "../../Include/VantedgeTrading/Trading Strategies/HourBreakout.mqh";
 CStrategy *HourBreakoutStrategy;
 input group "HourBreakout Strategy Settings";
 input int RangeBars_HourBreakout = 3;
@@ -35,7 +36,7 @@ input int EntryHour_HourBreakout = 3;
 //+------------------------------------------------------------------+
 //|                     MiddleRange  Initialization                  |
 //+------------------------------------------------------------------+
-#include "../../../Include/VantedgeTrading/Trading Strategies/MiddleRange.mqh";
+#include "../../Include/VantedgeTrading/Trading Strategies/MiddleRange.mqh";
 CStrategy *MiddleRangeStrategy;
 input group "MiddleRange Strategy Settings";
 input int RangeBars_MiddleRange = 3;
@@ -45,12 +46,23 @@ input int EntryMinute_MiddleRange = 30;
 //+------------------------------------------------------------------+
 //|                     MA Retest Initialization                     |
 //+------------------------------------------------------------------+
-#include "../../../Include/VantedgeTrading/Trading Strategies/MARetest.mqh"
+#include "../../Include/VantedgeTrading/Trading Strategies/MARetest.mqh"
 CStrategy *MARetestStrategy;
 input group "MA Retest Strategy Settings";
 input int MAPeriod_MARetest = 3;
 input int Lookback_MARetest = 4;
 input int ATRMultiplier_MARetest = 30;
+
+//+------------------------------------------------------------------+
+//|                     MA Crossover Initialization                  |
+//+------------------------------------------------------------------+
+#include "../../Include/VantedgeTrading/Trading Strategies/MACrossover.mqh"
+CStrategy *MACrossoverStrategy;
+input group "MA Crossover Strategy Settings";
+input int ShortMAPeriod_MACRossover = 3;
+input int LongMAPeriod_MACRossover = 4;
+input int Lookback_MACRossover = 30;
+input int ATRMultiplier_MACRossover = 30;
 
 
 // Create pointer to the selected strategy
@@ -89,10 +101,22 @@ int OnInit()
       }
       break;
       
-   // MARETEST INITIALIZATION
+   // MA RETEST INITIALIZATION
    case 3:
       // Create MARetest object
       activeStrategy = new MARetest(MAPeriod_MARetest, Lookback_MARetest, ATRMultiplier_MARetest);
+      if (activeStrategy != NULL)
+      {
+         activeStrategy.Init();
+         Print("MARetest Strategy creation successfull.");
+         return (INIT_SUCCEEDED);
+      }
+      break;
+      
+   // MA CROSSOVER INITIALIZATION
+   case 4:
+      // Create MARetest object
+      activeStrategy = new MACrossover(ShortMAPeriod_MACRossover, LongMAPeriod_MACRossover, Lookback_MACRossover, ATRMultiplier_MACRossover);
       if (activeStrategy != NULL)
       {
          activeStrategy.Init();

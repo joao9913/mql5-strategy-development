@@ -6,7 +6,7 @@
 #property copyright "VantedgeTrading, 2025"
 #property link "https://www.mql5.com"
 
-#include "/../DevelopmentStrategy.mqh"
+#include "Strategy.mqh"
 
 class MACrossover : public CStrategy
 {
@@ -26,7 +26,9 @@ private:
    double shortMAArray[];
    double longMAArray[];
    double priceArray[];
-
+   datetime lastTime;
+   bool lookback;
+   
    //--------METHODS
 
 private:
@@ -51,45 +53,70 @@ private:
       CopyBuffer(atrDefinition, 0, 0, 3, priceArray);
       return NormalizeDouble(priceArray[0], _Digits);
    }
+   
+   //Check if current candle is new
+   bool IsNewCandle()
+   {
+      datetime time = iTime(Symbol(), PERIOD_CURRENT, 0);
+      
+      if(time != lastTime)
+      {
+         lastTime = time;
+         return true;
+      }
+      return false;
+   }
      
    //Check if ShortMA was away from LongMA for lookback candles
-   bool CheckMALookback()
-   {
-      double currentLongMAValue = GetLongMAValue(1);
-      double currentShortMAValue = GetShortMAValue(1);
-      
-      if(currentShortMAValue > currentLongMAValue)
+   void CheckMALookback()
+   {      
+      if(!lookback)
       {
-         for(int i = 2; i <= m_lookbackBars; i++)
+         double currentLongMAValue = GetLongMAValue(1);
+         double currentShortMAValue = GetShortMAValue(1);
+         
+         if(currentShortMAValue > currentLongMAValue)
          {
-            double pastLongMAValue = GetLongMAValue(i);
-            double pastShortMAValue = GetShortMAValue(i);
-            
-            if(pastShortMAValue <= pastLongMAValue)
-               return false;
+            for(int i = 2; i <= m_lookbackBars; i++)
+            {
+               double pastLongMAValue = GetLongMAValue(i);
+               double pastShortMAValue = GetShortMAValue(i);
+               
+               if(pastShortMAValue <= pastLongMAValue)
+               {
+                  lookback = false;
+                  return;
+               }
+            }
          }
-      }
-      else if(currentShortMAValue < currentLongMAValue)
-      {
-         for(int i = 2; i <= m_lookbackBars; i++)
+         else if(currentShortMAValue < currentLongMAValue)
          {
-            double pastLongMAValue = GetLongMAValue(i);
-            double pastShortMAValue = GetShortMAValue(i);
-            
-            if(pastShortMAValue >= pastLongMAValue)
-               return false;
+            for(int i = 2; i <= m_lookbackBars; i++)
+            {
+               double pastLongMAValue = GetLongMAValue(i);
+               double pastShortMAValue = GetShortMAValue(i);
+               
+               if(pastShortMAValue >= pastLongMAValue)
+               {
+                  lookback = false;
+                  return;
+               }
+            }
          }
+         else
+         {
+            lookback = false;
+            return;
+         }
+         
+         lookback = true;
       }
-      else
-         return false;
-      
-      return true;
    }
    
    //If CheckMALookback is true, checks if there is a crossover of the two MAs
    string CheckMACrossover()
    {
-      if(CheckMALookback())
+      if(lookback)
       {
          double previousLongMAValue = GetLongMAValue(1);
          double previousShortMAValue = GetShortMAValue(1);
@@ -118,19 +145,42 @@ private:
    // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if(CheckMACrossover() != "")
+      if(IsNewCandle()) 
       {
-      
+         CheckMALookback();
+         
+         if(CheckMACrossover() != "")
+            return true;
       }
       
       return false;
    }
 
    // Enter market order on close direction
-   void EnterTrade()
+   void EnterTrade(string direction)
    {
-      // Variables to define trade information
-      //double entryprice, stoploss, takeprofit, rr = 2.05;
+      if(direction == "Long")
+      {
+         rr = 2.05;
+         entryprice = SymbolInfoDouble(Symbol(), SYMBOL_ASK); 
+         stoploss = entryprice - GetATRValue() * m_atrMultiplier;
+         takeprofit = entryprice + (entryprice - stoploss) * rr;
+         trade.Buy(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);  
+         
+         tradingAllowed = false;
+         lookback = false;
+      }
+      else if(direction == "Short")
+      {
+         rr = 2.05;
+         entryprice = SymbolInfoDouble(Symbol(), SYMBOL_ASK);   
+         stoploss = entryprice + GetATRValue() * m_atrMultiplier;
+         takeprofit = entryprice - (stoploss - entryprice) * rr;
+         trade.Sell(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
+         
+         tradingAllowed = false;
+         lookback = false;
+      }
    }
 
 public:
@@ -169,6 +219,6 @@ public:
    void ExecuteStrategy() override
    {
       if (EntryCriteria())
-         EnterTrade();
+         EnterTrade(CheckMACrossover());
    }
 };
