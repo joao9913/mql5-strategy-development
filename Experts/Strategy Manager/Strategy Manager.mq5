@@ -9,6 +9,7 @@
 
 #include "../../Include/VantedgeTrading/Trading Strategies/Strategy.mqh";
 #include "../../Include/VantedgeTrading/Risk Management/PropFirm Simulation.mqh";
+#include "../../Include/VantedgeTrading/Risk Management/Edge Risk Scaling.mqh";
 
 //------------ GLOBAL INPUTS ------------
 input group "Global Settings";
@@ -68,7 +69,7 @@ input int ATRMultiplier_MACRossover = 30;
 
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
-CPushSimulation *simulation;
+CEdgeRiskScaling *EdgeRiskScaling;
 
 int OnInit()
 {
@@ -76,7 +77,7 @@ int OnInit()
    CStrategy::SetServerHourDifference(ServerHourDifference);
    CStrategy::SetCompounding(UseCompounding);
    CStrategy::SetStartingBalance(StartingAccountBalance);
-   simulation = new CPushSimulation();
+   EdgeRiskScaling = new CEdgeRiskScaling();
 
    switch (StrategyChoice)
    {
@@ -147,7 +148,7 @@ void OnDeinit(const int reason)
 void OnTick()
 {
    if(RiskOverride == 0)
-      activeStrategy.SetRisk(simulation.GetRisk());
+      activeStrategy.SetRisk(EdgeRiskScaling.GetRisk());
    else
       activeStrategy.SetRisk(RiskOverride);
       
@@ -166,11 +167,11 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
          
          if(reason == DEAL_REASON_SL)
          {
-            simulation.UpdateOutcome("Stop-Loss");
+            EdgeRiskScaling.UpdateOutcome("Stop-Loss");
          }
          else if(reason == DEAL_REASON_TP)
          {
-            simulation.UpdateOutcome("Take-Profit");
+            EdgeRiskScaling.UpdateOutcome("Take-Profit");
          }
       }
    }
