@@ -13,7 +13,7 @@ private:
    double m_riskPercentage;
 
 public:
-   CPushSimulation(double initialRisk = 1)
+   CPushSimulation(double initialRisk = 1.4)
    {
       m_riskPercentage = initialRisk;
    }
@@ -22,5 +22,18 @@ public:
    double GetRisk()
    {
       return m_riskPercentage;
+   }
+   
+   //Get last trade outcome
+   void UpdateOutcome(string outcome)
+   {
+      if(outcome == "Stop-Loss")
+      {  
+         m_riskPercentage *= 1;
+      }
+      else if(outcome == "Take-Profit")
+      {
+         m_riskPercentage = 1.4;
+      }    
    }
 }

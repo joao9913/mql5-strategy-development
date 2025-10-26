@@ -8,7 +8,7 @@
 #property version "1.00"
 
 #include "../../Include/VantedgeTrading/Trading Strategies/Strategy.mqh";
-#include "../../Include/VantedgeTrading/Risk Management/PushSimulation.mqh";
+#include "../../Include/VantedgeTrading/Risk Management/PropFirm Simulation.mqh";
 
 //------------ GLOBAL INPUTS ------------
 input group "Global Settings";
@@ -154,6 +154,7 @@ void OnTick()
    activeStrategy.ExecuteStrategy();
 }
 
+//Method to check if last closed trade as a win or loss
 void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
 {
    if(trans.type == TRADE_TRANSACTION_DEAL_ADD)
@@ -165,11 +166,11 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
          
          if(reason == DEAL_REASON_SL)
          {
-            Comment("Stop-Loss");
+            simulation.UpdateOutcome("Stop-Loss");
          }
          else if(reason == DEAL_REASON_TP)
          {
-            Comment("Take-Profit");
+            simulation.UpdateOutcome("Take-Profit");
          }
       }
    }
