@@ -21,6 +21,7 @@ private:
    
    
    datetime lastDay;
+   datetime fundedStartDate, fundedEndDate;
    double dailyEquityLowest;
    double dailyEquityHighest;
       
@@ -104,33 +105,60 @@ public:
       }
       else if(phaseOutcome == "Passed")
       {
-         if(m_phase < 3)
+         if(m_phase == 1)
          {
             m_phase++;
             m_profitTargetPct = 5;
          }
+         else if(m_phase == 2)
+         {
+            m_phase++;
+            m_profitTargetPct = 100;
+            fundedStartDate = TimeCurrent();
+            fundedEndDate = fundedStartDate + 14 * 86400;
+         }
+         else if(m_phase == 3)
+         {
+            fundedStartDate = TimeCurrent();
+            fundedEndDate = fundedStartDate + 14 * 86400;
+            m_profitTargetPct = 100;
+         }
       }
    }
    
+   //Funded stage payout logic
+   void FundedStage()
+   {
+      if(m_phase == 3)
+      {
+         datetime currentDate = TimeCurrent();
+         if(currentDate >= fundedEndDate)
+         {
+            if(m_balance < m_startBalance)
+            { 
+               ResetForNextPhase("Passed");
+            }
+         }
+      }
+   }
+      
    //Update balance after each trade outcome
    void UpdateBalance(double profit, string outcome)
-   {
-      ResetEquityHighLow();
+   {      
       m_balance += profit;
       
       if(m_balance > m_accountEquityHigh)
          m_accountEquityHigh = m_balance;
          
       double ddPct = NormalizeDouble(100.00 * (1.0 - (m_accountEquityLow / m_accountEquityHigh)), 2);
-      
-      Comment("DDPCT: ", ddPct, "\n",
-              "m_MaxDrawdownPCT: ", m_maxDrawdownPct, "\n"
-              "Equity Lowest: ", m_accountEquityLow, "\n");
       if(ddPct >= m_maxDrawdownPct)
          ResetForNextPhase("Failed");
        
       double profitPct = 100.0 * ((m_balance - m_startBalance) / m_startBalance);
-      if(profitPct >= m_profitTargetPct && m_phase < 3)
+      if(profitPct >= m_profitTargetPct)
          ResetForNextPhase("Passed");
+         
+      ResetEquityHighLow();
+      FundedStage();
    }
 }
