@@ -42,20 +42,9 @@ public:
       m_tradeCount = 0;
    }
    
-   //LOGIC IS WRONG. IF DIFFERENCE > 5% DOESNT MAKE SENSE
    //Method to reset equity highest and lowest
    void ResetEquityHighLow()
-   {
-      double dailyDDPct = NormalizeDouble(100.0 * (equityHighest - equityLowest) / equityHighest, 2);
-    
-      if(dailyDDPct >= m_maxDailyDDPct)
-         ResetForNextPhase("Failed");
-            
-      Comment("Equity Highest: ", equityHighest, "\n", 
-                 "Equity Lowest: ", equityLowest, "\n", 
-                 "Daily DD: ", dailyDDPct, "\n",
-                 "\nMax Daily DD: ", m_maxDailyDDPct);
-                 
+   {                 
       double equity = AccountInfoDouble(ACCOUNT_EQUITY);
       equityHighest = equity;
       equityLowest = equity;
@@ -79,7 +68,16 @@ public:
          equityHighest = equity;
       
       if(equity < equityLowest)
+      {
          equityLowest = equity;
+         
+         double dailyDDPct = NormalizeDouble(100.0 * (equityHighest - equityLowest) / equityHighest, 2);
+    
+         if(dailyDDPct >= m_maxDailyDDPct)
+         {
+            ResetForNextPhase("Failed");
+         }
+      }
    }
    
    //Reset when new phase starts

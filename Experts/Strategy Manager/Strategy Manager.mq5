@@ -154,14 +154,18 @@ void OnDeinit(const int reason)
 }
 
 void OnTick()
-{    
+{     
+   //----------------------TRADING STRATEGIES
    if(RiskOverride > 0)
         activeStrategy.SetRisk(RiskOverride);  // Fixed risk from input
     else
         activeStrategy.SetRisk(edgeRiskScaling.GetRisk());
         
    activeStrategy.ExecuteStrategy();
-   propFirmSimulation.UpdateDailyEquity();
+   
+   //----------------------PROPFIRM SIMULATIONS
+   if(RunSimulation)
+      propFirmSimulation.UpdateDailyEquity();
 }
 
 //Method to check if last closed trade as a win or loss
