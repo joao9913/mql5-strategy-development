@@ -145,7 +145,7 @@ private:
    // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if(IsNewCandle()) 
+      if(IsNewCandle() && tradingAllowed) 
       {
          CheckMALookback();
          
@@ -220,5 +220,7 @@ public:
    {
       if (EntryCriteria())
          EnterTrade(CheckMACrossover());
+         
+      ResetControlVariables();
    }
 };

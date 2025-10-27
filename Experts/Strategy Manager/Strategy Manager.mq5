@@ -17,6 +17,7 @@ input int ServerHourDifference = 2;
 input bool UseCompounding = false;
 input int StartingAccountBalance = 10000;
 input double RiskOverride = 1;
+input bool RunSimulation = true;
 enum strategyChoice
 {
    HourBreakout_Strategy = 1,
@@ -166,7 +167,7 @@ void OnTick()
 //Method to check if last closed trade as a win or loss
 void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
 {
-   if(trans.type == TRADE_TRANSACTION_DEAL_ADD)
+   if(trans.type == TRADE_TRANSACTION_DEAL_ADD && RunSimulation)
    {
       ulong dealTicket = trans.deal;
       

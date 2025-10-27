@@ -92,7 +92,6 @@ public:
       if(phaseOutcome == "Failed")
       {
          m_phase = 1;
-         TesterStop();
       }
       else if(phaseOutcome == "Passed")
       {
