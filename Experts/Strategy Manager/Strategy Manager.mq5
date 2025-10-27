@@ -155,20 +155,22 @@ void OnDeinit(const int reason)
 
 void OnTick()
 {     
-   //----------------------TRADING STRATEGIES
-   if(RiskOverride > 0)
-        activeStrategy.SetRisk(RiskOverride);  // Fixed risk from input
-    else
-        activeStrategy.SetRisk(edgeRiskScaling.GetRisk());
-        
+   //----------------------TRADING STRATEGIES        
    activeStrategy.ExecuteStrategy();
    
    //----------------------PROPFIRM SIMULATIONS
    if(RunSimulation)
-      propFirmSimulation.UpdateDailyEquity();
+      propFirmSimulation.UpdateEquity();
+      
+   //----------------------EDGE RISK SCALING
+      
+   if(RiskOverride > 0)
+        activeStrategy.SetRisk(RiskOverride);
+    else
+        activeStrategy.SetRisk(edgeRiskScaling.GetRisk());
 }
 
-//Method to check if last closed trade as a win or loss
+//Method to check if last closed trade was a win or loss
 void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
 {
    if(trans.type == TRADE_TRANSACTION_DEAL_ADD && RunSimulation)

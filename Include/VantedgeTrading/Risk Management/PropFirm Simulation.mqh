@@ -13,15 +13,17 @@ private:
    //Core parameters
    double m_startBalance;
    double m_balance;
-   double m_equityHigh;
-   
+   double m_accountEquityHigh;
+   double m_accountEquityLow;
    double m_maxDrawdownPct;
    double m_profitTargetPct;
    double m_maxDailyDDPct;
-   datetime lastDay;
-   double equityLowest;
-   double equityHighest;
    
+   
+   datetime lastDay;
+   double dailyEquityLowest;
+   double dailyEquityHighest;
+      
    int m_phase;   //1 = Challenge, 2 = Verification, 3 = Funded
    int m_tradeCount;
 
@@ -34,7 +36,8 @@ public:
    {
       m_startBalance = startBalance;
       m_balance = startBalance;
-      m_equityHigh = startBalance;
+      m_accountEquityHigh = startBalance;
+      m_accountEquityLow = startBalance;
       m_maxDrawdownPct = maxDD;
       m_profitTargetPct = profitTarget;
       m_maxDailyDDPct = dailyDD;
@@ -46,17 +49,17 @@ public:
    void ResetEquityHighLow()
    {                 
       double equity = AccountInfoDouble(ACCOUNT_EQUITY);
-      equityHighest = equity;
-      equityLowest = equity;
+      dailyEquityHighest = equity;
+      dailyEquityLowest = equity;
    }
    
-   //Update Equity Highest and Lowest
-   void UpdateDailyEquity()
+   //Update Equity Every Tick
+   void UpdateEquity()
    {
       double equity = AccountInfoDouble(ACCOUNT_EQUITY);
       datetime currentDay = iTime(_Symbol, PERIOD_D1, 0);   //Get current day (midnight timestamp)
       
-      //Reset equity high and low at new day
+      //Reset daily equity high and low at new day
       if(currentDay != lastDay)
       {                           
          lastDay = currentDay;
@@ -64,27 +67,35 @@ public:
          return;
       }
       
-      if(equity > equityHighest)
-         equityHighest = equity;
+      //Daily drawdown with equity
       
-      if(equity < equityLowest)
+      if(equity > dailyEquityHighest)
+         dailyEquityHighest = equity;
+      
+      if(equity < dailyEquityLowest)
       {
-         equityLowest = equity;
+         dailyEquityLowest = equity;
          
-         double dailyDDPct = NormalizeDouble(100.0 * (equityHighest - equityLowest) / equityHighest, 2);
+         double dailyDDPct = NormalizeDouble(100.0 * (dailyEquityHighest - dailyEquityLowest) / dailyEquityHighest, 2);
     
          if(dailyDDPct >= m_maxDailyDDPct)
          {
+            //FAILED DUE TO DAILY DRAWDOWN
             ResetForNextPhase("Failed");
          }
       }
+      
+      //Account max drawdown with equity
+      if(equity < m_accountEquityLow)
+         m_accountEquityLow = equity;
    }
    
    //Reset when new phase starts
    void ResetForNextPhase(string phaseOutcome)
    {  
       m_startBalance = m_balance;
-      m_equityHigh = m_balance;
+      m_accountEquityLow = m_balance;
+      m_accountEquityHigh = m_balance;
       m_tradeCount = 0;
       
       if(phaseOutcome == "Failed")
@@ -107,10 +118,14 @@ public:
       ResetEquityHighLow();
       m_balance += profit;
       
-      if(m_balance > m_equityHigh)
-         m_equityHigh = m_balance;
+      if(m_balance > m_accountEquityHigh)
+         m_accountEquityHigh = m_balance;
          
-      double ddPct = 100.00 * (1.0 - (m_balance / m_equityHigh));
+      double ddPct = NormalizeDouble(100.00 * (1.0 - (m_accountEquityLow / m_accountEquityHigh)), 2);
+      
+      Comment("DDPCT: ", ddPct, "\n",
+              "m_MaxDrawdownPCT: ", m_maxDrawdownPct, "\n"
+              "Equity Lowest: ", m_accountEquityLow, "\n");
       if(ddPct >= m_maxDrawdownPct)
          ResetForNextPhase("Failed");
        
