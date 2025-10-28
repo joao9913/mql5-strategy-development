@@ -113,7 +113,7 @@ public:
          else if(m_phase == 2)
          {
             m_phase++;
-            m_profitTargetPct = 100;
+            m_profitTargetPct = 0;
             fundedStartDate = TimeCurrent();
             fundedEndDate = fundedStartDate + 14 * 86400;
          }
@@ -121,7 +121,7 @@ public:
          {
             fundedStartDate = TimeCurrent();
             fundedEndDate = fundedStartDate + 14 * 86400;
-            m_profitTargetPct = 100;
+            m_profitTargetPct = 0;
          }
       }
    }
@@ -155,7 +155,7 @@ public:
          ResetForNextPhase("Failed");
        
       double profitPct = 100.0 * ((m_balance - m_startBalance) / m_startBalance);
-      if(profitPct >= m_profitTargetPct)
+      if(profitPct >= m_profitTargetPct && m_profitTargetPct != 0)
          ResetForNextPhase("Passed");
          
       ResetEquityHighLow();
