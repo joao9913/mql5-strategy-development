@@ -24,6 +24,7 @@ enum strategyChoice
    MiddleRange_Strategy = 2,
    MARetest_Strategy = 3,
    MACrossover_Strategy = 4,
+   OffsetMA_Strategy = 5,
 };
 input strategyChoice StrategyChoice = HourBreakout_Strategy;
 
@@ -67,6 +68,15 @@ input int LongMAPeriod_MACRossover = 4;
 input int Lookback_MACRossover = 30;
 input int ATRMultiplier_MACRossover = 30;
 
+//+------------------------------------------------------------------+
+//|                     Offset MA Initialization                     |
+//+------------------------------------------------------------------+
+#include "../../Include/VantedgeTrading/Trading Strategies/OffsetMA.mqh"
+CStrategy *OffsetMAStrategy;
+input group "Offset MA Strategy Settings";
+input int MAPeriod_OffsetMA = 3;
+input double OffsetPercentage_OffsetMA = 1;
+input double ATRMultiplier_OffsetMA = 1;
 
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
@@ -125,7 +135,19 @@ int OnInit()
       if (activeStrategy != NULL)
       {
          activeStrategy.Init();
-         Print("MARetest Strategy creation successfull.");
+         Print("MACrossover Strategy creation successfull.");
+         return (INIT_SUCCEEDED);
+      }
+      break;
+      
+   // OFFSET MA INITIALIZATION
+   case 5:
+      // Create MARetest object
+      activeStrategy = new OffsetMA(MAPeriod_OffsetMA, OffsetPercentage_OffsetMA, ATRMultiplier_OffsetMA);
+      if (activeStrategy != NULL)
+      {
+         activeStrategy.Init();
+         Print("Offset MA Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
       break;
