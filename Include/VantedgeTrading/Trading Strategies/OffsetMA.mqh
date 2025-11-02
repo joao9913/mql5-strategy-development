@@ -44,6 +44,11 @@ private:
    {
       rr = 2.05;
       
+      if(IsNewCandle())
+      {
+         Comment(TimeCurrent());
+      }
+      
       //tradingAllowed = false;
    }
    

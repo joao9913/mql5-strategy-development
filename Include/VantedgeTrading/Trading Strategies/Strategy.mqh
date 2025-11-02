@@ -30,6 +30,7 @@ private:
    double m_riskPercentage;
 
    double currentBalance;
+   datetime lastTime;
    //--------METHODS
 
 protected:
@@ -73,6 +74,19 @@ protected:
          return false;
 
       return true;
+   }
+   
+   //Check if current candle is new
+   bool IsNewCandle()
+   {
+      datetime time = iTime(Symbol(), PERIOD_CURRENT, 0);
+      
+      if(time != lastTime)
+      {
+         lastTime = time;
+         return true;
+      }
+      return false;
    }
 
    // Get current hour from currentTime()
