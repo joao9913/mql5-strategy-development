@@ -32,8 +32,9 @@ private:
    // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if (tradingAllowed /* and any other entry criterias*/)
+      if (tradingAllowed && IsNewCandle())
       {
+         if(OffsetRetest() != "")
             return true;
       }
       return false;
@@ -43,13 +44,47 @@ private:
    void EnterTrade()
    {
       rr = 2.05;
+      string direction = OffsetRetest();
+      double atrValue = GetATRValue();
       
-      if(IsNewCandle())
+      if(direction == "Long")
       {
-         Comment(TimeCurrent());
+         entryprice = SymbolInfoDouble(Symbol(), SYMBOL_ASK);
+         stoploss = entryprice - atrValue * m_atrMultiplier;
+         takeprofit = NormalizeDouble(entryprice + (entryprice - stoploss) * rr, _Digits);
+         trade.Buy(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
+
+         tradingAllowed = false;
       }
+      else if(direction == "Short")
+      {
+         entryprice = SymbolInfoDouble(Symbol(), SYMBOL_ASK);
+         stoploss = entryprice + atrValue * m_atrMultiplier;
+         takeprofit = NormalizeDouble(entryprice - (stoploss - entryprice) * rr, _Digits);
+         trade.Sell(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
+
+         tradingAllowed = false;
+      }
+   }
+   
+   //Check if price touches an offset
+   string OffsetRetest()
+   {
+      double positiveOffset = PositiveOffset();
+      double negativeOffset = NegativeOffset();
+      double currentLow = iLow(_Symbol, PERIOD_CURRENT, 0);
+      double currentHigh = iHigh(_Symbol, PERIOD_CURRENT, 0);
       
-      //tradingAllowed = false;
+      if(currentLow <= negativeOffset)
+      {
+         return "Long";
+      }
+      else if(currentHigh >= positiveOffset)
+      {
+         return "Short";
+      }
+      else
+         return "";
    }
    
    //Calculate positive offset
