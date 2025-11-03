@@ -24,8 +24,6 @@ private:
    double maArray[];
    double atrArray[];
    
-   datetime lastTime;  //Variable to store last candle time
-   
    bool lookback; //Control if CheckLookback() needs to execute
 
    //--------METHODS
@@ -48,22 +46,10 @@ private:
       return atrArray[0];
    }
    
-   //Method to check if a new bar as formed
-   bool IsNewBar()
-   {
-      datetime currentBarTime = iTime(_Symbol, _Period, 0);
-      if(currentBarTime != lastTime)
-      {
-         lastTime = currentBarTime;
-         return true;
-      }
-      return false;
-   }
-   
    //Method for checking wether price has stayed above/below the MA for "lookback" number of candles
    void CheckLookback()
    {
-      if(IsNewBar() && !lookback)
+      if(IsNewCandle() && !lookback)
       {
          double close = iClose(_Symbol, PERIOD_CURRENT, 1);
          double maValue = GetMAValue(1);

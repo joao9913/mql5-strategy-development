@@ -6,6 +6,10 @@ Contains methods & variables that most strategies use, and some that every strat
 
     Calculates lots depending on account balance and risk, adjusted per pair
 
+## IsNewCandle()
+    
+    Checks if its a new candle. Used to optimize EAs
+
 ## CheckOpenOrders()
 
     Check if there are any open pending orders

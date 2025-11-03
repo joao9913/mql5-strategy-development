@@ -26,7 +26,6 @@ private:
    double shortMAArray[];
    double longMAArray[];
    double priceArray[];
-   datetime lastTime;
    bool lookback;
    
    //--------METHODS
@@ -52,19 +51,6 @@ private:
    {
       CopyBuffer(atrDefinition, 0, 0, 3, priceArray);
       return NormalizeDouble(priceArray[0], _Digits);
-   }
-   
-   //Check if current candle is new
-   bool IsNewCandle()
-   {
-      datetime time = iTime(Symbol(), PERIOD_CURRENT, 0);
-      
-      if(time != lastTime)
-      {
-         lastTime = time;
-         return true;
-      }
-      return false;
    }
      
    //Check if ShortMA was away from LongMA for lookback candles
