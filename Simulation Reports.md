@@ -109,3 +109,4 @@
     - Avg Monthly Loss %
     - Ratio W/L Months
     - Average Payout %
+    - Profitability Ratio
