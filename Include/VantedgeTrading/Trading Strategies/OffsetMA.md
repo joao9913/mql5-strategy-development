@@ -19,9 +19,9 @@ Trades based on a moving average upper and lower offset
 
 ## Input Variables
 
-    - MAPeriod          - Period of the moving average
-    - OffsetPercentage  - How much in % the offsets are away from the moving average
-    - ATRMultiplier     - How much to multiply the atr for the stop loss
+    - MAPeriod          - Period of the moving average                                - 10 - 10 - 200
+    - OffsetPercentage  - How much in % the offsets are away from the moving average  - 5 - 5 - 100
+    - ATRMultiplier     - How much to multiply the atr for the stop loss              - Same as previous strategies
 
 ## Pairs/Markets
 
