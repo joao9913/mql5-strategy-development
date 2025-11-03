@@ -4,7 +4,6 @@
 - End Date (00-00-0000)
 - Days Active (00)
 - Result (PASSED - FAILED)
-- PnL (%)
 - Phase (1)
 - Number of trades (0)
     ### Metrics/Statistics
@@ -23,7 +22,6 @@
 - End Date (00-00-0000)
 - Days Active (00)
 - Result (PASSED - FAILED)
-- PnL (%)
 - Phase (2)
 - Number of trades (0)
     ### Metrics/Statistics
@@ -63,7 +61,6 @@
 - End Date (00-00-0000)
 - Days Active (00)
 - Result (PASSED - FAILED)
-- PnL (%)
 - Phase (1-2)
 - Number of trades (0)
     ### Metrics/Statistics
