@@ -24,6 +24,9 @@ private:
    datetime fundedStartDate, fundedEndDate;
    double dailyEquityLowest;
    double dailyEquityHighest;
+   double minimumBalance;
+   double targetBalance;
+   string lastOutcome;
       
    int m_phase;   //1 = Challenge, 2 = Verification, 3 = Funded
    int m_tradeCount;
@@ -95,6 +98,9 @@ public:
    void ResetForNextPhase(string phaseOutcome)
    {  
       m_startBalance = m_balance;
+      lastOutcome = phaseOutcome;
+      minimumBalance = NormalizeDouble(m_startBalance * (1.0 - m_maxDrawdownPct / 100.0),2);
+      targetBalance = NormalizeDouble(m_startBalance * (1.0 + m_profitTargetPct / 100.0),2);
       m_accountEquityLow = m_balance;
       m_accountEquityHigh = m_balance;
       m_tradeCount = 0;
@@ -146,19 +152,46 @@ public:
    void UpdateBalance(double profit, string outcome)
    {      
       m_balance += profit;
+      m_balance = NormalizeDouble(m_balance, 2);
+            
+      if(!minimumBalance)
+      {
+         minimumBalance = NormalizeDouble(m_startBalance * (1.0 - m_maxDrawdownPct / 100.0),2);
+         targetBalance = NormalizeDouble(m_startBalance * (1.0 + m_profitTargetPct / 100.0),2);
+      }
       
       if(m_balance > m_accountEquityHigh)
          m_accountEquityHigh = m_balance;
          
       double ddPct = NormalizeDouble(100.00 * (1.0 - (m_accountEquityLow / m_accountEquityHigh)), 2);
-      if(ddPct >= m_maxDrawdownPct)
+      if(ddPct > m_maxDrawdownPct)
+      {
          ResetForNextPhase("Failed");
+         CommentInformation(profit);
+         return;
+      }
        
-      double profitPct = 100.0 * ((m_balance - m_startBalance) / m_startBalance);
-      if(profitPct >= m_profitTargetPct && m_profitTargetPct != 0)
+      if(m_balance >= targetBalance)
+      {
          ResetForNextPhase("Passed");
+         CommentInformation(profit);
+         return;
+      }
          
       ResetEquityHighLow();
       FundedStage();
+      CommentInformation(profit);
+   }
+   
+   //Comment information regarding the simulation
+   void CommentInformation(double profit)
+   {
+      Comment("Starting Balance: ", m_startBalance, "\n",
+              "Current Balance: ", m_balance, "\n",
+              "Minimum Balance: ", minimumBalance, "\n",
+              "Target Balance: ", targetBalance, "\n\n",
+              "Current Phase: ", m_phase, "\n"
+              "Last Trade: ", profit, "\n",
+              "Last Outcome: ", lastOutcome, "\n\n");
    }
 }
