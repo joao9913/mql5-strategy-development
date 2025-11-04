@@ -27,6 +27,7 @@ private:
    double minimumBalance;
    double targetBalance;
    string lastOutcome;
+   string outcomeReason;
       
    int m_phase;   //1 = Challenge, 2 = Verification, 3 = Funded
    int m_tradeCount;
@@ -72,7 +73,6 @@ public:
       }
       
       //Daily drawdown with equity
-      
       if(equity > dailyEquityHighest)
          dailyEquityHighest = equity;
       
@@ -85,13 +85,31 @@ public:
          if(dailyDDPct >= m_maxDailyDDPct)
          {
             //FAILED DUE TO DAILY DRAWDOWN
+            
+            Comment("Daily DD Pct: ", dailyDDPct, "\n",
+                    "Daily Equity High: ", dailyEquityHighest, "\n",
+                    "Daily Equity Low: ", dailyEquityLowest, "\n",
+                    "Max Daily DD Pt: ", m_maxDailyDDPct, "\n");
+            outcomeReason = "Daily Drawdown";
+            TesterStop();
             ResetForNextPhase("Failed");
          }
       }
       
       //Account max drawdown with equity
       if(equity < m_accountEquityLow)
+      {
          m_accountEquityLow = equity;
+         
+         double ddPct = NormalizeDouble(100.00 * (1.0 - (m_accountEquityLow / m_accountEquityHigh)), 1);
+         if(ddPct > m_maxDrawdownPct)
+         {                    
+            ResetForNextPhase("Failed");
+            outcomeReason = "Maximum Drawdown";
+            CommentInformation(0);
+            return;
+         }
+      }
    }
    
    //Reset when new phase starts
@@ -143,6 +161,7 @@ public:
             if(m_balance < m_startBalance)
             { 
                ResetForNextPhase("Passed");
+               outcomeReason = "Payout Date";
             }
          }
       }
@@ -162,18 +181,11 @@ public:
       
       if(m_balance > m_accountEquityHigh)
          m_accountEquityHigh = m_balance;
-         
-      double ddPct = NormalizeDouble(100.00 * (1.0 - (m_accountEquityLow / m_accountEquityHigh)), 2);
-      if(ddPct > m_maxDrawdownPct)
-      {
-         ResetForNextPhase("Failed");
-         CommentInformation(profit);
-         return;
-      }
        
       if(m_balance >= targetBalance)
       {
          ResetForNextPhase("Passed");
+         outcomeReason = "Profit Target";
          CommentInformation(profit);
          return;
       }
@@ -192,6 +204,6 @@ public:
               "Target Balance: ", targetBalance, "\n\n",
               "Current Phase: ", m_phase, "\n"
               "Last Trade: ", profit, "\n",
-              "Last Outcome: ", lastOutcome, "\n\n");
+              "Last Outcome: ", lastOutcome, "| ", outcomeReason, "\n");
    }
 }
