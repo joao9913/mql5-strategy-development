@@ -177,14 +177,18 @@ void OnDeinit(const int reason)
 
 void OnTick()
 {     
-   //----------------------TRADING STRATEGIES        
+   //----------------------TRADING STRATEGIES----------------------       
    activeStrategy.ExecuteStrategy();
    
-   //----------------------PROPFIRM SIMULATIONS
+   
+   
+   //----------------------PROPFIRM SIMULATIONS----------------------
    if(RunSimulation)
-      propFirmSimulation.UpdateEquity();
+      propFirmSimulation.UpdateChallengeStatus();
       
-   //----------------------EDGE RISK SCALING
+      
+      
+   //----------------------EDGE RISK SCALING----------------------
       
    if(RiskOverride > 0)
         activeStrategy.SetRisk(RiskOverride);
@@ -209,12 +213,12 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
          
          if(reason == DEAL_REASON_SL)
          {
-            propFirmSimulation.UpdateBalance(netProfit, "Loss");
+            propFirmSimulation.UpdateBalance(netProfit);
             edgeRiskScaling.UpdateOutcome("Stop-Loss");
          }
          else if(reason == DEAL_REASON_TP)
          {
-            propFirmSimulation.UpdateBalance(netProfit, "Win");
+            propFirmSimulation.UpdateBalance(netProfit);
             edgeRiskScaling.UpdateOutcome("Take-Profit");
          }
       }

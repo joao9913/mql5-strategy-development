@@ -12,198 +12,116 @@ class CPropFirmSimulation
 private:
    //Core parameters
    double m_startBalance;
-   double m_balance;
-   double m_accountEquityHigh;
-   double m_accountEquityLow;
-   double m_maxDrawdownPct;
-   double m_profitTargetPct;
-   double m_maxDailyDDPct;
+   double m_currentBalance;
+   double m_maxDrawdownValue;
+   double m_maxDrawdown;
+   double m_profitTargetValue;
+   double m_profitTarget;
+   double m_maxDailyDrawdown;
+   int m_phase;
    
-   
+   double maxDailyEquity;
+   double minDailyEquity;
    datetime lastDay;
-   datetime fundedStartDate, fundedEndDate;
-   double dailyEquityLowest;
-   double dailyEquityHighest;
-   double minimumBalance;
-   double targetBalance;
-   string lastOutcome;
-   string outcomeReason;
-      
-   int m_phase;   //1 = Challenge, 2 = Verification, 3 = Funded
-   int m_tradeCount;
-
+   
 public:
    //Constructor
-   CPropFirmSimulation(double startBalance = 10000.0,
-                       double maxDD = 10.0,
-                       double profitTarget = 8.0,
-                       double dailyDD = 5.0)
+   CPropFirmSimulation(double startBalance = 10000.0, double maxDD = 1000.0, double profitTarget = 800.0, double dailyDD = 500.0, int phase = 1)
    {
       m_startBalance = startBalance;
-      m_balance = startBalance;
-      m_accountEquityHigh = startBalance;
-      m_accountEquityLow = startBalance;
-      m_maxDrawdownPct = maxDD;
-      m_profitTargetPct = profitTarget;
-      m_maxDailyDDPct = dailyDD;
-      m_phase = 1;
-      m_tradeCount = 0;
+      m_maxDrawdownValue = maxDD;
+      m_maxDrawdown = NormalizeDouble(m_startBalance - m_maxDrawdownValue, 2);
+      m_profitTargetValue = profitTarget;
+      m_profitTarget = NormalizeDouble(m_startBalance + profitTarget, 2);
+      m_maxDailyDrawdown = dailyDD;
+      m_phase = phase;
+      maxDailyEquity = AccountInfoDouble(ACCOUNT_EQUITY);
+      minDailyEquity = maxDailyEquity;
+      lastDay = iTime(_Symbol, PERIOD_D1, 0);
    }
    
-   //Method to reset equity highest and lowest
-   void ResetEquityHighLow()
-   {                 
-      double equity = AccountInfoDouble(ACCOUNT_EQUITY);
-      dailyEquityHighest = equity;
-      dailyEquityLowest = equity;
-   }
-   
-   //Update Equity Every Tick
-   void UpdateEquity()
+   //Update challenge status each tick
+   void UpdateChallengeStatus()
    {
-      double equity = AccountInfoDouble(ACCOUNT_EQUITY);
+      double currentEquity = AccountInfoDouble(ACCOUNT_EQUITY);
+      
+      //If new day, reset highest and lowest daily equity
+      ResetDailyDrawdown(currentEquity);
+      
+      //Check Daily Drawdown
+      if(currentEquity > maxDailyEquity)
+         maxDailyEquity = currentEquity;
+      else if(currentEquity < minDailyEquity)
+      {
+         minDailyEquity = currentEquity;
+         double difference = maxDailyEquity - minDailyEquity;
+         if(difference >= m_maxDailyDrawdown)
+         {
+            CommentInformation(currentEquity, "Failed - Max Daily Drawdown");
+            ResetChallenge("Failed - Max Daily Drawdown");
+            return;
+         }
+      }
+      
+      //Check Profit Target & Max Drawdown
+      if(currentEquity <= m_maxDrawdown)
+      {
+         CommentInformation(currentEquity, "Failed - Max Drawdown");
+         ResetChallenge("Failed - Max Drawdown");
+         return;
+      }
+      else if(currentEquity >= m_profitTarget)  
+      {
+         CommentInformation(currentEquity, "Passed - Profit Target");
+         ResetChallenge("Passed - Profit Target");
+         return;
+      }
+   }
+   
+   //Reset challenge after passing or failing
+   void ResetChallenge(string outcome)
+   {
+      m_startBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+      m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
+      m_profitTarget = m_startBalance + m_profitTargetValue;
+      m_phase = 1;
+      
+      //Add logic for next phases
+   }
+   
+   //Reset daily drawdown equity
+   void ResetDailyDrawdown(double equity)
+   {
       datetime currentDay = iTime(_Symbol, PERIOD_D1, 0);   //Get current day (midnight timestamp)
       
       //Reset daily equity high and low at new day
       if(currentDay != lastDay)
-      {                           
+      {  
          lastDay = currentDay;
-         ResetEquityHighLow();
-         return;
-      }
-      
-      //Daily drawdown with equity
-      if(equity > dailyEquityHighest)
-         dailyEquityHighest = equity;
-      
-      if(equity < dailyEquityLowest)
-      {
-         dailyEquityLowest = equity;
-         
-         double dailyDDPct = NormalizeDouble(100.0 * (dailyEquityHighest - dailyEquityLowest) / dailyEquityHighest, 2);
-    
-         if(dailyDDPct >= m_maxDailyDDPct)
-         {
-            //FAILED DUE TO DAILY DRAWDOWN
-            
-            Comment("Daily DD Pct: ", dailyDDPct, "\n",
-                    "Daily Equity High: ", dailyEquityHighest, "\n",
-                    "Daily Equity Low: ", dailyEquityLowest, "\n",
-                    "Max Daily DD Pt: ", m_maxDailyDDPct, "\n");
-            outcomeReason = "Daily Drawdown";
-            TesterStop();
-            ResetForNextPhase("Failed");
-         }
-      }
-      
-      //Account max drawdown with equity
-      if(equity < m_accountEquityLow)
-      {
-         m_accountEquityLow = equity;
-         
-         double ddPct = NormalizeDouble(100.00 * (1.0 - (m_accountEquityLow / m_accountEquityHigh)), 1);
-         if(ddPct > m_maxDrawdownPct)
-         {                    
-            ResetForNextPhase("Failed");
-            outcomeReason = "Maximum Drawdown";
-            CommentInformation(0);
-            return;
-         }
-      }
-   }
-   
-   //Reset when new phase starts
-   void ResetForNextPhase(string phaseOutcome)
-   {  
-      m_startBalance = m_balance;
-      lastOutcome = phaseOutcome;
-      minimumBalance = NormalizeDouble(m_startBalance * (1.0 - m_maxDrawdownPct / 100.0),2);
-      targetBalance = NormalizeDouble(m_startBalance * (1.0 + m_profitTargetPct / 100.0),2);
-      m_accountEquityLow = m_balance;
-      m_accountEquityHigh = m_balance;
-      m_tradeCount = 0;
-      
-      if(phaseOutcome == "Failed")
-      {
-         m_phase = 1;
-      }
-      else if(phaseOutcome == "Passed")
-      {
-         if(m_phase == 1)
-         {
-            m_phase++;
-            m_profitTargetPct = 5;
-         }
-         else if(m_phase == 2)
-         {
-            m_phase++;
-            m_profitTargetPct = 0;
-            fundedStartDate = TimeCurrent();
-            fundedEndDate = fundedStartDate + 14 * 86400;
-         }
-         else if(m_phase == 3)
-         {
-            fundedStartDate = TimeCurrent();
-            fundedEndDate = fundedStartDate + 14 * 86400;
-            m_profitTargetPct = 0;
-         }
-      }
-   }
-   
-   //Funded stage payout logic
-   void FundedStage()
-   {
-      if(m_phase == 3)
-      {
-         datetime currentDate = TimeCurrent();
-         if(currentDate >= fundedEndDate)
-         {
-            if(m_balance < m_startBalance)
-            { 
-               ResetForNextPhase("Passed");
-               outcomeReason = "Payout Date";
-            }
-         }
+         maxDailyEquity = equity;
+         minDailyEquity = equity;
       }
    }
       
    //Update balance after each trade outcome
-   void UpdateBalance(double profit, string outcome)
+   void UpdateBalance(double profit)
    {      
-      m_balance += profit;
-      m_balance = NormalizeDouble(m_balance, 2);
-            
-      if(!minimumBalance)
-      {
-         minimumBalance = NormalizeDouble(m_startBalance * (1.0 - m_maxDrawdownPct / 100.0),2);
-         targetBalance = NormalizeDouble(m_startBalance * (1.0 + m_profitTargetPct / 100.0),2);
-      }
-      
-      if(m_balance > m_accountEquityHigh)
-         m_accountEquityHigh = m_balance;
-       
-      if(m_balance >= targetBalance)
-      {
-         ResetForNextPhase("Passed");
-         outcomeReason = "Profit Target";
-         CommentInformation(profit);
-         return;
-      }
-         
-      ResetEquityHighLow();
-      FundedStage();
-      CommentInformation(profit);
+      m_currentBalance += profit;
+      m_currentBalance = NormalizeDouble(m_currentBalance, 2);
    }
    
-   //Comment information regarding the simulation
-   void CommentInformation(double profit)
+   //Comment Information
+   void CommentInformation(double equity, string outcome)
    {
-      Comment("Starting Balance: ", m_startBalance, "\n",
-              "Current Balance: ", m_balance, "\n",
-              "Minimum Balance: ", minimumBalance, "\n",
-              "Target Balance: ", targetBalance, "\n\n",
-              "Current Phase: ", m_phase, "\n"
-              "Last Trade: ", profit, "\n",
-              "Last Outcome: ", lastOutcome, "| ", outcomeReason, "\n");
+      double difference =NormalizeDouble(maxDailyEquity - minDailyEquity, 2);
+      
+      Comment("Start Balance: ", m_startBalance, "\n",
+              "Current Balance: ", m_currentBalance, "\n",
+              "Max Drawdown: ", m_maxDrawdown, "\n",
+              "Profit Target: ", m_profitTarget, "\n",
+              "Max Daily Drawdown: ", m_maxDailyDrawdown, "\n",
+              "Daily Drawdown: ", difference, "\n",
+              "Current Equity: ", equity, "\n",
+              "\nOutcome: ", outcome, "\n");
    }
 }
