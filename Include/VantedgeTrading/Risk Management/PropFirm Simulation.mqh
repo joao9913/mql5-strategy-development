@@ -57,8 +57,7 @@ public:
          double difference = maxDailyEquity - minDailyEquity;
          if(difference >= m_maxDailyDrawdown)
          {
-            CommentInformation(currentEquity, "Failed - Max Daily Drawdown");
-            ResetChallenge("Failed - Max Daily Drawdown");
+            UpdateChallenge("Failed");
             return;
          }
       }
@@ -66,27 +65,42 @@ public:
       //Check Profit Target & Max Drawdown
       if(currentEquity <= m_maxDrawdown)
       {
-         CommentInformation(currentEquity, "Failed - Max Drawdown");
-         ResetChallenge("Failed - Max Drawdown");
+         UpdateChallenge("Failed");
          return;
       }
       else if(currentEquity >= m_profitTarget)  
       {
-         CommentInformation(currentEquity, "Passed - Profit Target");
-         ResetChallenge("Passed - Profit Target");
+         UpdateChallenge("Passed");
          return;
       }
    }
    
    //Reset challenge after passing or failing
-   void ResetChallenge(string outcome)
+   void UpdateChallenge(string outcome)
    {
+      if(outcome == "Failed")
+      {
+         m_phase = 1;
+         m_profitTargetValue = 800;
+      }
+      else if(outcome == "Passed")
+      {
+         if(m_phase == 1)
+         {
+            m_profitTargetValue = 500;
+            m_phase = 2;
+         }
+         else if(m_phase == 2)
+         {
+            m_profitTargetValue = 500;
+            m_phase = 3;
+         }
+      }
+      
       m_startBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+      m_currentBalance = m_startBalance;
       m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
       m_profitTarget = m_startBalance + m_profitTargetValue;
-      m_phase = 1;
-      
-      //Add logic for next phases
    }
    
    //Reset daily drawdown equity
