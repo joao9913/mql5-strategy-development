@@ -19,6 +19,8 @@ private:
    double m_profitTarget;
    double m_maxDailyDrawdown;
    int m_phase;
+   datetime m_phaseStartTime;
+   datetime phaseEndTime;
    
    double maxDailyEquity;
    double minDailyEquity;
@@ -38,6 +40,7 @@ public:
       maxDailyEquity = AccountInfoDouble(ACCOUNT_EQUITY);
       minDailyEquity = maxDailyEquity;
       lastDay = iTime(_Symbol, PERIOD_D1, 0);
+      m_phaseStartTime = TimeCurrent();
    }
    
    //Update challenge status each tick
@@ -68,7 +71,7 @@ public:
          UpdateChallenge("Failed");
          return;
       }
-      else if(currentEquity >= m_profitTarget)  
+      else if(currentEquity >= m_profitTarget && m_phase != 3)  
       {
          UpdateChallenge("Passed");
          return;
@@ -82,6 +85,7 @@ public:
       {
          m_phase = 1;
          m_profitTargetValue = 800;
+         ResetChallenge();
       }
       else if(outcome == "Passed")
       {
@@ -89,18 +93,20 @@ public:
          {
             m_profitTargetValue = 500;
             m_phase = 2;
+            ResetChallenge();
          }
          else if(m_phase == 2)
          {
-            m_profitTargetValue = 500;
+            m_profitTargetValue = 0;
+            m_profitTarget = 0;
             m_phase = 3;
+            ResetChallenge();
          }
       }
-      
-      m_startBalance = AccountInfoDouble(ACCOUNT_BALANCE);
-      m_currentBalance = m_startBalance;
-      m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
-      m_profitTarget = m_startBalance + m_profitTargetValue;
+      else if(outcome == "Payout")
+      {
+         ResetChallenge();
+      }
    }
    
    //Reset daily drawdown equity
@@ -122,6 +128,34 @@ public:
    {      
       m_currentBalance += profit;
       m_currentBalance = NormalizeDouble(m_currentBalance, 2);
+      
+      datetime currentTime = TimeCurrent();
+      int daysPassed = (int)((currentTime - m_phaseStartTime) / 86400);
+      
+      //Check If Payout
+      if(m_phase == 3)
+      {
+         if(daysPassed >= 14)
+         {
+            if(m_currentBalance > m_startBalance)
+            {
+               UpdateChallenge("Payout");
+               CommentInformation(m_currentBalance, "Payout");
+               
+            }
+         }
+      }
+   }
+   
+   //Reset Balance & Targets
+   void ResetChallenge()
+   {
+      phaseEndTime = TimeCurrent();
+      m_phaseStartTime = TimeCurrent();
+      m_startBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+      m_currentBalance = m_startBalance;
+      m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
+      m_profitTarget = m_startBalance + m_profitTargetValue;
    }
    
    //Comment Information
