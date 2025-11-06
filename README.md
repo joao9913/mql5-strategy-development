@@ -6,36 +6,6 @@ This repository contains all MetaTrader 5 development work, including Expert Adv
 
 The goal is to maintain a complete version-controlled record of all active and experimental projects, with clear separation between strategies, risk management systems, and shared code modules.
 
-## Structure
-
-- ### Experts/
-
-  - #### Trading Strategies/
-    - ##### In Development
-      - Notes.md
-    - ##### Strategy Manager
-      - Notes.md
-
-- ### Risk Management/
-  - #### Prop Firm Trading/
-    - Notes.md
-    - ##### In Development
-      - Notes.md
-    - ##### Strategy Manager
-      - Notes.md
-  - #### Personal Account Trading/
-    - ##### In Development
-      - ###### Risk Management Tests
-        - ###### Highest Balance Compounding
-        - ###### Highest Balance Compounding + Static Risk Comparison
-        - ###### Multiplier Martingale
-        - ###### Static Risk Comparison
-        - Base Report NC.html
-        - Base Report NC.png
-        - Base Report WC.html
-        - Base Report WC.png
-        - Notes.md
-
 ## TODO
   ### Simulations
     Implement single phase and full challenge testing (P1, P2, P3, P1+P2, P1+P2+P3)
@@ -51,6 +21,4 @@ The goal is to maintain a complete version-controlled record of all active and e
     /Include/Vantedge/
     /Presets/
     /Optimizations/
-    Push to GitHub regularly to keep version history synced.
-
-## Resources
+    Push to GitHub regularly to keep version history synced
