@@ -7,6 +7,11 @@
 #property copyright "Copyright 2025, YourName"
 #property link "https://mql5.com"
 
+// Get local PC time
+#import "kernel32.dll"
+   void GetLocalTime(ushort &arr[]);
+#import
+
 class CWriteToCSV
 {
 private:
@@ -18,25 +23,32 @@ public:
 
    //Constructor
    CWriteToCSV(string filename = "SimulationData_")
-   {
-      m_filename = filename + TimeToString(TimeCurrent(), TIME_DATE|TIME_MINUTES);
+   {  
+      ushort t[8];
+      GetLocalTime(t);
+      string localTime = StringFormat("%04d.%02d.%02d_%02d-%02d-%02d",
+                                      t[0], t[1], t[3], t[4], t[5], t[6]);
+
+      
+      m_filename = filename + localTime;
       StringReplace(m_filename, ":", "-");
       StringReplace(m_filename, " ", "_");
       m_filename += ".csv";
    }
    
+   //Write simulation data to CSV file
+   
    //Create CSV File
    bool Init()
    {      
-      //Open in write mode - overwrite existing file
-      int handle = FileOpen(m_filename, FILE_WRITE | FILE_CSV);
+      string path = "SimulationData\\";      
+      int handle = FileOpen(path + m_filename, FILE_WRITE | FILE_CSV | FILE_COMMON);
       if(handle == INVALID_HANDLE)
       {
          Print("Error creating file ", m_filename, " Error: ", GetLastError());
          return false;
       }
       
-      //Write header row
       FileWrite(handle, "Challenge Number", 
                         "Start Phase Date", 
                         "End Phase Date",
@@ -51,7 +63,7 @@ public:
                         "Daily Drawdown");
       FileClose(handle);
       
-      Print("CSV file created with header: ", m_filename);
+      Print("Common path: ", TerminalInfoString(TERMINAL_COMMONDATA_PATH));
       return true;
    }
 };

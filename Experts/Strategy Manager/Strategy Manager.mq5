@@ -97,6 +97,8 @@ int OnInit()
       edgeRiskScaling = new CEdgeRiskScaling();
       propFirmSimulation = new CPropFirmSimulation();
       writeToCSV = new CWriteToCSV();
+      
+      writeToCSV.Init();
    }
 
    switch (StrategyChoice)
