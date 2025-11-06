@@ -104,25 +104,26 @@ public:
    {
       m_outcome = outcome;
       if(outcome == "Failed")
-      {
-         m_phase = 1;
-         m_profitTargetValue = 800;
+      {  
          ResetChallenge();
+         m_profitTargetValue = 800;
+         m_phase = 1;
+         m_challengeNumber++;
       }
       else if(outcome == "Passed")
       {
          if(m_phase == 1)
          {
+            ResetChallenge();
             m_profitTargetValue = 500;
             m_phase = 2;
-            ResetChallenge();
          }
          else if(m_phase == 2)
          {
+            ResetChallenge();
             m_profitTargetValue = 0;
             m_profitTarget = 0;
             m_phase = 3;
-            ResetChallenge();
          }
       }
       else if(outcome == "Payout")
@@ -195,7 +196,6 @@ public:
       m_currentBalance = m_startBalance;
       m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
       m_profitTarget = m_startBalance + m_profitTargetValue;
-      m_challengeNumber++;
       
       for(int i = PositionsTotal(); i >= 0; i--)
       {         
