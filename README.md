@@ -36,14 +36,11 @@ The goal is to maintain a complete version-controlled record of all active and e
         - Base Report WC.png
         - Notes.md
 
-## Versioning Guidelines
-
-    Each EA or include file should have its version noted in both the filename and header comment.
-    When making major changes:
-    Create a new version file (e.g., PushMethod_v1.3.mq5)
-    Update the changelog under /Docs/
-    Commit with a descriptive message:
-    git commit -m "PushMethod v1.3 - Added dynamic breakeven and updated scaling logic"
+## TODO
+  ### Simulations
+    Implement single phase and full challenge testing (P1, P2, P3, P1+P2, P1+P2+P3)
+    Implement full challenge report (instead of per phase outcome)
+    Implement metrics calculated from the reports    
 
 ## How To Use
 
