@@ -19,10 +19,14 @@ private:
    double m_maxDrawdown;
    double m_profitTargetValue;
    double m_profitTarget;
+   double m_maxDailyDrawdownValue;
    double m_maxDailyDrawdown;
    int m_phase;
    datetime m_phaseStartTime;
    datetime phaseEndTime;
+   int m_challengeNumber;
+   string m_outcome;
+   string m_reason;
    
    double maxDailyEquity;
    double minDailyEquity;
@@ -31,7 +35,7 @@ private:
    
 public:
    //Constructor
-   CPropFirmSimulation(double startBalance = 10000.0, double maxDD = 1000.0, double profitTarget = 800.0, double dailyDD = 500.0, int phase = 1)
+   CPropFirmSimulation(double startBalance = 10000.0, double maxDD = 1000.0, double profitTarget = 800.0, double dailyDD = 500.0, int phase = 1, int challengeNumber = 1, string outcome = "Running", string reason = "")
    {
       csv.Init();
       
@@ -40,18 +44,23 @@ public:
       m_maxDrawdown = NormalizeDouble(m_startBalance - m_maxDrawdownValue, 2);
       m_profitTargetValue = profitTarget;
       m_profitTarget = NormalizeDouble(m_startBalance + profitTarget, 2);
-      m_maxDailyDrawdown = dailyDD;
+      m_maxDailyDrawdownValue = dailyDD;
       m_phase = phase;
       maxDailyEquity = AccountInfoDouble(ACCOUNT_EQUITY);
       minDailyEquity = maxDailyEquity;
       lastDay = iTime(_Symbol, PERIOD_D1, 0);
       m_phaseStartTime = TimeCurrent();
+      m_challengeNumber = 1;
+      m_outcome = outcome;
+      m_reason = reason;
+      m_maxDailyDrawdown = 0;
    }
    
    //Update challenge status each tick
    void UpdateChallengeStatus()
    {
       double currentEquity = AccountInfoDouble(ACCOUNT_EQUITY);
+      m_currentBalance = currentEquity;
       
       //If new day, reset highest and lowest daily equity
       ResetDailyDrawdown(currentEquity);
@@ -62,9 +71,10 @@ public:
       else if(currentEquity < minDailyEquity)
       {
          minDailyEquity = currentEquity;
-         double difference = maxDailyEquity - minDailyEquity;
-         if(difference >= m_maxDailyDrawdown)
+         m_maxDailyDrawdown = maxDailyEquity - minDailyEquity;
+         if(m_maxDailyDrawdown >= m_maxDailyDrawdownValue)
          {
+            m_reason = "Max Daily Drawdown";
             UpdateChallenge("Failed");
             return;
          }
@@ -73,12 +83,14 @@ public:
       //Check Profit Target & Max Drawdown
       if(currentEquity <= m_maxDrawdown)
       {
+         m_reason = "Max Drawdown";
          phaseEndTime = TimeCurrent();
          UpdateChallenge("Failed");
          return;
       }
       else if(currentEquity >= m_profitTarget && m_phase != 3)  
       {
+         m_reason = "Profit Target";
          phaseEndTime = TimeCurrent();
          UpdateChallenge("Passed");
          return;
@@ -88,6 +100,7 @@ public:
    //Reset challenge after passing or failing
    void UpdateChallenge(string outcome)
    {
+      m_outcome = outcome;
       if(outcome == "Failed")
       {
          m_phase = 1;
@@ -155,8 +168,24 @@ public:
    //Reset Balance & Targets
    void ResetChallenge()
    {
+      int duration = (int)((phaseEndTime - m_phaseStartTime) / 86400);
       string row[] = {
-         "Challenge Number", 
+         IntegerToString(m_challengeNumber),
+         TimeToString(m_phaseStartTime, TIME_DATE),
+         TimeToString(phaseEndTime, TIME_DATE),
+         IntegerToString(m_phase),
+         m_outcome,
+         m_reason,
+         IntegerToString(duration),
+         DoubleToString(m_startBalance, 2),
+         DoubleToString(m_currentBalance, 2),
+         DoubleToString(m_maxDrawdown, 2),
+         DoubleToString(m_profitTarget, 2),
+         DoubleToString(m_maxDailyDrawdown, 2)
+      };
+      
+      /*
+      "Challenge Number", 
          "Start Phase Date", 
          "End Phase Date",
          "Phase", 
@@ -168,7 +197,7 @@ public:
          "Max Drawdown",
          "Profit Target",
          "Daily Drawdown"
-      };
+      */
       
       csv.WriteCSV(row);
    
@@ -177,5 +206,6 @@ public:
       m_currentBalance = m_startBalance;
       m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
       m_profitTarget = m_startBalance + m_profitTargetValue;
+      m_challengeNumber++;
    }
 }

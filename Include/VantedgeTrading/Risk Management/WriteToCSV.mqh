@@ -49,7 +49,7 @@ public:
       // Move cursor to end of file before writing
       FileSeek(handle, 0, SEEK_END);
    
-       string line = "";
+      string line = "";
       for(int i = 0; i < ArraySize(data); i++)
       {
          if(i > 0) line += ",";
