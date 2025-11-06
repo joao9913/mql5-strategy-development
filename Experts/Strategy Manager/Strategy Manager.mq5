@@ -9,7 +9,6 @@
 
 #include "../../Include/VantedgeTrading/Trading Strategies/Strategy.mqh";
 #include "../../Include/VantedgeTrading/Risk Management/PropFirm Simulation.mqh";
-#include "../../Include/VantedgeTrading/Risk Management/WriteToCSV.mqh";
 #include "../../Include/VantedgeTrading/Risk Management/Edge Risk Scaling.mqh";
 
 //------------ GLOBAL INPUTS ------------
@@ -83,7 +82,6 @@ input double ATRMultiplier_OffsetMA = 1;
 CStrategy *activeStrategy;
 CEdgeRiskScaling *edgeRiskScaling;
 CPropFirmSimulation *propFirmSimulation;
-CWriteToCSV *writeToCSV;
 
 int OnInit()
 {
@@ -96,9 +94,6 @@ int OnInit()
    {
       edgeRiskScaling = new CEdgeRiskScaling();
       propFirmSimulation = new CPropFirmSimulation();
-      writeToCSV = new CWriteToCSV();
-      
-      writeToCSV.Init();
    }
 
    switch (StrategyChoice)
@@ -177,12 +172,10 @@ void OnDeinit(const int reason)
       delete activeStrategy;
       delete propFirmSimulation;
       delete edgeRiskScaling;
-      delete writeToCSV;
       
       propFirmSimulation = NULL;
       edgeRiskScaling = NULL;
       activeStrategy = NULL;
-      writeToCSV = NULL;
    }
 }
 

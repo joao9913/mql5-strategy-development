@@ -37,6 +37,28 @@ public:
    }
    
    //Write simulation data to CSV file
+   void WriteCSV(string &data[])
+   {
+      //Open file
+      int handle = FileOpen(m_filename, FILE_READ | FILE_WRITE | FILE_CSV | FILE_COMMON);
+      if(handle == INVALID_HANDLE)
+      {
+         Print("Error opening file for append: ", m_filename, " Error: ", GetLastError());
+         return;
+      }
+
+      FileSeek(handle, 0, SEEK_END);
+      
+      string line = "";
+      for(int i = 0; i < ArraySize(data); i++)
+      {
+         if(i > 0) line += ",";
+         line += data[i];
+      }
+
+      FileWrite(handle, line); 
+      FileClose(handle);
+   }
    
    //Create CSV File
    bool Init()

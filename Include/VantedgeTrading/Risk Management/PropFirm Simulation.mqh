@@ -7,6 +7,8 @@
 #property copyright "Copyright 2025, YourName"
 #property link "https://mql5.com"
 
+#include "WriteToCSV.mqh";
+
 class CPropFirmSimulation
 {
 private:
@@ -25,11 +27,14 @@ private:
    double maxDailyEquity;
    double minDailyEquity;
    datetime lastDay;
+   CWriteToCSV csv;
    
 public:
    //Constructor
    CPropFirmSimulation(double startBalance = 10000.0, double maxDD = 1000.0, double profitTarget = 800.0, double dailyDD = 500.0, int phase = 1)
    {
+      csv.Init();
+      
       m_startBalance = startBalance;
       m_maxDrawdownValue = maxDD;
       m_maxDrawdown = NormalizeDouble(m_startBalance - m_maxDrawdownValue, 2);
@@ -150,6 +155,13 @@ public:
    //Reset Balance & Targets
    void ResetChallenge()
    {
+      string row[] = {
+         TimeToString(m_phaseStartTime, TIME_DATE),
+         TimeToString(phaseEndTime, TIME_DATE)
+      };
+      
+      csv.WriteCSV(row);
+   
       m_phaseStartTime = TimeCurrent();
       m_startBalance = AccountInfoDouble(ACCOUNT_BALANCE);
       m_currentBalance = m_startBalance;
