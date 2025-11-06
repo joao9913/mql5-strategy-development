@@ -68,11 +68,13 @@ public:
       //Check Profit Target & Max Drawdown
       if(currentEquity <= m_maxDrawdown)
       {
+         phaseEndTime = TimeCurrent();
          UpdateChallenge("Failed");
          return;
       }
       else if(currentEquity >= m_profitTarget && m_phase != 3)  
       {
+         phaseEndTime = TimeCurrent();
          UpdateChallenge("Passed");
          return;
       }
@@ -140,8 +142,6 @@ public:
             if(m_currentBalance > m_startBalance)
             {
                UpdateChallenge("Payout");
-               CommentInformation(m_currentBalance, "Payout");
-               
             }
          }
       }
@@ -150,26 +150,10 @@ public:
    //Reset Balance & Targets
    void ResetChallenge()
    {
-      phaseEndTime = TimeCurrent();
       m_phaseStartTime = TimeCurrent();
       m_startBalance = AccountInfoDouble(ACCOUNT_BALANCE);
       m_currentBalance = m_startBalance;
       m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
       m_profitTarget = m_startBalance + m_profitTargetValue;
-   }
-   
-   //Comment Information
-   void CommentInformation(double equity, string outcome)
-   {
-      double difference =NormalizeDouble(maxDailyEquity - minDailyEquity, 2);
-      
-      Comment("Start Balance: ", m_startBalance, "\n",
-              "Current Balance: ", m_currentBalance, "\n",
-              "Max Drawdown: ", m_maxDrawdown, "\n",
-              "Profit Target: ", m_profitTarget, "\n",
-              "Max Daily Drawdown: ", m_maxDailyDrawdown, "\n",
-              "Daily Drawdown: ", difference, "\n",
-              "Current Equity: ", equity, "\n",
-              "\nOutcome: ", outcome, "\n");
    }
 }
