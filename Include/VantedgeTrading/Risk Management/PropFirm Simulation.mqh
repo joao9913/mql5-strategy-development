@@ -107,32 +107,55 @@ public:
       m_outcome = outcome;
       if(outcome == "Failed")
       {  
-         ResetChallenge();
+         m_challengeNumber++;
+         WriteCSV();
          m_profitTargetValue = 800;
          m_phase = 1;
-         m_challengeNumber++;
+         
+         ResetChallenge();
       }
       else if(outcome == "Passed")
       {
          if(m_phase == 1)
          {
-            ResetChallenge();
+            WriteCSV();
             m_profitTargetValue = 500;
             m_phase = 2;
+            
+            ResetChallenge();
          }
          else if(m_phase == 2)
          {
-            ResetChallenge();
+            WriteCSV();
             m_profitTargetValue = 0;
             m_profitTarget = 0;
             m_phase = 3;
+            
+            ResetChallenge();
          }
       }
       else if(outcome == "Payout")
       {
-         ResetChallenge();
          m_profitTargetValue = 0;
          m_profitTarget = 0;
+         WriteCSV();
+         
+         ResetChallenge();
+      }
+   }
+   
+   //Reset Balance & Targets
+   void ResetChallenge()
+   {      
+      m_phaseStartTime = TimeCurrent();
+      m_startBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+      m_currentBalance = m_startBalance;
+      m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
+      m_profitTarget = m_startBalance + m_profitTargetValue;
+      
+      for(int i = PositionsTotal(); i >= 0; i--)
+      {         
+         trade.PositionClose(_Symbol);
       }
    }
    
@@ -172,12 +195,12 @@ public:
       }
    }
    
-   //Reset Balance & Targets
-   void ResetChallenge()
+   //Manage and write CSV
+   void WriteCSV()
    {
       m_phaseEndTime = TimeCurrent();
-      
       int duration = (int)((m_phaseEndTime - m_phaseStartTime) / 86400);
+      
       string row[] = {
          IntegerToString(m_challengeNumber),
          TimeToString(m_phaseStartTime, TIME_DATE),
@@ -194,16 +217,5 @@ public:
       };
       
       csv.WriteCSV(row);
-   
-      m_phaseStartTime = TimeCurrent();
-      m_startBalance = AccountInfoDouble(ACCOUNT_BALANCE);
-      m_currentBalance = m_startBalance;
-      m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
-      m_profitTarget = m_startBalance + m_profitTargetValue;
-      
-      for(int i = PositionsTotal(); i >= 0; i--)
-      {         
-         trade.PositionClose(_Symbol);
-      }
    }
 }
