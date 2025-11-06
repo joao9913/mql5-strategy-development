@@ -54,7 +54,7 @@ public:
       lastDay = iTime(_Symbol, PERIOD_D1, 0);
       m_phaseStartTime = TimeCurrent();
       m_phaseEndTime = m_phaseStartTime;
-      m_challengeNumber = 1;
+      m_challengeNumber = 0;
       m_outcome = outcome;
       m_reason = reason;
       m_maxDailyDrawdown = 0;
