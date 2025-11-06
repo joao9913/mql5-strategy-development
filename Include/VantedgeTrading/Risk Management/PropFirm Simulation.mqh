@@ -156,8 +156,18 @@ public:
    void ResetChallenge()
    {
       string row[] = {
-         TimeToString(m_phaseStartTime, TIME_DATE),
-         TimeToString(phaseEndTime, TIME_DATE)
+         "Challenge Number", 
+         "Start Phase Date", 
+         "End Phase Date",
+         "Phase", 
+         "Outcome",
+         "Reason",
+         "Duration",
+         "Start Balance",
+         "Ending Balance",
+         "Max Drawdown",
+         "Profit Target",
+         "Daily Drawdown"
       };
       
       csv.WriteCSV(row);
