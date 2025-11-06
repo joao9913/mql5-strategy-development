@@ -8,6 +8,8 @@
 #property link "https://mql5.com"
 
 #include "WriteToCSV.mqh";
+#include <Trade/Trade.mqh>
+
 
 class CPropFirmSimulation
 {
@@ -23,7 +25,7 @@ private:
    double m_maxDailyDrawdown;
    int m_phase;
    datetime m_phaseStartTime;
-   datetime phaseEndTime;
+   datetime m_phaseEndTime;
    int m_challengeNumber;
    string m_outcome;
    string m_reason;
@@ -32,6 +34,7 @@ private:
    double minDailyEquity;
    datetime lastDay;
    CWriteToCSV csv;
+   CTrade trade;
    
 public:
    //Constructor
@@ -50,6 +53,7 @@ public:
       minDailyEquity = maxDailyEquity;
       lastDay = iTime(_Symbol, PERIOD_D1, 0);
       m_phaseStartTime = TimeCurrent();
+      m_phaseEndTime = m_phaseStartTime;
       m_challengeNumber = 1;
       m_outcome = outcome;
       m_reason = reason;
@@ -84,14 +88,12 @@ public:
       if(currentEquity <= m_maxDrawdown)
       {
          m_reason = "Max Drawdown";
-         phaseEndTime = TimeCurrent();
          UpdateChallenge("Failed");
          return;
       }
       else if(currentEquity >= m_profitTarget && m_phase != 3)  
       {
          m_reason = "Profit Target";
-         phaseEndTime = TimeCurrent();
          UpdateChallenge("Passed");
          return;
       }
@@ -168,11 +170,13 @@ public:
    //Reset Balance & Targets
    void ResetChallenge()
    {
-      int duration = (int)((phaseEndTime - m_phaseStartTime) / 86400);
+      m_phaseEndTime = TimeCurrent();
+      
+      int duration = (int)((m_phaseEndTime - m_phaseStartTime) / 86400);
       string row[] = {
          IntegerToString(m_challengeNumber),
          TimeToString(m_phaseStartTime, TIME_DATE),
-         TimeToString(phaseEndTime, TIME_DATE),
+         TimeToString(m_phaseEndTime, TIME_DATE),
          IntegerToString(m_phase),
          m_outcome,
          m_reason,
@@ -184,21 +188,6 @@ public:
          DoubleToString(m_maxDailyDrawdown, 2)
       };
       
-      /*
-      "Challenge Number", 
-         "Start Phase Date", 
-         "End Phase Date",
-         "Phase", 
-         "Outcome",
-         "Reason",
-         "Duration",
-         "Start Balance",
-         "Ending Balance",
-         "Max Drawdown",
-         "Profit Target",
-         "Daily Drawdown"
-      */
-      
       csv.WriteCSV(row);
    
       m_phaseStartTime = TimeCurrent();
@@ -207,5 +196,10 @@ public:
       m_maxDrawdown = m_startBalance - m_maxDrawdownValue;
       m_profitTarget = m_startBalance + m_profitTargetValue;
       m_challengeNumber++;
+      
+      for(int i = PositionsTotal(); i >= 0; i--)
+      {         
+         trade.PositionClose(_Symbol);
+      }
    }
 }

@@ -39,7 +39,7 @@ public:
    //Write simulation data to CSV file
    void WriteCSV(string &data[])
    {
-      int handle = FileOpen(m_filename, FILE_READ | FILE_WRITE | FILE_CSV | FILE_COMMON);
+      int handle = FileOpen(m_filename, FILE_READ | FILE_WRITE | FILE_CSV | FILE_COMMON | FILE_UNICODE);
       if(handle == INVALID_HANDLE)
       {
          Print("Error opening file for append: ", m_filename, " | Error: ", GetLastError());
@@ -48,23 +48,41 @@ public:
    
       // Move cursor to end of file before writing
       FileSeek(handle, 0, SEEK_END);
-   
-      string line = "";
-      for(int i = 0; i < ArraySize(data); i++)
-      {
-         if(i > 0) line += ",";
-         line += data[i];
-      }
-
-   FileWrite(handle, line);
-   
+      
+      string challengeNumber = data[0];
+      string startTime = data[1];
+      string endTime = data[2];
+      string phase = data[3];
+      string outcome = data[4];
+      string reason = data[5];
+      string duration = data[6];
+      string startBalance = data[7];
+      string endBalance = data[8];
+      string maxDrawdown = data[9];
+      string profitTarget = data[10];
+      string maxDailyDrawdown = data[11];
+      
+      
+      FileWrite(handle, 
+         challengeNumber,
+         startTime,
+         endTime,
+         phase,
+         outcome,
+         reason,
+         duration,
+         startBalance,
+         endBalance,
+         maxDrawdown,
+         profitTarget,
+         maxDailyDrawdown);
       FileClose(handle);
    }
    
    //Create CSV File
    bool Init()
    {        
-      int handle = FileOpen(m_filename, FILE_WRITE | FILE_CSV | FILE_COMMON);
+      int handle = FileOpen(m_filename, FILE_WRITE | FILE_CSV | FILE_COMMON | FILE_UNICODE);
       if(handle == INVALID_HANDLE)
       {
          Print("Error creating file ", m_filename, " Error: ", GetLastError());
@@ -84,8 +102,6 @@ public:
                         "Profit Target",
                         "Daily Drawdown");
       FileClose(handle);
-      
-      Print("Common path: ", TerminalInfoString(TERMINAL_COMMONDATA_PATH));
       return true;
    }
 };
