@@ -97,6 +97,8 @@ public:
          UpdateChallenge("Passed");
          return;
       }
+      else if(m_phase == 3)
+         m_reason = "Payout";
    }
    
    //Reset challenge after passing or failing
@@ -129,6 +131,8 @@ public:
       else if(outcome == "Payout")
       {
          ResetChallenge();
+         m_profitTargetValue = 0;
+         m_profitTarget = 0;
       }
    }
    
