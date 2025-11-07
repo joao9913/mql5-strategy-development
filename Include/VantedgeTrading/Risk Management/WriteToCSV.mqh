@@ -22,7 +22,7 @@ private:
 public:
 
    //Constructor
-   CWriteToCSV(string filename = "SimulationData_")
+   CWriteToCSV(string filename = "Simulation Mode")
    {  
       ushort t[8];
       GetLocalTime(t);
@@ -33,6 +33,8 @@ public:
       StringReplace(m_filename, ":", "-");
       StringReplace(m_filename, " ", "_");
       m_filename += ".csv";
+      
+      Init();
    }
    
    //Write simulation data to CSV file
