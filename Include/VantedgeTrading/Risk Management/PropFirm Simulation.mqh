@@ -10,7 +10,6 @@
 #include "WriteToCSV.mqh";
 #include <Trade/Trade.mqh>
 
-
 class CPropFirmSimulation
 {
 private:
@@ -70,20 +69,36 @@ public:
       ResetDailyDrawdown(currentEquity);
       
       //Check Daily Drawdown
-      if(currentEquity > maxDailyEquity)
-         maxDailyEquity = currentEquity;
-      else if(currentEquity < minDailyEquity)
-      {
-         minDailyEquity = currentEquity;
-         m_maxDailyDrawdown = maxDailyEquity - minDailyEquity;
-         if(m_maxDailyDrawdown >= m_maxDailyDrawdownValue)
-         {
-            m_reason = "Max Daily Drawdown";
-            UpdateChallenge("Failed");
-            return;
-         }
-      }
+      CheckDailyDrawdown(currentEquity);
       
+      //Check Profit Target & Max Drawdown
+      CheckTargetDrawdown(currentEquity);
+   }
+   
+   //Reset challenge after passing or failing
+   void UpdateChallenge(string outcome)
+   {
+      m_outcome = outcome;
+      if(outcome == "Failed")
+      {  
+         m_challengeNumber++;
+         SetupNextPhase(800, 1);
+      }
+      else if(outcome == "Passed")
+      {
+         if(m_phase == 1)
+            SetupNextPhase(500, 2);
+            
+         else if(m_phase == 2)
+           SetupNextPhase(0, 3);
+      }
+      else if(outcome == "Payout")
+         SetupNextPhase(0, 3);
+   }
+   
+   //Check Profit Target & Max Drawdown
+   void CheckTargetDrawdown(double currentEquity)
+   {
       //Check Profit Target & Max Drawdown
       if(currentEquity <= m_maxDrawdown)
       {
@@ -101,48 +116,33 @@ public:
          m_reason = "Payout";
    }
    
-   //Reset challenge after passing or failing
-   void UpdateChallenge(string outcome)
+   //Check daily drawdown
+   void CheckDailyDrawdown(double currentEquity)
    {
-      m_outcome = outcome;
-      if(outcome == "Failed")
-      {  
-         m_challengeNumber++;
-         WriteCSV();
-         m_profitTargetValue = 800;
-         m_phase = 1;
-         
-         ResetChallenge();
-      }
-      else if(outcome == "Passed")
+      if(currentEquity > maxDailyEquity)
+         maxDailyEquity = currentEquity;
+      else if(currentEquity < minDailyEquity)
       {
-         if(m_phase == 1)
+         minDailyEquity = currentEquity;
+         m_maxDailyDrawdown = maxDailyEquity - minDailyEquity;
+         if(m_maxDailyDrawdown >= m_maxDailyDrawdownValue)
          {
-            WriteCSV();
-            m_profitTargetValue = 500;
-            m_phase = 2;
-            
-            ResetChallenge();
+            m_reason = "Max Daily Drawdown";
+            UpdateChallenge("Failed");
+            return;
          }
-         else if(m_phase == 2)
-         {
-            WriteCSV();
-            m_profitTargetValue = 0;
-            m_profitTarget = 0;
-            m_phase = 3;
-            
-            ResetChallenge();
-         }
-      }
-      else if(outcome == "Payout")
-      {
-         m_profitTargetValue = 0;
-         m_profitTarget = 0;
-         WriteCSV();
-         
-         ResetChallenge();
       }
    }
+   
+   //Setup next phase
+   void SetupNextPhase(int target, int phase)
+   {
+      WriteCSV();
+      m_profitTargetValue = target;
+      m_phase = phase;
+      ResetChallenge();
+   }
+   
    
    //Reset Balance & Targets
    void ResetChallenge()

@@ -17,7 +17,6 @@ input int ServerHourDifference = 2;
 input bool UseCompounding = false;
 input int StartingAccountBalance = 10000;
 input double RiskOverride = 1;
-input bool RunSimulation = true;
 enum strategyChoice
 {
    HourBreakout_Strategy = 1,
@@ -27,6 +26,19 @@ enum strategyChoice
    OffsetMA_Strategy = 5,
 };
 input strategyChoice StrategyChoice = HourBreakout_Strategy;
+
+//------------ SIMULATION SETTINGS ------------
+input group "Simulation Settings";
+input bool RunSimulation = true;
+enum challengeMode
+{
+   MODE_PHASE_1 = 1,
+   MODE_PHASE_2 = 2,
+   MODE_PHASE_3 = 3,
+   MODE_CHALLENGE = 4,
+   MODE_FUNDED = 5,
+};
+input challengeMode PhaseRun = MODE_PHASE_1;
 
 //+------------------------------------------------------------------+
 //|                     HourBreakout Initialization                  |
