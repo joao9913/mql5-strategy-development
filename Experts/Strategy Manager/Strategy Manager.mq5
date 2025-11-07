@@ -97,7 +97,19 @@ int OnInit()
    if(RunSimulation)
    {
       edgeRiskScaling = new CEdgeRiskScaling();
-      propFirmSimulation = new CPropFirmSimulation(PhaseRun);
+      
+      string strategyName = "";
+      
+      switch(StrategyChoice)
+      {
+         case 1: strategyName = "HourBreakout"; break;
+         case 2: strategyName = "MiddleRange"; break;
+         case 3: strategyName = "MARetest"; break;
+         case 4: strategyName = "MACrossover"; break;
+         case 5: strategyName = "OffsetMA"; break;
+         default: strategyName = "InvalidStrategy"; break;
+      }     
+      propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName);
    }
 
    switch (StrategyChoice)
