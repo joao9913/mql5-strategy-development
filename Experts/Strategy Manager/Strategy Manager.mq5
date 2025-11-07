@@ -229,12 +229,10 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
          
          if(reason == DEAL_REASON_SL)
          {
-            propFirmSimulation.UpdateBalance(netProfit);
             edgeRiskScaling.UpdateOutcome("Stop-Loss");
          }
          else if(reason == DEAL_REASON_TP)
          {
-            propFirmSimulation.UpdateBalance(netProfit);
             edgeRiskScaling.UpdateOutcome("Take-Profit");
          }
       }

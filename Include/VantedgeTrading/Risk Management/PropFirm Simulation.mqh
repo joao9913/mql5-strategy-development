@@ -73,6 +73,9 @@ public:
       
       //Check Profit Target & Max Drawdown
       CheckTargetDrawdown(currentEquity);
+      
+      //Check payout dates and status
+      CheckPayout();
    }
    
    //Reset challenge after passing or failing
@@ -172,13 +175,10 @@ public:
          minDailyEquity = equity;
       }
    }
-      
-   //Update balance after each trade outcome
-   void UpdateBalance(double profit)
-   {      
-      m_currentBalance += profit;
-      m_currentBalance = NormalizeDouble(m_currentBalance, 2);
-      
+   
+   //Check payout date and status
+   void CheckPayout()
+   {
       datetime currentTime = TimeCurrent();
       int daysPassed = (int)((currentTime - m_phaseStartTime) / 86400);
       
