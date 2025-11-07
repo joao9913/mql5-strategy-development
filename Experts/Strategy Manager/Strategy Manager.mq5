@@ -30,15 +30,7 @@ input strategyChoice StrategyChoice = HourBreakout_Strategy;
 //------------ SIMULATION SETTINGS ------------
 input group "Simulation Settings";
 input bool RunSimulation = true;
-enum challengeMode
-{
-   MODE_PHASE_1 = 1,
-   MODE_PHASE_2 = 2,
-   MODE_PHASE_3 = 3,
-   MODE_CHALLENGE = 4,
-   MODE_FUNDED = 5,
-};
-input challengeMode PhaseRun = MODE_PHASE_1;
+input SimulationMode PhaseRun = MODE_PHASE_1;
 
 //+------------------------------------------------------------------+
 //|                     HourBreakout Initialization                  |
@@ -105,7 +97,7 @@ int OnInit()
    if(RunSimulation)
    {
       edgeRiskScaling = new CEdgeRiskScaling();
-      propFirmSimulation = new CPropFirmSimulation();
+      propFirmSimulation = new CPropFirmSimulation(PhaseRun);
    }
 
    switch (StrategyChoice)

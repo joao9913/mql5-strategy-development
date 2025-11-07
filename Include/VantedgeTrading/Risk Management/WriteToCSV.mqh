@@ -29,7 +29,6 @@ public:
       string localTime = StringFormat("%04d.%02d.%02d_%02d-%02d-%02d",
                                       t[0], t[1], t[3], t[4], t[5], t[6]);
 
-      
       m_filename = "SimulationData\\" + filename + localTime;
       StringReplace(m_filename, ":", "-");
       StringReplace(m_filename, " ", "_");
