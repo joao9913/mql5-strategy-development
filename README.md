@@ -6,44 +6,11 @@ This repository contains all MetaTrader 5 development work, including Expert Adv
 
 The goal is to maintain a complete version-controlled record of all active and experimental projects, with clear separation between strategies, risk management systems, and shared code modules.
 
-## Structure
-
-- ### Experts/
-
-  - #### Trading Strategies/
-    - ##### In Development
-      - Notes.md
-    - ##### Strategy Manager
-      - Notes.md
-
-- ### Risk Management/
-  - #### Prop Firm Trading/
-    - Notes.md
-    - ##### In Development
-      - Notes.md
-    - ##### Strategy Manager
-      - Notes.md
-  - #### Personal Account Trading/
-    - ##### In Development
-      - ###### Risk Management Tests
-        - ###### Highest Balance Compounding
-        - ###### Highest Balance Compounding + Static Risk Comparison
-        - ###### Multiplier Martingale
-        - ###### Static Risk Comparison
-        - Base Report NC.html
-        - Base Report NC.png
-        - Base Report WC.html
-        - Base Report WC.png
-        - Notes.md
-
-## Versioning Guidelines
-
-    Each EA or include file should have its version noted in both the filename and header comment.
-    When making major changes:
-    Create a new version file (e.g., PushMethod_v1.3.mq5)
-    Update the changelog under /Docs/
-    Commit with a descriptive message:
-    git commit -m "PushMethod v1.3 - Added dynamic breakeven and updated scaling logic"
+## TODO
+  ### Simulations
+    Implement single phase and full challenge testing (P1, P2, P3, P1+P2, P1+P2+P3)
+    Implement full challenge report (instead of per phase outcome)
+    Implement metrics calculated from the reports    
 
 ## How To Use
 
@@ -54,6 +21,4 @@ The goal is to maintain a complete version-controlled record of all active and e
     /Include/Vantedge/
     /Presets/
     /Optimizations/
-    Push to GitHub regularly to keep version history synced.
-
-## Resources
+    Push to GitHub regularly to keep version history synced
