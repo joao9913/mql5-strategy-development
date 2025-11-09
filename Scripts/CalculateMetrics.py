@@ -76,9 +76,11 @@ def calculatePhaseMetrics(df):
 
 def calculatePayoutMetrics(df):
     df["Duration"] = df["Duration"].astype(float)
+    df["Start Balance"] = df["Start Balance"].astype(float)
+    df["Ending Balance"] = df["Ending Balance"].astype(float)
     outcomeSeries = df["Outcome"]
 
-    # Metrics for phase 1 and phase 2
+    #Basic Metrics
     totalPassed = (outcomeSeries == "Payout").sum()
     totalFailed = (outcomeSeries == "Failed").sum()
     totalOutcomes = totalPassed + totalFailed
@@ -87,13 +89,21 @@ def calculatePayoutMetrics(df):
     averagePassedDuration = round(df[df["Outcome"]=="Payout"]["Duration"].mean(), 2)
     averageFailedDuration = round(df[df["Outcome"]=="Failed"]["Duration"].mean(), 2)
 
-    #Consecutive wins/losses
+    #Consecutive Wins/Losses
     passedGroups = (outcomeSeries == "Payout").astype(int).groupby((outcomeSeries != outcomeSeries.shift()).cumsum()).sum()
     failedGroups = (outcomeSeries == "Failed").astype(int).groupby((outcomeSeries != outcomeSeries.shift()).cumsum()).sum()
     maxConsWins = passedGroups.max()
     maxConsLosses = failedGroups.max()
     averageConsWins = round(passedGroups.mean(), 2)
     averageConsLosses = round(failedGroups.mean(), 2)
+
+    #Payout Metrics
+    payoutRows = df[df["Outcome"] == "Payout"].copy()
+    payoutRows["Payout Amount"] = payoutRows["Ending Balance"] - payoutRows["Start Balance"]
+    averagePayout = round(payoutRows["Payout Amount"].mean(), 2) if not payoutRows.empty else 0
+    totalPayoutAmmount = round(payoutRows["Payout Amount"].sum(), 2) if not payoutRows.empty else 0
+    grossLoss = totalFailed * 80 #each fail attempt costs 80$ (10k account on 5ers)
+    profitFactor = round(totalPayoutAmmount / grossLoss, 2) if grossLoss != 0 else float('inf')
 
     return{
         "Total Payouts": totalPassed,
@@ -105,8 +115,18 @@ def calculatePayoutMetrics(df):
         "Max Consecutive Payouts": maxConsWins,
         "Max Consecutive Losses": maxConsLosses,
         "Average Consecutive Payouts": averageConsWins,
-        "Average Consecutive Losses": averageConsLosses
+        "Average Consecutive Losses": averageConsLosses,
+        "Average Payout($)": averagePayout,
+        "Total Payouts ($)": totalPayoutAmmount,
+        "Total Failed Cost ($)": grossLoss,
+        "Profit Factor": profitFactor
     }
+
+def CalculateChallengeMetrics(df):
+    print()
+
+def CalculateFundedMetrics(df):
+    print()
 
 #Map phase type to function
 metricFunctions = {
@@ -122,7 +142,8 @@ metricFunctions = {
 # =======================
 
 groupedMetrics = {
-    "PHASE": {},
+    "PHASE1&2": {},
+    "PHASE3": {},
     "CHALLENGE": {},
     "FUNDED": {}
 }
@@ -135,8 +156,10 @@ for phaseType, files in phaseFiles.items():
             metrics = metricFunctions[phaseType](df)
 
             #Assign metrics to correct group
-            if "PHASE" in phaseType:
-                groupedMetrics["PHASE"][fileName.replace(".csv", "")] = metrics
+            if phaseType in ["PHASE1", "PHASE2"]:
+                groupedMetrics["PHASE1&2"][fileName.replace(".csv", "")] = metrics
+            elif phaseType == "PHASE3":
+                groupedMetrics["PHASE3"][fileName.replace(".csv", "")] = metrics
             elif phaseType == "CHALLENGE":
                 groupedMetrics["CHALLENGE"][fileName.replace(".csv", "")] = metrics
             elif phaseType == "FUNDED":
@@ -167,6 +190,7 @@ def SaveMetrics(groupsName, metricsDict):
 print(f"Metrics saved to {filePath}")
 
 #SAVE EACH GROUP
-SaveMetrics("PHASES", groupedMetrics["PHASE"])
+SaveMetrics("PHASE1&2", groupedMetrics["PHASE1&2"])
+SaveMetrics("PHASE3", groupedMetrics["PHASE3"])
 SaveMetrics("CHALLENGE", groupedMetrics["CHALLENGE"])
 SaveMetrics("FUNDED", groupedMetrics["FUNDED"])
