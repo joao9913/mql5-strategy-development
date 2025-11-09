@@ -7,10 +7,11 @@ import csv
 # CONFIGURATION 
 # ==========================
 
-baseFolder = Path(r"C:\Users\João Pereira\AppData\Roaming\MetaQuotes\Terminal\Common\Files\SimulationData")
-#subfolder = input("Specify the subfolder of the simulation reports: ")
-subfolder = "MiddleRange_USDJPY_2025-11-08_10;26;30"
-fullPath = baseFolder / subfolder
+#Automatically find MT5 Common Folder
+commonFolder = Path(os.getenv("APPDATA")) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "SimulationData"
+testFolder = "MiddleRange_USDJPY_2025-11-08_10;26;30"
+#subfolder = input("Specify the folder of the simulation reports: ")
+fullPath = commonFolder / testFolder
 
 #Define expected CSV files per phase type
 phaseFiles = {
