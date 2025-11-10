@@ -24,6 +24,7 @@ enum strategyChoice
    MARetest_Strategy = 3,
    MACrossover_Strategy = 4,
    OffsetMA_Strategy = 5,
+   OffsetMAContinuation_Strategy = 6
 };
 input strategyChoice StrategyChoice = HourBreakout_Strategy;
 
@@ -76,11 +77,21 @@ input int ATRMultiplier_MACRossover = 30;
 //|                     Offset MA Initialization                     |
 //+------------------------------------------------------------------+
 #include "../../Include/VantedgeTrading/Trading Strategies/OffsetMA.mqh"
-CStrategy *OffsetMAStrategy;
+CStrategy *OffsetMAContStrategy;
 input group "Offset MA Strategy Settings";
 input int MAPeriod_OffsetMA = 3;
 input double OffsetPercentage_OffsetMA = 1;
 input double ATRMultiplier_OffsetMA = 1;
+
+//+------------------------------------------------------------------+
+//|             Offset MA Continuation Initialization                |
+//+------------------------------------------------------------------+
+#include "../../Include/VantedgeTrading/Trading Strategies/OffsetMAContinuation.mqh"
+CStrategy *OffsetMAContinuationStrategy;
+input group "Offset MA Continuation Strategy Settings";
+input int MAPeriod_OffsetMAContinuation = 3;
+input double OffsetPercentage_OffsetMAContinuation = 1;
+input double ATRMultiplier_OffsetMAContinuation = 1;
 
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
@@ -107,6 +118,7 @@ int OnInit()
          case 3: strategyName = "MARetest"; break;
          case 4: strategyName = "MACrossover"; break;
          case 5: strategyName = "OffsetMA"; break;
+         case 6: strategyName = "OffsetMAContinuation"; break;
          default: strategyName = "InvalidStrategy"; break;
       }     
       propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName);
@@ -150,7 +162,7 @@ int OnInit()
       
    // MA CROSSOVER INITIALIZATION
    case 4:
-      // Create MARetest object
+      // Create MACrossover object
       activeStrategy = new MACrossover(ShortMAPeriod_MACRossover, LongMAPeriod_MACRossover, Lookback_MACRossover, ATRMultiplier_MACRossover);
       if (activeStrategy != NULL)
       {
@@ -162,12 +174,23 @@ int OnInit()
       
    // OFFSET MA INITIALIZATION
    case 5:
-      // Create MARetest object
+      // Create OffsetMA object
       activeStrategy = new OffsetMA(MAPeriod_OffsetMA, OffsetPercentage_OffsetMA, ATRMultiplier_OffsetMA);
       if (activeStrategy != NULL)
       {
          activeStrategy.Init();
          Print("Offset MA Strategy creation successfull.");
+         return (INIT_SUCCEEDED);
+      }
+      break;
+   // OFFSET MA CONTINUATION INITIALIZATION
+   case 6:
+      // Create OffsetMA Continuation object
+      activeStrategy = new OffsetMAContinuation(MAPeriod_OffsetMAContinuation, OffsetPercentage_OffsetMAContinuation, ATRMultiplier_OffsetMAContinuation);
+      if (activeStrategy != NULL)
+      {
+         activeStrategy.Init();
+         Print("Offset MA Continuation Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
       break;
