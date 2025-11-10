@@ -9,7 +9,7 @@ import csv
 
 #Automatically find MT5 Common Folder
 commonFolder = Path(os.getenv("APPDATA")) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "SimulationData"
-testFolder = "MiddleRange_USDJPY_2025-11-08_10;26;30"
+testFolder = "MiddleRange_USDJPY_2025-11-10_19;24;15"
 #subfolder = input("Specify the folder of the simulation reports: ")
 fullPath = commonFolder / testFolder
 
@@ -40,7 +40,7 @@ def readCSV(filePath):
 # METRICS FUNCTIONS
 # ==========================
 
-def calculatePhaseMetrics(df):
+def CalculatePhaseMetrics(df):
     df["Duration"] = df["Duration"].astype(float)
     outcomeSeries = df["Outcome"]
 
@@ -65,16 +65,16 @@ def calculatePhaseMetrics(df):
         "Total Passed": totalPassed,
         "Total Failed": totalFailed,
         "Winrate (%)": winrate,
-        "Average Duration (Days)": averageDuration,
-        "Average Duration When Passed (Days)": averagePassedDuration,
-        "Average Duration When Failed (Days)": averageFailedDuration,
+        "Average Duration": averageDuration,
+        "Average Duration When Passed": averagePassedDuration,
+        "Average Duration When Failed": averageFailedDuration,
         "Max Consecutive Wins": maxConsWins,
         "Max Consecutive Losses": maxConsLosses,
         "Average Consecutive Wins": averageConsWins,
         "Average Consecutive Losses": averageConsLosses
     }
 
-def calculatePayoutMetrics(df):
+def CalculatePayoutMetrics(df):
     df["Duration"] = df["Duration"].astype(float)
     df["Start Balance"] = df["Start Balance"].astype(float)
     df["Ending Balance"] = df["Ending Balance"].astype(float)
@@ -109,9 +109,9 @@ def calculatePayoutMetrics(df):
         "Total Payouts": totalPassed,
         "Total Failed": totalFailed,
         "Winrate (%)": winrate,
-        "Average Duration (Days)": averageDuration,
-        "Average Duration When Payout (Days)": averagePassedDuration,
-        "Average Duration When Failed (Days)": averageFailedDuration,
+        "Average Duration": averageDuration,
+        "Average Duration When Payout": averagePassedDuration,
+        "Average Duration When Failed": averageFailedDuration,
         "Max Consecutive Payouts": maxConsWins,
         "Max Consecutive Losses": maxConsLosses,
         "Average Consecutive Payouts": averageConsWins,
@@ -123,18 +123,207 @@ def calculatePayoutMetrics(df):
     }
 
 def CalculateChallengeMetrics(df):
-    print()
+    df = df.copy()
+    df["Outcome"] = df["Outcome"].astype(str).str.strip()
+    df["Phase"] = pd.to_numeric(df["Phase"], errors = "coerce").fillna(0).astype(int)
+    df["Duration"] = pd.to_numeric(df["Duration"], errors = "coerce").fillna(0)
+
+    #Group by challenge number
+    challengeGroups = df.groupby("Challenge Number")
+    totalChallenges = challengeGroups.ngroups
+    totalWonChallenges = 0
+    totalFailedChallenges = 0
+    
+    #Store durations for passed/failed challenges
+    challengeDurations = []
+    passedDurations = []
+    failedDurations = []
+    challengeOutcomes = []
+
+    #Count failures by phase
+    failedPhase1Count = 0
+    failedPhase2Count = 0
+
+    for challengeNum, group in challengeGroups:
+        p1 = group[group["Phase"] == 1]
+        p2 = group[group["Phase"] == 2]
+        totalDuration = group["Duration"].sum()
+
+        if not p1.empty and not p2.empty:
+            if(p1["Outcome"].iloc[0] == "Passed") and (p2["Outcome"].iloc[0] == "Passed"):
+                totalWonChallenges +=1
+                passedDurations.append(totalDuration)
+                challengeOutcomes.append("Passed")
+            else:
+                totalFailedChallenges += 1
+                failedDurations.append(totalDuration)
+                challengeOutcomes.append("Failed")
+
+                #Count which phase failed
+                if p1["Outcome"].iloc[0] == "Failed":
+                    failedPhase1Count += 1
+                elif p2["Outcome"].iloc[0] == "Failed":
+                    failedPhase2Count += 1
+        else:
+            totalFailedChallenges += 1
+            failedDurations.append(totalDuration)
+            challengeOutcomes.append("Failed")
+            failedPhase1Count += 1
+        
+        challengeDurations.append(totalDuration)
+    
+    # BASIC STATISTICS / METRICS
+    winrate = round((totalWonChallenges / totalChallenges) * 100, 2) if totalChallenges else 0
+    averageDurationTotal = round(sum(challengeDurations) / len(challengeDurations), 2) if challengeDurations else 0
+    averageDurationPassed = round(sum(passedDurations) / len(passedDurations), 2) if passedDurations else 0
+    averageDurationFailed = round(sum(failedDurations) / len(failedDurations), 2) if failedDurations else 0
+
+    # CONSECUTIVE WINS & LOSSES
+    if challengeOutcomes:
+        series = pd.Series(challengeOutcomes)
+        groups = (series != series.shift()).cumsum()
+        streaks = series.groupby(groups).agg(['first', 'size'])
+
+        winStreaks = streaks[streaks['first'] == 'Passed']["size"]
+        lossStreaks = streaks[streaks['first'] == 'Failed']["size"]
+
+        maxConsecutiveWins = int(winStreaks.max()) if not winStreaks.empty else 0
+        maxConsecutiveLosses = int(lossStreaks.max()) if not lossStreaks.empty else 0
+        averageConsecutiveWins = round(winStreaks.mean(), 2) if not winStreaks.empty else 0
+        averageConsecutiveLosses = round(winStreaks.mean(), 2) if not lossStreaks.empty else 0
+    else:
+        maxConsecutiveWins = maxConsecutiveLosses = averageConsecutiveWins = averageConsecutiveLosses = 0
+    
+    # FAIL % PER PHASE
+    failedPhase1Percentage = round((failedPhase1Count / totalFailedChallenges) * 100, 2) if totalFailedChallenges else 0
+    failedPhase2Percentage = round((failedPhase2Count / totalFailedChallenges) * 100, 2) if totalFailedChallenges else 0
+
+    return {
+        "Total Challenges": totalChallenges,
+        "Won Challenges": totalWonChallenges,
+        "Winrate (%)": winrate,
+        "Average Duration Total": averageDurationTotal,
+        "Average Duration Passed": averageDurationPassed,
+        "Average Duration Failed": averageDurationFailed,
+        "Max Consecutive Wins": maxConsecutiveWins,
+        "Max Consecutive Losses": maxConsecutiveLosses,
+        "Average Consecutive Wins": averageConsecutiveWins,
+        "Average Consecutive Losses": averageConsecutiveLosses,
+        "% Failed Phase 1": failedPhase1Percentage,
+        "% Failed Phase 2": failedPhase2Percentage
+    }
 
 def CalculateFundedMetrics(df):
-    print()
+    df = df.copy()
+    df["Outcome"] = df["Outcome"].astype(str).str.strip()
+    df["Phase"] = pd.to_numeric(df["Phase"], errors="coerce").fillna(0).astype(int)
+    df["Duration"] = pd.to_numeric(df["Duration"], errors="coerce").fillna(0)
+    df["Start Balance"] = pd.to_numeric(df["Start Balance"], errors="coerce").fillna(0)
+    df["Ending Balance"] = pd.to_numeric(df["Ending Balance"], errors="coerce").fillna(0)
+
+    challengeGroups = df.groupby("Challenge Number")
+    totalChallenges = challengeGroups.ngroups
+    challengeWins = 0
+    totalPayouts = 0
+    totalFailedChallenges = 0
+
+    challengeDurations = []
+    passedDurations = []
+    failedDurations = []
+    challengeOutcomes = []
+    payoutProfits = []
+    allChallengePayoutStreaks = []
+
+    for challengeNum, group in challengeGroups:
+        payouts = group[group["Outcome"] == "Payout"]
+        failed = group[group["Outcome"] == "Failed"]
+        totalDuration = group["Duration"].sum()
+        challengeDurations.append(totalDuration)
+
+        # Track challenge-level win/fail
+        if not payouts.empty:
+            challengeWins += 1
+            totalPayouts += len(payouts)
+            passedDurations.append(totalDuration)
+            challengeOutcomes.append("Payout")
+            profits = (payouts["Ending Balance"] - payouts["Start Balance"]).tolist()
+            payoutProfits.extend(profits)
+
+        if not failed.empty and payouts.empty:
+            totalFailedChallenges += 1
+            failedDurations.append(totalDuration)
+            challengeOutcomes.append("Failed")
+
+        # --- Consecutive payouts within this challenge ---
+        if not group.empty:
+            outcome_series = (group["Outcome"] == "Payout").astype(int)
+            streak_groups = (outcome_series != outcome_series.shift()).cumsum()
+            streaks = outcome_series.groupby(streak_groups).sum()
+            if not streaks.empty:
+                allChallengePayoutStreaks.extend(streaks[streaks > 0].tolist())
+
+    # BASIC METRICS / STATISTIC
+    challengeWinrate = round((challengeWins / totalChallenges) * 100, 2) if totalChallenges else 0
+    payoutWinrate = round((totalPayouts / (totalPayouts + totalFailedChallenges)) * 100, 2) if (totalPayouts + totalFailedChallenges) else 0
+    averageDurationTotal = round(sum(challengeDurations) / len(challengeDurations), 2) if challengeDurations else 0
+    averageDurationPassed = round(sum(passedDurations) / len(passedDurations), 2) if passedDurations else 0
+    averageDurationFailed = round(sum(failedDurations) / len(failedDurations), 2) if failedDurations else 0
+
+    # CONSECUTIVE WINS & LOSSES
+    if challengeOutcomes:
+        series = pd.Series(challengeOutcomes)
+        groups = (series != series.shift()).cumsum()
+        streaks = series.groupby(groups).agg(['first', 'size'])
+
+        winStreaks = streaks[streaks['first'] == 'Payout']["size"]
+        lossStreaks = streaks[streaks['first'] == 'Failed']["size"]
+
+        maxConsecutiveWins = int(winStreaks.max()) if not winStreaks.empty else 0
+        maxConsecutiveLosses = int(lossStreaks.max()) if not lossStreaks.empty else 0
+        averageConsecutiveWins = round(winStreaks.mean(), 2) if not winStreaks.empty else 0
+        averageConsecutiveLosses = round(lossStreaks.mean(), 2) if not lossStreaks.empty else 0
+    else:
+        maxConsecutiveWins = maxConsecutiveLosses = averageConsecutiveWins = averageConsecutiveLosses = 0
+
+    maxConsecutivePayoutsPerChallenge = max(allChallengePayoutStreaks) if allChallengePayoutStreaks else 0
+    averageConsecutivePayoutsPerChallenge = round(sum(allChallengePayoutStreaks) / len(allChallengePayoutStreaks), 2) if allChallengePayoutStreaks else 0
+
+    # PROFIT METRICS
+    averageProfitPerPayout = round(sum(payoutProfits) / len(payoutProfits), 2) if payoutProfits else 0
+    totalChallengeProfits = []
+    for challengeNum, group in challengeGroups:
+        payouts = group[group["Outcome"] == "Payout"]
+        if not payouts.empty:
+            totalProfit = (payouts["Ending Balance"] - payouts["Start Balance"]).sum()
+        else:
+            totalProfit = 0  # failed challenges
+        totalChallengeProfits.append(totalProfit)
+    
+    averageTotalProfitPerChallenge = round(sum(totalChallengeProfits) / len(totalChallengeProfits), 2) if totalChallengeProfits else 0
+
+    return {
+        "Challenge Winrate": challengeWinrate,
+        "Payout Winrate": payoutWinrate,
+        "Average Duration Total": averageDurationTotal,
+        "Average Duration Passed": averageDurationPassed,
+        "Average Duration Failed": averageDurationFailed,
+        "Max Consecutive Wins (Challenges)": maxConsecutiveWins,
+        "Max Consecutive Losses (Challenges)": maxConsecutiveLosses,
+        "Average Consecutive Wins (Challenges)": averageConsecutiveWins,
+        "Average Consecutive Losses (Challenges)": averageConsecutiveLosses,
+        "Max Consecutive Payouts": maxConsecutivePayoutsPerChallenge,
+        "Average Payouts Per Challenge": averageConsecutivePayoutsPerChallenge,
+        "Average Profit Per Payout ($)": averageProfitPerPayout,
+        "Average Profit Per Challenge": averageTotalProfitPerChallenge
+    }
 
 #Map phase type to function
 metricFunctions = {
-    "PHASE1": calculatePhaseMetrics,
-    "PHASE2": calculatePhaseMetrics,
-    "PHASE3": calculatePayoutMetrics,
-    "CHALLENGE": calculatePhaseMetrics,
-    "FUNDED": calculatePhaseMetrics
+    "PHASE1": CalculatePhaseMetrics,
+    "PHASE2": CalculatePhaseMetrics,
+    "PHASE3": CalculatePayoutMetrics,
+    "CHALLENGE": CalculateChallengeMetrics,
+    "FUNDED": CalculateFundedMetrics
 }
 
 # =======================
