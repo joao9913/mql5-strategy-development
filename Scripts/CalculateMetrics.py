@@ -10,9 +10,9 @@ import csv
 
 #Automatically find MT5 Common Folder
 commonFolder = Path(os.getenv("APPDATA")) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "SimulationData"
-testFolder = "MiddleRange_USDJPY_2025-11-10_19;24;15"
-#subfolder = input("Specify the folder of the simulation reports: ")
-fullPath = commonFolder / testFolder
+#testFolder = "MiddleRange_USDJPY_2025-11-10_19;24;15"
+subfolder = input("Specify the folder of the simulation reports: ")
+fullPath = commonFolder / subfolder
 
 #Define expected CSV files per phase type
 phaseFiles = {
@@ -36,7 +36,6 @@ def readCSV(filePath):
         print(f"File not found: {filePath}")
         return None
     
-
 # ==========================
 # METRICS FUNCTIONS
 # ==========================
