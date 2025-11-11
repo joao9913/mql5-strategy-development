@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from pathlib import Path
 import os 
 import csv
@@ -301,6 +302,29 @@ def CalculateFundedMetrics(df):
     
     averageTotalProfitPerChallenge = round(sum(totalChallengeProfits) / len(totalChallengeProfits), 2) if totalChallengeProfits else 0
 
+    # MONTHLY METRICS / STATISTICS (fixed version)
+    df["End Phase Date"] = pd.to_datetime(df["End Phase Date"], errors="coerce")
+    df["PnL"] = np.where(
+        df["Outcome"] == "Payout",
+        df["Ending Balance"] - df["Start Balance"],
+        np.where(df["Outcome"] == "Failed", -80, 0)
+    )
+
+    df["Month"] = df["End Phase Date"].dt.to_period("M").astype(str)
+    monthlyPnL = df.groupby("Month")["PnL"].sum()
+    winningMonths = int((monthlyPnL > 0).sum())
+    losingMonths = int((monthlyPnL <= 0).sum())
+    monthlyWinrate = round((winningMonths / (winningMonths + losingMonths)) * 100, 2) if (winningMonths + losingMonths) else 0
+    averageMonthlyProfit = round(monthlyPnL[monthlyPnL > 0].mean(), 2) if (monthlyPnL > 0).any() else 0
+    averageMonthlyLoss = round(monthlyPnL[monthlyPnL <= 0].mean(), 2) if (monthlyPnL <= 0).any() else 0
+    monthlyWinLossRatio = round(winningMonths / losingMonths, 2) if losingMonths > 0 else float('inf')
+    
+    df["PnL"] = df["PnL"].round(2)
+    df["Monthly Profit"] = df["Month"].map(monthlyPnL).round(2)
+    monthlyDF = df[["Challenge Number", "Phase", "Start Phase Date", "End Phase Date", "Outcome", "PnL", "Monthly Profit"]]
+    csvFile = fullPath / "MONTHLY_FUNDED.csv"
+    monthlyDF.to_csv(csvFile, index=False, encoding='utf-16', sep='\t')
+
     return {
         "Challenge Winrate": challengeWinrate,
         "Payout Winrate": payoutWinrate,
@@ -314,7 +338,13 @@ def CalculateFundedMetrics(df):
         "Max Consecutive Payouts": maxConsecutivePayoutsPerChallenge,
         "Average Payouts Per Challenge": averageConsecutivePayoutsPerChallenge,
         "Average Profit Per Payout ($)": averageProfitPerPayout,
-        "Average Profit Per Challenge": averageTotalProfitPerChallenge
+        "Average Profit Per Challenge": averageTotalProfitPerChallenge,
+        "Winning Months": winningMonths,
+        "Loosing Months": losingMonths,
+        "Monthly Winrate": monthlyWinrate,
+        "Average Monthly Profit": averageMonthlyProfit,
+        "Average Monthly Loss": averageMonthlyLoss,
+        "Monthly W/L Ratio": monthlyWinLossRatio
     }
 
 #Map phase type to function
