@@ -8,14 +8,15 @@ from datetime import datetime
 # ==========================
 
 #Automatically find MT5 Common Folder
-commonFolder = Path(os.getenv("APPDATA")) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "SimulationData" / "JoinSimulations"
-if not commonFolder.exists():
-    raise FileNotFoundError(f"Folder not found: {commonFolder}")
+commonFolder = Path(os.getenv("APPDATA")) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "SimulationData"
+
+joinFolder = commonFolder / "JoinSimulations"
+joinFolder.mkdir(exist_ok=True)
 
 #Check if there are any folders to merge
-subfolders = [f for f in commonFolder.iterdir() if f.is_dir()]
+subfolders = [f for f in joinFolder.iterdir() if f.is_dir()]
 if not subfolders:
-    print(f"No subfolders found in {commonFolder}. No simulations to merge.")
+    print(f"No subfolders found in {joinFolder}. No simulations to merge.")
     exit()
 
 folderFiles = [set(f.name for f in sf.glob("*.csv")) for sf in subfolders]
@@ -25,7 +26,7 @@ if not commonFiles:
     exit()
 
 timestamp = datetime.now().strftime("_%Y-%m-%d_%H;%M;%S")
-mergedFolder = commonFolder / f"MergedSimulations{timestamp}"
+mergedFolder = joinFolder / f"MergedSimulations{timestamp}"
 mergedFolder.mkdir(exist_ok=True)
 
 # ==========================
@@ -37,7 +38,7 @@ for fileName in commonFiles:
     
     for subfolder in subfolders:
         strategyName = subfolder.name.split("_")[0]
-        filePath = commonFolder / subfolder / fileName
+        filePath = joinFolder / subfolder / fileName
         df = pd.read_csv(filePath, encoding='utf-16', sep='\t')
         df["Strategy"] = strategyName
         allData.append(df)
