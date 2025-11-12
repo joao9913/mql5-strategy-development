@@ -43,28 +43,38 @@ def readCSV(filePath):
 # METRICS FUNCTIONS
 # ==========================
 
+def calculate_consecutive(series, outcome):
+    # Create boolean series where True = desired outcome
+    mask = series == outcome
+    # Only keep streaks where outcome is True
+    streaks = mask.groupby((mask != mask.shift()).cumsum()).sum()
+    # Only keep streaks > 0
+    streaks = streaks[streaks > 0]
+    return streaks
+
+
 def CalculatePhaseMetrics(df):
     df["Duration"] = df["Duration"].astype(float)
     outcomeSeries = df["Outcome"]
 
-    # Metrics for phase 1 and phase 2
     totalPassed = (outcomeSeries == "Passed").sum()
     totalFailed = (outcomeSeries == "Failed").sum()
     totalOutcomes = totalPassed + totalFailed
     winrate = round((totalPassed / totalOutcomes) * 100, 2) if totalOutcomes else 0
-    averageDuration = round(df["Duration"].astype(float).mean(), 2) if totalOutcomes else 0
+    averageDuration = round(df["Duration"].mean(), 2) if totalOutcomes else 0
     averagePassedDuration = round(df[df["Outcome"]=="Passed"]["Duration"].mean(), 2)
     averageFailedDuration = round(df[df["Outcome"]=="Failed"]["Duration"].mean(), 2)
 
-    #Consecutive wins/losses
-    passedGroups = (outcomeSeries == "Passed").astype(int).groupby((outcomeSeries != outcomeSeries.shift()).cumsum()).sum()
-    failedGroups = (outcomeSeries == "Failed").astype(int).groupby((outcomeSeries != outcomeSeries.shift()).cumsum()).sum()
+    # Consecutive wins/losses
+    passedGroups = calculate_consecutive(outcomeSeries, "Passed")
+    failedGroups = calculate_consecutive(outcomeSeries, "Failed")
+
     maxConsWins = passedGroups.max()
     maxConsLosses = failedGroups.max()
     averageConsWins = round(passedGroups.mean(), 2)
     averageConsLosses = round(failedGroups.mean(), 2)
 
-    return{
+    return {
         "Nº Passed": totalPassed,
         "Nº Failed": totalFailed,
         "Winrate (%)": winrate,
@@ -83,32 +93,32 @@ def CalculatePayoutMetrics(df):
     df["Ending Balance"] = df["Ending Balance"].astype(float)
     outcomeSeries = df["Outcome"]
 
-    #Basic Metrics
+    # Basic Metrics
     totalPassed = (outcomeSeries == "Payout").sum()
     totalFailed = (outcomeSeries == "Failed").sum()
     totalOutcomes = totalPassed + totalFailed
     winrate = round((totalPassed / totalOutcomes) * 100, 2) if totalOutcomes else 0
-    averageDuration = round(df["Duration"].astype(float).mean(), 2) if totalOutcomes else 0
-    averagePassedDuration = round(df[df["Outcome"]=="Payout"]["Duration"].mean(), 2)
-    averageFailedDuration = round(df[df["Outcome"]=="Failed"]["Duration"].mean(), 2)
+    averageDuration = round(df["Duration"].mean(), 2) if totalOutcomes else 0
+    averagePassedDuration = round(df[df["Outcome"]=="Payout"]["Duration"].mean(), 2) if totalPassed else 0
+    averageFailedDuration = round(df[df["Outcome"]=="Failed"]["Duration"].mean(), 2) if totalFailed else 0
 
-    #Consecutive Wins/Losses
-    passedGroups = (outcomeSeries == "Payout").astype(int).groupby((outcomeSeries != outcomeSeries.shift()).cumsum()).sum()
-    failedGroups = (outcomeSeries == "Failed").astype(int).groupby((outcomeSeries != outcomeSeries.shift()).cumsum()).sum()
-    maxConsWins = passedGroups.max()
-    maxConsLosses = failedGroups.max()
-    averageConsWins = round(passedGroups.mean(), 2)
-    averageConsLosses = round(failedGroups.mean(), 2)
+    # Consecutive Wins/Losses
+    passedGroups = calculate_consecutive(outcomeSeries, "Payout")
+    failedGroups = calculate_consecutive(outcomeSeries, "Failed")
+    maxConsWins = passedGroups.max() if not passedGroups.empty else 0
+    maxConsLosses = failedGroups.max() if not failedGroups.empty else 0
+    averageConsWins = round(passedGroups.mean(), 2) if not passedGroups.empty else 0
+    averageConsLosses = round(failedGroups.mean(), 2) if not failedGroups.empty else 0
 
-    #Payout Metrics
+    # Payout Metrics
     payoutRows = df[df["Outcome"] == "Payout"].copy()
     payoutRows["Payout Amount"] = payoutRows["Ending Balance"] - payoutRows["Start Balance"]
     averagePayout = round(payoutRows["Payout Amount"].mean(), 2) if not payoutRows.empty else 0
     totalPayoutAmmount = round(payoutRows["Payout Amount"].sum(), 2) if not payoutRows.empty else 0
-    grossLoss = totalFailed * 80 #each fail attempt costs 80$ (10k account on 5ers)
+    grossLoss = totalFailed * 80  # each fail attempt costs $80
     profitFactor = round(totalPayoutAmmount / grossLoss, 2) if grossLoss != 0 else float('inf')
 
-    return{
+    return {
         "Nº Payouts": totalPassed,
         "Nº Failed": totalFailed,
         "Winrate (%)": winrate,
@@ -193,7 +203,7 @@ def CalculateChallengeMetrics(df):
         maxConsecutiveWins = int(winStreaks.max()) if not winStreaks.empty else 0
         maxConsecutiveLosses = int(lossStreaks.max()) if not lossStreaks.empty else 0
         averageConsecutiveWins = round(winStreaks.mean(), 2) if not winStreaks.empty else 0
-        averageConsecutiveLosses = round(winStreaks.mean(), 2) if not lossStreaks.empty else 0
+        averageConsecutiveLosses = round(lossStreaks.mean(), 2) if not lossStreaks.empty else 0
     else:
         maxConsecutiveWins = maxConsecutiveLosses = averageConsecutiveWins = averageConsecutiveLosses = 0
     
@@ -299,7 +309,7 @@ def CalculateFundedMetrics(df):
         if not payouts.empty:
             totalProfit = (payouts["Ending Balance"] - payouts["Start Balance"]).sum()
         else:
-            totalProfit = 0  # failed challenges
+            totalProfit = -80  # failed challenges
         totalChallengeProfits.append(totalProfit)
     
     averageTotalProfitPerChallenge = round(sum(totalChallengeProfits) / len(totalChallengeProfits), 2) if totalChallengeProfits else 0
