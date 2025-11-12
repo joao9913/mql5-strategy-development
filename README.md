@@ -22,3 +22,22 @@ The goal is to maintain a complete version-controlled record of all active and e
     /Presets/
     /Optimizations/
     Push to GitHub regularly to keep version history synced
+
+## MT5 Color Scheme
+    [Colors]
+    Color0=657930
+    Color1=13421512
+    Color3=3023122
+    Color4=197379
+    Color5=9157775
+    Color6=5592663
+    Color7=5737262
+    Color8=13421512
+    Color9=6053069
+    Color10=9234160
+    Color11=33023
+    Color12=55295
+    Color13=13688896
+    Color14=17919
+    Color15=66036
+    Color16=4539717
