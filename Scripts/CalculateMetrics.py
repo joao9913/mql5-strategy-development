@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 import os 
 import csv
+import webbrowser
 
 # ==========================
 # CONFIGURATION 
@@ -10,9 +11,11 @@ import csv
 
 #Automatically find MT5 Common Folder
 commonFolder = Path(os.getenv("APPDATA")) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "SimulationData"
-#testFolder = "MiddleRange_USDJPY_2025-11-10_19;24;15"
+#subfolder = "HourBreakout_USDJPY_2025-11-12_17;15;23"
 subfolder = input("Specify the folder of the simulation reports: ")
 fullPath = commonFolder / subfolder
+metricsFolder = fullPath / "METRICS"
+metricsFolder.mkdir(exist_ok=True)
 
 #Define expected CSV files per phase type
 phaseFiles = {
@@ -62,16 +65,16 @@ def CalculatePhaseMetrics(df):
     averageConsLosses = round(failedGroups.mean(), 2)
 
     return{
-        "Total Passed": totalPassed,
-        "Total Failed": totalFailed,
+        "Nº Passed": totalPassed,
+        "Nº Failed": totalFailed,
         "Winrate (%)": winrate,
-        "Average Duration": averageDuration,
-        "Average Duration When Passed": averagePassedDuration,
-        "Average Duration When Failed": averageFailedDuration,
-        "Max Consecutive Wins": maxConsWins,
-        "Max Consecutive Losses": maxConsLosses,
-        "Average Consecutive Wins": averageConsWins,
-        "Average Consecutive Losses": averageConsLosses
+        "Avg Duration": averageDuration,
+        "Avg Duration Passed": averagePassedDuration,
+        "Avg Duration Failed": averageFailedDuration,
+        "Max Cons Wins": maxConsWins,
+        "Max Cons Losses": maxConsLosses,
+        "Avg Cons Wins": averageConsWins,
+        "Avg Cons Losses": averageConsLosses
     }
 
 def CalculatePayoutMetrics(df):
@@ -106,19 +109,19 @@ def CalculatePayoutMetrics(df):
     profitFactor = round(totalPayoutAmmount / grossLoss, 2) if grossLoss != 0 else float('inf')
 
     return{
-        "Total Payouts": totalPassed,
-        "Total Failed": totalFailed,
+        "Nº Payouts": totalPassed,
+        "Nº Failed": totalFailed,
         "Winrate (%)": winrate,
-        "Average Duration": averageDuration,
-        "Average Duration When Payout": averagePassedDuration,
-        "Average Duration When Failed": averageFailedDuration,
-        "Max Consecutive Payouts": maxConsWins,
-        "Max Consecutive Losses": maxConsLosses,
-        "Average Consecutive Payouts": averageConsWins,
-        "Average Consecutive Losses": averageConsLosses,
-        "Average Payout($)": averagePayout,
+        "Avg Duration": averageDuration,
+        "Avg Duration Payout": averagePassedDuration,
+        "Avg Duration Failed": averageFailedDuration,
+        "Max Cons Payouts": maxConsWins,
+        "Max Cons Losses": maxConsLosses,
+        "Avg Cons Payouts": averageConsWins,
+        "Avg Cons Losses": averageConsLosses,
+        "Avg Payout($)": averagePayout,
         "Total Payouts ($)": totalPayoutAmmount,
-        "Total Failed Cost ($)": grossLoss,
+        "Total Failed ($)": grossLoss,
         "Profit Factor": profitFactor
     }
 
@@ -199,16 +202,16 @@ def CalculateChallengeMetrics(df):
     failedPhase2Percentage = round((failedPhase2Count / totalFailedChallenges) * 100, 2) if totalFailedChallenges else 0
 
     return {
-        "Total Challenges": totalChallenges,
-        "Won Challenges": totalWonChallenges,
+        "Challenges": totalChallenges,
+        "Won": totalWonChallenges,
         "Winrate (%)": winrate,
-        "Average Duration Total": averageDurationTotal,
-        "Average Duration Passed": averageDurationPassed,
-        "Average Duration Failed": averageDurationFailed,
-        "Max Consecutive Wins": maxConsecutiveWins,
-        "Max Consecutive Losses": maxConsecutiveLosses,
-        "Average Consecutive Wins": averageConsecutiveWins,
-        "Average Consecutive Losses": averageConsecutiveLosses,
+        "Avg Duration Total": averageDurationTotal,
+        "Avg Duration Passed": averageDurationPassed,
+        "Avg Duration Failed": averageDurationFailed,
+        "Max Cons Wins": maxConsecutiveWins,
+        "Max Cons Losses": maxConsecutiveLosses,
+        "Avg Cons Wins": averageConsecutiveWins,
+        "Avg Cons Losses": averageConsecutiveLosses,
         "% Failed Phase 1": failedPhase1Percentage,
         "% Failed Phase 2": failedPhase2Percentage
     }
@@ -321,28 +324,28 @@ def CalculateFundedMetrics(df):
     df["PnL"] = df["PnL"].round(2)
     df["Monthly Profit"] = df["Month"].map(monthlyPnL).round(2)
     monthlyDF = df[["Challenge Number", "Phase", "Start Phase Date", "End Phase Date", "Outcome", "PnL", "Monthly Profit"]]
-    csvFile = fullPath / "MONTHLY_FUNDED.csv"
+    csvFile = metricsFolder / "MONTHLY_FUNDED.csv"
     monthlyDF.to_csv(csvFile, index=False, encoding='utf-16', sep='\t')
 
     return {
-        "Challenge Winrate": challengeWinrate,
+        "Challenge WR": challengeWinrate,
         "Payout Winrate": payoutWinrate,
-        "Average Duration Total": averageDurationTotal,
-        "Average Duration Passed": averageDurationPassed,
-        "Average Duration Failed": averageDurationFailed,
-        "Max Consecutive Wins (Challenges)": maxConsecutiveWins,
-        "Max Consecutive Losses (Challenges)": maxConsecutiveLosses,
-        "Average Consecutive Wins (Challenges)": averageConsecutiveWins,
-        "Average Consecutive Losses (Challenges)": averageConsecutiveLosses,
-        "Max Consecutive Payouts": maxConsecutivePayoutsPerChallenge,
-        "Average Payouts Per Challenge": averageConsecutivePayoutsPerChallenge,
-        "Average Profit Per Payout ($)": averageProfitPerPayout,
-        "Average Profit Per Challenge": averageTotalProfitPerChallenge,
+        "Avg Duration Total": averageDurationTotal,
+        "Avg Duration Passed": averageDurationPassed,
+        "Avg Duration Failed": averageDurationFailed,
+        "Max Cons Wins (Challenges)": maxConsecutiveWins,
+        "Max Cons Losses (Challenges)": maxConsecutiveLosses,
+        "Avg Cons Wins (Challenges)": averageConsecutiveWins,
+        "Avg Cons Losses (Challenges)": averageConsecutiveLosses,
+        "Max Cons Payouts": maxConsecutivePayoutsPerChallenge,
+        "Avg Payouts Challenge": averageConsecutivePayoutsPerChallenge,
+        "Avg Profit Payout ($)": averageProfitPerPayout,
+        "Avg Profit Challenge": averageTotalProfitPerChallenge,
         "Winning Months": winningMonths,
         "Loosing Months": losingMonths,
         "Monthly Winrate": monthlyWinrate,
-        "Average Monthly Profit": averageMonthlyProfit,
-        "Average Monthly Loss": averageMonthlyLoss,
+        "Avg Monthly Profit": averageMonthlyProfit,
+        "Avg Monthly Loss": averageMonthlyLoss,
         "Monthly W/L Ratio": monthlyWinLossRatio
     }
 
@@ -412,3 +415,62 @@ SaveMetrics("PHASE1&2", groupedMetrics["PHASE1&2"])
 SaveMetrics("PHASE3", groupedMetrics["PHASE3"])
 SaveMetrics("CHALLENGE", groupedMetrics["CHALLENGE"])
 SaveMetrics("FUNDED", groupedMetrics["FUNDED"])
+
+# =======================
+# GENERATE HTML REPORT
+# =======================
+
+metricsFiles = [
+    "METRICS_PHASE1&2.csv",
+    "METRICS_PHASE3.csv",
+    "METRICS_CHALLENGE.csv",
+    "METRICS_FUNDED.csv",
+]
+originalFiles = [
+    "PHASE1.csv",
+    "PHASE2.csv",
+    "PHASE3.csv",
+    "CHALLENGE.csv",
+    "FUNDED.csv",
+]
+
+htmlSections=[]
+
+for fileName in metricsFiles:
+    filePath = metricsFolder / fileName
+    df = readCSV(filePath)
+    if df is not None:
+        sectionTitle = fileName.replace("METRICS_", "").replace(".csv", "")
+        sectionHTML = df.to_html(index=False)
+        htmlSections.append(f"<h2>{sectionTitle}</h2>\n{sectionHTML}")
+
+for fileName in originalFiles:
+    filePath = fullPath / fileName
+    df = readCSV(filePath)
+    if df is not None:
+        sectionTitle = fileName.replace(".csv", "")
+        sectionHTML = df.to_html(index=False)
+        htmlSections.append(f"<h2>Raw Data - {sectionTitle}</h2>\n{sectionHTML}")
+    
+fullHTML = "\n<hr>\n".join(htmlSections)
+cssContent = Path("reportStyle.css").read_text()
+
+htmlTemplate = f"""
+<html>
+<head>
+    <title>Simulation Report</title>
+    <style>{cssContent}</style>
+</head>
+<body>
+    <h1><a>Simulation Report </a> - {subfolder}</h1>
+    {fullHTML}
+</body>
+</html>
+"""
+
+htmlOutput = fullPath / f"REPORT.html"
+
+with open(htmlOutput, "w", encoding="utf-16") as f:
+    f.write(htmlTemplate)
+
+webbrowser.open(str(htmlOutput))
