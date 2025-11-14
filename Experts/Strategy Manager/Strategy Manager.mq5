@@ -258,11 +258,13 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
          
          if(reason == DEAL_REASON_SL)
          {
-            edgeRiskScaling.UpdateOutcome("Stop-Loss");
+            edgeRiskScaling.UpdateScaling(false);
+            Comment(edgeRiskScaling.GetRisk());
          }
          else if(reason == DEAL_REASON_TP)
          {
-            edgeRiskScaling.UpdateOutcome("Take-Profit");
+            edgeRiskScaling.UpdateScaling(true);
+            Comment(edgeRiskScaling.GetRisk());
          }
       }
    }
