@@ -89,13 +89,14 @@ for phase in phaseTypes:
         # ADD TOTAL ROW
         # ==========================
         countCols = ["Nº Passed", "Nº Failed", "Nº Payouts", "Challenges", "Won", "Loss",
-                     "Winning Months", "Loosing Months", "Failed Challenges"]
+                     "Winning Months", "Loosing Months", "Failed Challenges", "Total Payouts ($)", "Total Failed ($)"]
         percentageCols = ["Winrate (%)", "Payout Winrate", "Challenge WR", "Monthly Winrate",
                           "% Failed Phase 1", "% Failed Phase 2"]
         avgCols = ["Avg Duration", "Avg Duration Passed", "Avg Duration Failed", "Avg Duration Total", 
                    "Avg Duration Payout", "Avg Cons Wins", "Avg Cons Losses", "Avg Cons Payouts",
                    "Avg Payouts Challenge", "Avg Profit Payout ($)", "Avg Profit Challenge", 
-                   "Avg Monthly Profit", "Avg Monthly Loss"]
+                   "Avg Monthly Profit", "Avg Monthly Loss", "Avg Payout($)", "Profit Factor", 
+                   "Avg Cons Wins (Challenges)", "Avg Cons Losses (Challenges)", "Monthly W/L Ratio"]
         maxCols = ["Max Cons Wins", "Max Cons Losses", "Max Cons Payouts",
                    "Max Cons Wins (Challenges)", "Max Cons Losses (Challenges)"]
 
@@ -161,7 +162,7 @@ htmlTemplate = f"""
 """
 
 # Save HTML report
-htmlOutput = mergedFolder / "MERGED_METRICS_REPORT.html"
+htmlOutput = mergedMetricsFolder / "MERGED_METRICS_REPORT.html"
 with open(htmlOutput, "w", encoding="utf-16") as f:
     f.write(htmlTemplate)
 
