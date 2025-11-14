@@ -32,6 +32,8 @@ input strategyChoice StrategyChoice = HourBreakout_Strategy;
 input group "Simulation Settings";
 input bool RunSimulation = true;
 input SimulationMode PhaseRun = MODE_PHASE_1;
+input bool DailyDrawdownTrailing = true;
+input bool SaveCSVFiles = true;
 
 //+------------------------------------------------------------------+
 //|                     HourBreakout Initialization                  |
@@ -121,7 +123,7 @@ int OnInit()
          case 6: strategyName = "OffsetMAContinuation"; break;
          default: strategyName = "InvalidStrategy"; break;
       }     
-      propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName);
+      propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName, DailyDrawdownTrailing, SaveCSVFiles);
    }
 
    switch (StrategyChoice)
