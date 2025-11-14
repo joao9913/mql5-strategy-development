@@ -383,10 +383,10 @@ def SaveMetrics(groupName, metricsDict, savePath):
     with open(filePath, "w", newline='', encoding="utf-16") as f:
         writer = csv.writer(f, delimiter='\t')
         firstMetrics = next(iter(metricsDict.values()))
-        headers = ["File"] + list(firstMetrics.keys())
+        headers = list(firstMetrics.keys())
         writer.writerow(headers)
         for fileName, metrics in metricsDict.items():
-            row = [fileName] + list(metrics.values())
+            row = list(metrics.values())
             writer.writerow(row)
 
 # Scan each simulation folder
@@ -427,8 +427,58 @@ for folder in simulationFolders:
             print(f"Could not classify file: {csvPath}")
 
     # Only after processing all CSVs in the folder, save metrics
-    metricsFolder = folder / "Metrics"
+    metricsFolder = folder / "METRICS"
     metricsFolder.mkdir(exist_ok=True)
 
     for groupName in ["PHASE1", "PHASE2", "PHASE3", "CHALLENGE", "FUNDED"]:
         SaveMetrics(groupName, groupedMetrics.get(groupName, {}), metricsFolder)
+
+# Loop over each simulation folder
+for folder in simulationFolders:
+    metricsFolder = folder / "Metrics"
+    fullPath = folder  # use folder as base for report and raw files
+    
+    htmlSections = []
+
+    # Add metrics CSVs
+    metricsFiles = list(metricsFolder.glob("*.csv"))
+    for filePath in metricsFiles:
+        df = readCSV(filePath)
+        if df is not None:
+            sectionTitle = filePath.name.replace("METRICS_", "").replace(".csv", "")
+            sectionHTML = df.to_html(index=False)
+            htmlSections.append(f"<h2>{sectionTitle}</h2>\n{sectionHTML}")
+
+    # Add original CSVs
+    originalFiles = list(folder.glob("*.csv"))
+    for filePath in originalFiles:
+        df = readCSV(filePath)
+        if df is not None:
+            sectionTitle = filePath.name.replace(".csv", "")
+            sectionHTML = df.to_html(index=False)
+            htmlSections.append(f"<h2>Raw Data - {sectionTitle}</h2>\n{sectionHTML}")
+
+    # Combine sections into full HTML
+    fullHTML = "\n<hr>\n".join(htmlSections)
+    cssContent = Path("reportStyle.css").read_text()
+
+    htmlTemplate = f"""
+    <html>
+    <head>
+        <title>Simulation Report</title>
+        <style>{cssContent}</style>
+    </head>
+    <body>
+        <h1>Simulation Report - {folder.name}</h1>
+        {fullHTML}
+    </body>
+    </html>
+    """
+
+    # Save HTML per folder
+    htmlOutput = metricsFolder / "REPORT.html"
+    with open(htmlOutput, "w", encoding="utf-16") as f:
+        f.write(htmlTemplate)
+
+    # Open report in browser
+    #webbrowser.open(str(htmlOutput))
