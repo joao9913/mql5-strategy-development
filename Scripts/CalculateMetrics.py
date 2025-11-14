@@ -11,11 +11,16 @@ import webbrowser
 
 #Automatically find MT5 Common Folder
 commonFolder = Path(os.getenv("APPDATA")) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "SimulationData"
-#subfolder = "HourBreakout_USDJPY_2025-11-12_17;15;23"
-subfolder = input("Specify the folder of the simulation reports: ")
-fullPath = commonFolder / subfolder
-metricsFolder = fullPath / "METRICS"
-metricsFolder.mkdir(exist_ok=True)
+calculateMetricsFolder = commonFolder / "CalculateMetrics"
+calculateMetricsFolder.mkdir(exist_ok=True)
+simulationFolders = [f for f in calculateMetricsFolder.iterdir() if f.is_dir()]
+if not simulationFolders:
+    print("No simulation folders found inside CalculateMetrics.")
+    exit()
+
+print("Detected simulation folders:")
+for f in simulationFolders:
+    print(" -", f.name)
 
 #Define expected CSV files per phase type
 phaseFiles = {
@@ -225,6 +230,9 @@ def CalculateChallengeMetrics(df):
     }
 
 def CalculateFundedMetrics(df):
+    import numpy as np
+    import pandas as pd
+
     df = df.copy()
     df["Outcome"] = df["Outcome"].astype(str).str.strip()
     df["Phase"] = pd.to_numeric(df["Phase"], errors="coerce").fillna(0).astype(int)
@@ -233,7 +241,7 @@ def CalculateFundedMetrics(df):
     df["Ending Balance"] = pd.to_numeric(df["Ending Balance"], errors="coerce").fillna(0)
 
     # Group by both Strategy and Challenge Number
-    challengeGroups = df.groupby(["Strategy", "Challenge Number"])
+    challengeGroups = df.groupby(["Challenge Number"])
     totalChallenges = challengeGroups.ngroups
 
     challengeWins = 0
@@ -245,8 +253,8 @@ def CalculateFundedMetrics(df):
     failedDurations = []
     challengeOutcomes = []
     payoutProfits = []
-    allChallengePayoutStreaks = []
 
+    # Process each challenge
     for _, group in challengeGroups:
         group = group.sort_values("Phase")
         payouts = group[group["Outcome"] == "Payout"]
@@ -266,21 +274,14 @@ def CalculateFundedMetrics(df):
             failedDurations.append(totalDuration)
             challengeOutcomes.append("Failed")
 
-        # Consecutive payouts within this challenge
-        outcome_series = (group["Outcome"] == "Payout").astype(int)
-        streak_groups = (outcome_series != outcome_series.shift()).cumsum()
-        streaks = outcome_series.groupby(streak_groups).sum()
-        if not streaks.empty:
-            allChallengePayoutStreaks.extend(streaks[streaks > 0].tolist())
-
     # BASIC METRICS
     challengeWinrate = round((challengeWins / totalChallenges) * 100, 2) if totalChallenges else 0
     payoutWinrate = round((totalPayouts / (totalPayouts + totalFailedChallenges)) * 100, 2) if (totalPayouts + totalFailedChallenges) else 0
     averageDurationTotal = round(sum(challengeDurations) / len(challengeDurations), 2) if challengeDurations else 0
     averageDurationPassed = round(sum(passedDurations) / len(passedDurations), 2) if passedDurations else 0
     averageDurationFailed = round(sum(failedDurations) / len(failedDurations), 2) if failedDurations else 0
-    
-    # MAX CONSECUTIVE WINS/LOSSES
+
+    # CONSECUTIVE WINS/LOSSES (per challenge)
     if challengeOutcomes:
         series = pd.Series(challengeOutcomes)
         groups = (series != series.shift()).cumsum()
@@ -296,23 +297,26 @@ def CalculateFundedMetrics(df):
     else:
         maxConsecutiveWins = maxConsecutiveLosses = averageConsecutiveWins = averageConsecutiveLosses = 0
 
+    # MAX CONSECUTIVE PAYOUTS ACROSS ALL STRATEGIES (chronological)
+    df_sorted = df.sort_values(["Challenge Number", "Phase"])
+    allPayoutSeries = (df_sorted["Outcome"] == "Payout").astype(int)
+    streak_groups = (allPayoutSeries != allPayoutSeries.shift()).cumsum()
+    streaks = allPayoutSeries.groupby(streak_groups).sum()
+    allChallengePayoutStreaks = streaks[streaks > 0].tolist()
+
     maxConsecutivePayoutsPerChallenge = max(allChallengePayoutStreaks) if allChallengePayoutStreaks else 0
     averageConsecutivePayoutsPerChallenge = round(sum(allChallengePayoutStreaks) / len(allChallengePayoutStreaks), 2) if allChallengePayoutStreaks else 0
-
 
     # PROFIT METRICS
     averageProfitPerPayout = round(sum(payoutProfits) / len(payoutProfits), 2) if payoutProfits else 0
     totalChallengeProfits = []
-    for challengeNum, group in df.groupby("Challenge Number"):
+    for _, group in df.groupby("Challenge Number"):
         payouts = group[group["Outcome"] == "Payout"]
-        if not payouts.empty:
-            totalProfit = (payouts["Ending Balance"] - payouts["Start Balance"]).sum()
-        else:
-            totalProfit = -80
+        totalProfit = (payouts["Ending Balance"] - payouts["Start Balance"]).sum() if not payouts.empty else -80
         totalChallengeProfits.append(totalProfit)
-    averageTotalProfitPerChallenge = round(sum(totalChallengeProfits) / len(totalChallengeProfits))
+    averageTotalProfitPerChallenge = round(sum(totalChallengeProfits) / len(totalChallengeProfits), 2) if totalChallengeProfits else 0
 
-    # MONTHLY METRICS / STATISTICS (fixed version)
+    # MONTHLY METRICS
     df["End Phase Date"] = pd.to_datetime(df["End Phase Date"], errors="coerce")
     df["PnL"] = np.where(
         df["Outcome"] == "Payout",
@@ -328,12 +332,6 @@ def CalculateFundedMetrics(df):
     averageMonthlyProfit = round(monthlyPnL[monthlyPnL > 0].mean(), 2) if (monthlyPnL > 0).any() else 0
     averageMonthlyLoss = round(monthlyPnL[monthlyPnL <= 0].mean(), 2) if (monthlyPnL <= 0).any() else 0
     monthlyWinLossRatio = round(winningMonths / losingMonths, 2) if losingMonths > 0 else float('inf')
-    
-    df["PnL"] = df["PnL"].round(2)
-    df["Monthly Profit"] = df["Month"].map(monthlyPnL).round(2)
-    monthlyDF = df[["Challenge Number", "Phase", "Start Phase Date", "End Phase Date", "Outcome", "PnL", "Monthly Profit"]]
-    csvFile = metricsFolder / "MONTHLY_FUNDED.csv"
-    monthlyDF.to_csv(csvFile, index=False, encoding='utf-16', sep='\t')
 
     return {
         "Challenge WR": challengeWinrate,
@@ -372,115 +370,65 @@ metricFunctions = {
 # PROCESS CSV FILES
 # =======================
 
-groupedMetrics = {
-    "PHASE1&2": {},
-    "PHASE3": {},
-    "CHALLENGE": {},
-    "FUNDED": {}
-}
-
-for phaseType, files in phaseFiles.items():
-    for fileName in files:
-        filePath = fullPath / fileName
-        df = readCSV(filePath)
-        if df is not None:
-            metrics = metricFunctions[phaseType](df)
-
-            #Assign metrics to correct group
-            if phaseType in ["PHASE1", "PHASE2"]:
-                groupedMetrics["PHASE1&2"][fileName.replace(".csv", "")] = metrics
-            elif phaseType == "PHASE3":
-                groupedMetrics["PHASE3"][fileName.replace(".csv", "")] = metrics
-            elif phaseType == "CHALLENGE":
-                groupedMetrics["CHALLENGE"][fileName.replace(".csv", "")] = metrics
-            elif phaseType == "FUNDED":
-                groupedMetrics["FUNDED"][fileName.replace(".csv", "")] = metrics
-
 # =======================
 # SAVE METRICS TO CSV FILE
 # =======================
 
-#Create  metrics folder if it doesnt exist
-metricsFolder = fullPath / "METRICS"
-metricsFolder.mkdir(exist_ok=True)
-
-def SaveMetrics(groupsName, metricsDict):
+def SaveMetrics(groupName, metricsDict, savePath):
     if not metricsDict:
-        print(f"No metrics found for {groupsName}")
+        print(f"No metrics found for {groupName}")
         return
     
-    filePath = metricsFolder / f"METRICS_{groupsName}.csv"
-    with open(filePath, mode="w", newline='', encoding='utf-16') as f:
+    filePath = savePath / f"METRICS_{groupName}.csv"
+    with open(filePath, "w", newline='', encoding="utf-16") as f:
         writer = csv.writer(f, delimiter='\t')
-        headers = ["Phase"] + list(next(iter(metricsDict.values())).keys())
+        firstMetrics = next(iter(metricsDict.values()))
+        headers = ["File"] + list(firstMetrics.keys())
         writer.writerow(headers)
-        for phase, metrics in metricsDict.items():
-            row = [phase] + list(metrics.values())
+        for fileName, metrics in metricsDict.items():
+            row = [fileName] + list(metrics.values())
             writer.writerow(row)
 
-print(f"Metrics saved to {filePath}")
+# Scan each simulation folder
+for folder in simulationFolders:
+    groupedMetrics = {
+        "PHASE1": {},
+        "PHASE2": {},
+        "PHASE3": {},
+        "CHALLENGE": {},
+        "FUNDED": {}
+    }
 
-#SAVE EACH GROUP
-SaveMetrics("PHASE1&2", groupedMetrics["PHASE1&2"])
-SaveMetrics("PHASE3", groupedMetrics["PHASE3"])
-SaveMetrics("CHALLENGE", groupedMetrics["CHALLENGE"])
-SaveMetrics("FUNDED", groupedMetrics["FUNDED"])
+    csvFiles = list(folder.glob("*.csv"))
 
-# =======================
-# GENERATE HTML REPORT
-# =======================
+    for csvPath in csvFiles:
+        df = readCSV(csvPath)
+        if df is None or df.empty:
+            continue
 
-metricsFiles = [
-    "METRICS_PHASE1&2.csv",
-    "METRICS_PHASE3.csv",
-    "METRICS_CHALLENGE.csv",
-    "METRICS_FUNDED.csv",
-]
-originalFiles = [
-    "PHASE1.csv",
-    "PHASE2.csv",
-    "PHASE3.csv",
-    "CHALLENGE.csv",
-    "FUNDED.csv",
-]
+        filename = csvPath.name.upper()
+        
+        if "PHASE1.CSV" in filename:
+            metrics = CalculatePhaseMetrics(df)
+            groupedMetrics["PHASE1"][csvPath.name] = metrics
+        elif "PHASE2.CSV" in filename:
+            metrics = CalculatePhaseMetrics(df)
+            groupedMetrics["PHASE2"][csvPath.name] = metrics
+        elif "PHASE3.CSV" in filename:
+            metrics = CalculatePayoutMetrics(df)
+            groupedMetrics["PHASE3"][csvPath.name] = metrics
+        elif "CHALLENGE.CSV" in filename:
+            metrics = CalculateChallengeMetrics(df)
+            groupedMetrics["CHALLENGE"][csvPath.name] = metrics
+        elif "FUNDED.CSV" in filename:
+            metrics = CalculateFundedMetrics(df)
+            groupedMetrics["FUNDED"][csvPath.name] = metrics
+        else:
+            print(f"Could not classify file: {csvPath}")
 
-htmlSections=[]
+    # Only after processing all CSVs in the folder, save metrics
+    metricsFolder = folder / "Metrics"
+    metricsFolder.mkdir(exist_ok=True)
 
-for fileName in metricsFiles:
-    filePath = metricsFolder / fileName
-    df = readCSV(filePath)
-    if df is not None:
-        sectionTitle = fileName.replace("METRICS_", "").replace(".csv", "")
-        sectionHTML = df.to_html(index=False)
-        htmlSections.append(f"<h2>{sectionTitle}</h2>\n{sectionHTML}")
-
-for fileName in originalFiles:
-    filePath = fullPath / fileName
-    df = readCSV(filePath)
-    if df is not None:
-        sectionTitle = fileName.replace(".csv", "")
-        sectionHTML = df.to_html(index=False)
-        htmlSections.append(f"<h2>Raw Data - {sectionTitle}</h2>\n{sectionHTML}")
-    
-fullHTML = "\n<hr>\n".join(htmlSections)
-cssContent = Path("reportStyle.css").read_text()
-
-htmlTemplate = f"""
-<html>
-<head>
-    <title>Simulation Report</title>
-    <style>{cssContent}</style>
-</head>
-<body>
-    <h1><a>Simulation Report </a> - {subfolder}</h1>
-    {fullHTML}
-</body>
-</html>
-"""
-
-htmlOutput = fullPath / f"REPORT.html"
-
-with open(htmlOutput, "w", encoding="utf-16") as f:
-    f.write(htmlTemplate)
-
-webbrowser.open(str(htmlOutput))
+    for groupName in ["PHASE1", "PHASE2", "PHASE3", "CHALLENGE", "FUNDED"]:
+        SaveMetrics(groupName, groupedMetrics.get(groupName, {}), metricsFolder)
