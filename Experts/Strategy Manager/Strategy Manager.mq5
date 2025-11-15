@@ -34,6 +34,7 @@ input bool RunSimulation = true;
 input SimulationMode PhaseRun = MODE_PHASE_1;
 input bool DailyDrawdownTrailing = true;
 input bool SaveCSVFiles = true;
+input bool RunEDGE = true;
 
 //+------------------------------------------------------------------+
 //|                     HourBreakout Initialization                  |
@@ -97,7 +98,6 @@ input double ATRMultiplier_OffsetMAContinuation = 1;
 
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
-CEdgeRiskScaling *edgeRiskScaling;
 CPropFirmSimulation *propFirmSimulation;
 
 int OnInit()
@@ -106,11 +106,9 @@ int OnInit()
    CStrategy::SetServerHourDifference(ServerHourDifference);
    CStrategy::SetCompounding(UseCompounding);
    CStrategy::SetStartingBalance(StartingAccountBalance);
-   
-   if(RunSimulation)
-   {
-      edgeRiskScaling = new CEdgeRiskScaling();
       
+   if(RunSimulation)
+   {      
       string strategyName = "";
       
       switch(StrategyChoice)
@@ -212,10 +210,8 @@ void OnDeinit(const int reason)
    {
       delete activeStrategy;
       delete propFirmSimulation;
-      delete edgeRiskScaling;
       
       propFirmSimulation = NULL;
-      edgeRiskScaling = NULL;
       activeStrategy = NULL;
    }
 }
@@ -226,19 +222,14 @@ void OnTick()
    activeStrategy.ExecuteStrategy();
    
    
-   
    //----------------------PROPFIRM SIMULATIONS----------------------
    if(RunSimulation)
       propFirmSimulation.UpdateChallengeStatus();
-      
-      
-      
-   //----------------------EDGE RISK SCALING----------------------
-      
-   if(RiskOverride > 0)
-        activeStrategy.SetRisk(RiskOverride);
-    else
-        activeStrategy.SetRisk(edgeRiskScaling.GetRisk());
+   
+   if(RunEDGE)
+      activeStrategy.SetRisk(propFirmSimulation.GetRisk());
+   else
+      activeStrategy.SetRisk(RiskOverride);
 }
 
 //Method to check if last closed trade was a win or loss
@@ -258,13 +249,11 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
          
          if(reason == DEAL_REASON_SL)
          {
-            edgeRiskScaling.UpdateScaling(false);
-            Comment(edgeRiskScaling.GetRisk());
+            propFirmSimulation.UpdateEDGE(false);
          }
          else if(reason == DEAL_REASON_TP)
          {
-            edgeRiskScaling.UpdateScaling(true);
-            Comment(edgeRiskScaling.GetRisk());
+            propFirmSimulation.UpdateEDGE(true);
          }
       }
    }

@@ -10,7 +10,6 @@
 class CEdgeRiskScaling
 {
 private:
-   double m_riskPercentage;
    int m_phase;
    int m_stage;
    int m_trade;
@@ -26,9 +25,8 @@ private:
    double m_phase2Stage3[6];
 
 public:
-   CEdgeRiskScaling(double initialRisk = 1.4, int phase = 1)
+   CEdgeRiskScaling(int phase = 1)
    {
-      m_riskPercentage = initialRisk;
       m_phase = phase;
       m_stage = 1;
       m_trade = 1;
@@ -79,6 +77,8 @@ public:
       m_phase = phase;
       m_stage = 1;
       m_trade = 1;
+      
+      CommentInformation();
    }
    
    //Update scaling based on trade result
@@ -165,7 +165,19 @@ public:
             }
          }
       }
+      
+      CommentInformation();
    }
+   
+   //Comment EDGE information
+   void CommentInformation()
+   {
+      Comment("Phase: ", m_phase, "\n", 
+              "Stage: ", m_stage, "\n",
+              "Trade: ", m_trade, "\n",
+              "Risk: ", GetRisk(), "\n");
+   }
+   
 
    //Getter for risk
    double GetRisk()
