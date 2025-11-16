@@ -239,6 +239,12 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
    {
       ulong dealTicket = trans.deal;
       
+      if(propFirmSimulation.ignoreNextDeal)
+      {
+         propFirmSimulation.ignoreNextDeal = false;
+         return;
+      }
+      
       if(HistoryDealSelect(dealTicket))
       {
          double profit = HistoryDealGetDouble(dealTicket, DEAL_PROFIT);

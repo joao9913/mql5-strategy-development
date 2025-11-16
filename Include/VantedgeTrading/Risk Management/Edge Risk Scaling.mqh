@@ -77,14 +77,12 @@ public:
       m_phase = phase;
       m_stage = 1;
       m_trade = 1;
-      
-      CommentInformation();
    }
    
    //Update scaling based on trade result
    void UpdateScaling(bool win)
    {
-      if(win)
+      if(win && m_trade-1 >= 0)
       {
          if(m_phase == 1)
          {
@@ -101,7 +99,7 @@ public:
                   break;
                   
                case 3:
-                  if(m_trade-1 < 3) m_stage = 1;
+                  if(m_trade-1 < 3) m_stage = 3;
                   m_trade = 1;
                   break;
             }
@@ -121,54 +119,90 @@ public:
                   break;
                   
                case 3:
-                  if(m_trade-1 < 4) m_stage = 1;
+                  if(m_trade-1 < 4) m_stage = 3;
                   m_trade = 1;
                   break;
             }
          }
       }
-      else
+      else if(!win && m_trade-1 >= 0)
       {
-         m_trade++;
+         if(CheckIfLastTrade())
+            m_trade++;
+         
          if(m_phase == 1)
          {
             switch(m_stage)
             {
                case 1:
-                  if(m_trade-1 >= 4) m_trade = 0;
+                  if(m_trade-1 >= 4) m_trade = 1;
                   break;
                   
                case 2:
-                  if(m_trade-1 >= 5) m_trade = 0;
+                  if(m_trade-1 >= 5) m_trade = 1;
                   break;
                   
                case 3:
-                  if(m_trade-1 >= 5) m_trade = 0;
+                  if(m_trade-1 >= 5) m_trade = 1;
                   break;
             }
          }
-         if(m_phase == 2)
+         else if(m_phase == 2 || m_phase == 3)
          {
             switch(m_stage)
             {
                case 1:
-                  if(m_trade-1 >= 5) m_trade = 0;
+                  if(m_trade-1 >= 5) m_trade = 1;
                   break;
                   
                case 2:
-                  if(m_trade-1 >= 5) m_trade = 0;
+                  if(m_trade-1 >= 5) m_trade = 1;
                   break;
                   
                case 3:
-                  if(m_trade-1 >= 6) m_trade = 0;
+                  if(m_trade-1 >= 6) m_trade = 1;
                   break;
             }
          }
-      }
-      
-      CommentInformation();
+      }     
    }
    
+   bool CheckIfLastTrade()
+   {
+      if(m_phase == 1)
+      {
+         switch(m_stage)
+         {
+            case 1:
+               if(m_trade == 4)
+                  return false;
+            case 2:
+               if(m_trade == 5)
+                  return false;
+            case 3:
+               if(m_trade == 5)
+                  return false;
+         }
+      }
+      else if(m_phase == 2 || m_phase == 3)
+      {
+         switch(m_stage)
+         {
+            case 1:
+               if(m_trade == 5)
+                  return false;
+            case 2:
+               if(m_trade == 5)
+                  return false;
+            case 3:
+               if(m_trade == 6)
+                  return false;
+         }
+      }
+      
+      return true;
+   }
+      
    //Comment EDGE information
    void CommentInformation()
    {
