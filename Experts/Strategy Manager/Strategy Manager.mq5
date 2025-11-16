@@ -121,7 +121,7 @@ int OnInit()
          case 6: strategyName = "OffsetMAContinuation"; break;
          default: strategyName = "InvalidStrategy"; break;
       }     
-      propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName, DailyDrawdownTrailing, SaveCSVFiles);
+      propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName, DailyDrawdownTrailing, SaveCSVFiles, RunEDGE);
    }
 
    switch (StrategyChoice)
@@ -218,18 +218,31 @@ void OnDeinit(const int reason)
 
 void OnTick()
 {     
-   //----------------------TRADING STRATEGIES----------------------       
-   activeStrategy.ExecuteStrategy();
+   //----------------------NORMAL STRATEGY----------------------
    
+   if(!RunSimulation)
+   {
+      activeStrategy.ExecuteStrategy();
+      activeStrategy.SetRisk(RiskOverride);
+      return;
+   }
    
-   //----------------------PROPFIRM SIMULATIONS----------------------
-   if(RunSimulation)
-      propFirmSimulation.UpdateChallengeStatus();
+   //----------------------EDGE SIMULATIONS----------------------
    
    if(RunEDGE)
+   {
+      if(!propFirmSimulation.GetCooldown())     
+         activeStrategy.ExecuteStrategy();
+      
       activeStrategy.SetRisk(propFirmSimulation.GetRisk());
-   else
-      activeStrategy.SetRisk(RiskOverride);
+      return;
+   } 
+   
+   //----------------------REGULAR SIMULATIONS----------------------   
+   
+   activeStrategy.SetRisk(RiskOverride);
+   activeStrategy.ExecuteStrategy();
+   propFirmSimulation.UpdateChallengeStatus();
 }
 
 //Method to check if last closed trade was a win or loss

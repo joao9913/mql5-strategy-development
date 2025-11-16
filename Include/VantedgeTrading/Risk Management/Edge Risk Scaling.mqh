@@ -164,7 +164,7 @@ public:
                   break;
             }
          }
-      }     
+      }  
    }
    
    bool CheckIfLastTrade()
@@ -202,15 +202,6 @@ public:
       
       return true;
    }
-      
-   //Comment EDGE information
-   void CommentInformation()
-   {
-      Comment("Phase: ", m_phase, "\n", 
-              "Stage: ", m_stage, "\n",
-              "Trade: ", m_trade, "\n",
-              "Risk: ", GetRisk(), "\n");
-   }
    
 
    //Getter for risk
@@ -247,5 +238,11 @@ public:
          
          default: return 0.0;
       }
+   }
+   
+   //Return two wins
+   int PayoutStage()
+   {
+      return m_stage;
    }
 }
