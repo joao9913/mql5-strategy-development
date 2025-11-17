@@ -233,8 +233,9 @@ void OnTick()
    {
       if(!propFirmSimulation.GetCooldown())     
          activeStrategy.ExecuteStrategy();
-      
+       
       activeStrategy.SetRisk(propFirmSimulation.GetRisk());
+      propFirmSimulation.UpdateChallengeStatus();
       return;
    } 
    
