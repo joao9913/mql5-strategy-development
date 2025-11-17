@@ -1,0 +1,25 @@
+- Question/Problem
+	What is the actual impact of having 10% vs 8% targets on phase 1, on prop-firm challenges using normal trading strategies with constant risk management.
+
+- Methodology
+	- Use prop firm simulations 
+	- Risk 2% per trade
+	- Use 3 strategies to have more sample
+	- Compare metrics regarding winrate, durations, and other important metrics.
+	
+	
+- Data Analysis
+	Using 3 strategies, merged metrics:
+	- 10%
+		- Winrate				- 65%
+		- Average Days		-  26
+		- Avg Cons Wins		- 2.58
+	- 8%
+		- Winrate				- 69%
+		- Average Days		-  20
+		- Avg Cons Wins		- 2.98
+
+
+- Conclusions
+	- It takes 6 more days to pass a Phase 1 if the target is 10%, rather than 8%. Simply, the effect of adding 2 aditionally percentage is not that
+	  noticeable in the long term. Results were as expected. FTMO can still be used. 

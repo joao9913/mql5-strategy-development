@@ -1,0 +1,24 @@
+HourBreakout
+	- USDCHF: 	5 - 14
+	- EURUSD:	6 - 10
+
+MiddleRange
+	- EURUSD:	4 - 15- 0
+	- USDCHF:	3 - 10 - 0
+	- GBPUSD:	3 - 9 - 0
+	- XAUUSD:	3 - 7 - 0
+	
+MARetest
+	- USDJPY:	40 - 10 - 1
+	- EURUSD:	40 - 10 - 1
+	- USDCHF:	60 - 10 - 1
+	- GBPUSD:	100 - 10 -1
+	- XAUUSD:	20 - 10 - 1
+
+OffsetMA
+	- USDJPY:	100 - 7 - 2
+	- EURUSD:	100 - 5 - 2
+
+OffsetMAContinuation
+	- EURUSD:	100 - 2 - 2
+	- GBPUSD:	100 - 2 - 2

@@ -1,0 +1,58 @@
+- Question/Problem
+	Study if the EDGE Risk Scaling plan has a big advantage over using a standard fixed risk percentage. 
+	Compare the advantage of the edge system always ending up in profit after a loss, while normal risk percentage doesn't 
+	end up in profit but more tries further down the challenge.
+		
+- Methodology
+	- Test multiple fixed risk percentages in 3 normal trading strategies (1.0%, 1.5%, 2.0%, 2.5%, 3.0%)
+	- Compare metrics regarding profitability, duration, testing both challenges, and funded simulations.
+	
+- Data Analysis
+	- EDGE Metrics
+		- Challenge
+			- N Challenges		- 577
+			- Winrate				- 52%
+			- Avg Duration			- 24.65
+			- Avg Duration Passed	- 18.05
+			
+		- Funded
+			- Winrate	W/1 Payout		- 50.28%
+			- Payout Winrate			- 84.28%
+			- Avg Duration				- 72.95
+			- Avg Duration Passed		- 121.95
+			- Avg Payouts P/Challenge	- 5.75
+			- Avg Profit P/Payout		- 2.79%
+			- Avg Profit P/Challenge		- 7.5%
+			- Individual Monthly Winrate	- 61.81%
+			- Avg Monthly Profit			- 5.48%
+			- Avg Monthly Loss			- 1.02%
+			- Monthly WL Ratio			- 1.63
+			
+- Conclusions
+	- 1.5% vs EDGE	
+		- 4% more probability of having a payout 
+		- 2 more payouts in average 
+		- 0.2% more profit per payout
+		- 0.2% more monthly winrate
+		- 0.2% less monthly profit
+		
+	- 1.75% vs EDGE	
+		- 1% less probability of having a payout 
+		- 1 more payouts in average 
+		- 0.8% more profit per payout
+		- 0.4% less monthly winrate
+		- 1% more monthly profit
+	
+	- 2.0% vs EDGE
+		- 6% less probability of having a payout
+		- 1.2 less payouts in average
+		- 1.6% more profit per payout
+		- 7.55 less monthly winrate
+		- 2.2% more monthly profit
+		
+	- More testing is needed regarding payout taking using normal simulations, due to the fact that the normal simulation does not
+	stop after a certain profit threshold, and goes on until 14 days have passed. 
+		Also, it seems that using EDGE to pass challenge phases is a bit more effective regarding duration and winrate, although the 
+	difference is not that noticeable. 
+		The final answer will only be possible after testing these two methods of risk scaling with random strategies, to ensure that random 
+	probability strategies would still make money using prop-firm trading.

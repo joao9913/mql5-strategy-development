@@ -1,0 +1,13 @@
+- Question/Problem
+	Compare if random probability strategies still make any money when trading with prop-firms. Aditionally, check if EDGE has a big impact on these types of systems.
+	
+- Methodology
+	- Create 15 random probability strategies
+	- Run normal simulations using 2% fixed risk per trade
+	- Run EDGE simulations on the same dataset
+	- Join metrics and compare these
+	
+- Data Analysis
+
+
+- Conclusions
