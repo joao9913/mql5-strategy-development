@@ -39,6 +39,16 @@ private:
       return 0;
    }
    
+   void VisualMode() override
+   {
+      if(!m_visualMode) return;
+      
+      string prefix = m_objPrefix + "_MARETEST";
+      
+      
+      ChartRedraw(0); 
+   }
+   
    //Get ATR Value
    double GetATRValue()
    {

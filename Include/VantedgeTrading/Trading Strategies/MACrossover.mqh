@@ -52,6 +52,16 @@ private:
       CopyBuffer(atrDefinition, 0, 0, 3, priceArray);
       return NormalizeDouble(priceArray[0], _Digits);
    }
+   
+   void VisualMode() override
+   {
+      if(!m_visualMode) return;
+      
+      string prefix = m_objPrefix + "_MACROSSOVER";
+      
+      
+      ChartRedraw(0); 
+   }
      
    //Check if ShortMA was away from LongMA for lookback candles
    void CheckMALookback()

@@ -67,6 +67,16 @@ private:
       }
    }
    
+   void VisualMode() override
+   {
+      if(!m_visualMode) return;
+      
+      string prefix = m_objPrefix + "_OFFSETMA";
+      
+      
+      ChartRedraw(0); 
+   }
+   
    //Check if price touches an offset
    string OffsetRetest()
    {

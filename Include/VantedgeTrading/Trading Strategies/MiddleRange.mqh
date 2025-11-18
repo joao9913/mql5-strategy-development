@@ -26,6 +26,37 @@ private:
    //--------METHODS
 
 private:
+
+   void VisualMode() override
+   {
+      if(!m_visualMode) return;
+      
+      string prefix = m_objPrefix + "_MIDDLERANGE";
+      
+      if(CheckEntryHour())
+      {
+         //Draw Range
+         datetime timeStart = iTime(_Symbol, PERIOD_CURRENT, m_rangeBars);
+         datetime timeEnd = iTime(_Symbol, PERIOD_CURRENT, 0);
+         
+         ObjectCreate(0, prefix + "Range", OBJ_RECTANGLE, 0, timeStart, rangeHigh, timeEnd, rangeLow);
+         ObjectSetInteger(0, prefix + "Range", OBJPROP_COLOR, clrMediumSpringGreen);
+         ObjectSetInteger(0, prefix + "Range", OBJPROP_BACK, true);
+         
+         //Draw Entry Lines
+         ObjectCreate(0, prefix + "EntryHour", OBJ_VLINE, 0, timeStart, rangeHigh);
+         ObjectSetInteger(0, prefix+"EntryHour", OBJPROP_COLOR, clrMaroon);
+         
+         //Draw Middle Line
+         ObjectCreate(0, prefix + "Middle", OBJ_TREND, 0, timeStart, rangeMiddle, timeEnd, rangeMiddle);
+         ObjectSetInteger(0, prefix+"Middle", OBJPROP_COLOR, clrMediumSpringGreen);
+         
+         ChartRedraw(0); 
+      }
+      
+      ChartRedraw(0); 
+   }
+   
    // Check if hour is within entry hour range
    bool CheckEntryHour()
    {
@@ -79,6 +110,13 @@ private:
       if (CheckEntryHour() && tradingAllowed)
       {
          CalculateRange();
+         
+         if(m_visualMode)
+         {
+            ClearVisualMode();
+            VisualMode();
+         }
+         
          if (CheckCloseMiddleRange() != NULL)
             return true;
       }

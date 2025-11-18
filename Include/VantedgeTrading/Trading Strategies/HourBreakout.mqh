@@ -32,6 +32,30 @@ private:
 
       return false;
    }
+   
+   void VisualMode() override
+   {
+      if(!m_visualMode) return;
+      
+      string prefix = m_objPrefix + "_HOURBREAKOUT";
+      
+      if(CheckEntryHour())
+      {
+         //Draw Range
+         datetime timeStart = iTime(_Symbol, PERIOD_CURRENT, m_rangeBars);
+         datetime timeEnd = iTime(_Symbol, PERIOD_CURRENT, 0);
+         
+         ObjectCreate(0, prefix + "Range", OBJ_RECTANGLE, 0, timeStart, rangeHigh, timeEnd, rangeLow);
+         ObjectSetInteger(0, prefix + "Range", OBJPROP_COLOR, clrMediumSpringGreen);
+         ObjectSetInteger(0, prefix + "Range", OBJPROP_BACK, true);
+         
+         //Draw Entry Lines
+         ObjectCreate(0, prefix + "EntryHour", OBJ_VLINE, 0, timeStart, rangeHigh);
+         ObjectSetInteger(0, prefix+"EntryHour", OBJPROP_COLOR, clrMaroon);
+         
+         ChartRedraw(0); 
+      }
+   }
 
    // Calculate range
    void CalculateRange()
@@ -61,6 +85,13 @@ private:
       if (CheckEntryHour() && tradingAllowed)
       {
          CalculateRange();
+         
+         if(m_visualMode)
+         {
+            ClearVisualMode();
+            VisualMode();
+         }
+      
          return true;
       }
 
@@ -135,7 +166,7 @@ public:
    // Execute trades if all conditions are met
    void ExecuteStrategy() override
    {
-      if (EntryCriteria())
+      if(EntryCriteria())
          PlacePendings();
 
       ResetControlVariables();

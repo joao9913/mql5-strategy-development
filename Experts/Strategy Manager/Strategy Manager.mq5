@@ -107,7 +107,7 @@ int OnInit()
    CStrategy::SetServerHourDifference(ServerHourDifference);
    CStrategy::SetCompounding(UseCompounding);
    CStrategy::SetStartingBalance(StartingAccountBalance);
-   CStrategy::SetVisualMode(VisualMode);
+   activeStrategy.SetVisualMode(VisualMode);
       
    if(RunSimulation)
    {      

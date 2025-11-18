@@ -18,6 +18,8 @@ protected:
    static bool m_setCompounding;
    static bool m_visualMode;
    CTrade trade;
+   
+   string m_objPrefix;
 
    // New NTrades
    bool tradingAllowed;
@@ -125,12 +127,24 @@ protected:
          trade.OrderDelete(ticket);
       }
    }
+   
+   //Remove old objects from visual mode
+   virtual void ClearVisualMode()
+   {
+      ObjectsDeleteAll(0, m_objPrefix);
+   }
 
 public:
    // Abstract method every strategy needs to implement
    virtual void ExecuteStrategy() = 0;
    virtual bool Init(){return true;}
-   virtual void VisualMode();
+   virtual void VisualMode() = 0;
+   
+   CStrategy()
+   {
+      m_visualMode = true;
+      m_objPrefix = __FUNCTION__;
+   }
 
    // Setter method to set the Server Hour Difference the same for every strategy
    static void SetServerHourDifference(int value)
