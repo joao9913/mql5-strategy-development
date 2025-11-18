@@ -91,7 +91,8 @@ for phase in phaseTypes:
         countCols = ["Nº Passed", "Nº Failed", "Nº Payouts", "Challenges", "Won", "Loss",
                      "Winning Months", "Loosing Months", "Failed Challenges", "Total Payouts ($)", "Total Failed ($)"]
         percentageCols = ["Winrate (%)", "Payout Winrate", "Challenge WR", "Monthly Winrate",
-                          "% Failed Phase 1", "% Failed Phase 2"]
+                          "% Failed Phase 1", "% Failed Phase 2", "Efficiency Ratio", "Profitability Ratio", 
+                          "Profitability Ratio Payout", "Profitability Ratio Monthly"]
         avgCols = ["Avg Duration", "Avg Duration Passed", "Avg Duration Failed", "Avg Duration Total", 
                    "Avg Duration Payout", "Avg Cons Wins", "Avg Cons Losses", "Avg Cons Payouts",
                    "Avg Payouts Challenge", "Avg Profit Payout ($)", "Avg Profit Challenge", 
@@ -167,4 +168,4 @@ with open(htmlOutput, "w", encoding="utf-16") as f:
     f.write(htmlTemplate)
 
 # Open in default browser
-webbrowser.open(str(htmlOutput))
+#webbrowser.open(str(htmlOutput))

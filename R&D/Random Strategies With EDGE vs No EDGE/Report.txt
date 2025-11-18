@@ -8,6 +8,21 @@
 	- Join metrics and compare these
 	
 - Data Analysis
+	- Normal
+		- Challenge
+			- Efficiency Ratio:	0.95
+		
+		- Funded
+			- Profitability Ratio Payout:	9.06
+			- Profitability Ratio Monthly:	0.72
+		
+	- EDGE
+		- Challenge
+			- Efficiency Ratio:	1.22
+		
+		- Funded
+			- Profitability Ratio Payout:	12.62
+			- Profitability Ratio Monthly:	1.00
 
 
 - Conclusions

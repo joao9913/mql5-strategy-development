@@ -78,6 +78,7 @@ def CalculatePhaseMetrics(df):
     maxConsLosses = failedGroups.max()
     averageConsWins = round(passedGroups.mean(), 2)
     averageConsLosses = round(failedGroups.mean(), 2)
+    efficiencyRatio = round(winrate / averageDuration, 2)
 
     return {
         "Nº Passed": totalPassed,
@@ -89,7 +90,8 @@ def CalculatePhaseMetrics(df):
         "Max Cons Wins": maxConsWins,
         "Max Cons Losses": maxConsLosses,
         "Avg Cons Wins": averageConsWins,
-        "Avg Cons Losses": averageConsLosses
+        "Avg Cons Losses": averageConsLosses,
+        "Efficiency Ratio": efficiencyRatio
     }
 
 def CalculatePayoutMetrics(df):
@@ -122,6 +124,7 @@ def CalculatePayoutMetrics(df):
     totalPayoutAmmount = round(payoutRows["Payout Amount"].sum(), 2) if not payoutRows.empty else 0
     grossLoss = totalFailed * 80  # each fail attempt costs $80
     profitFactor = round(totalPayoutAmmount / grossLoss, 2) if grossLoss != 0 else float('inf')
+    profitabilityRatio = round(((winrate / 100 * averagePayout) / 80) * 10, 2)
 
     return {
         "Nº Payouts": totalPassed,
@@ -137,7 +140,8 @@ def CalculatePayoutMetrics(df):
         "Avg Payout($)": averagePayout,
         "Total Payouts ($)": totalPayoutAmmount,
         "Total Failed ($)": grossLoss,
-        "Profit Factor": profitFactor
+        "Profit Factor": profitFactor,
+        "Profitability Ratio": profitabilityRatio
     }
 
 def CalculateChallengeMetrics(df):
@@ -212,6 +216,7 @@ def CalculateChallengeMetrics(df):
 
     failedPhase1Percentage = round((failedPhase1Count / totalFailedChallenges) * 100, 2) if totalFailedChallenges else 0
     failedPhase2Percentage = round((failedPhase2Count / totalFailedChallenges) * 100, 2) if totalFailedChallenges else 0
+    efficiencyRatio = round(winrate / averageDurationTotal, 2)
 
     return {
         "Challenges": totalChallenges,
@@ -226,7 +231,8 @@ def CalculateChallengeMetrics(df):
         "Avg Cons Wins": averageConsecutiveWins,
         "Avg Cons Losses": averageConsecutiveLosses,
         "% Failed Phase 1": failedPhase1Percentage,
-        "% Failed Phase 2": failedPhase2Percentage
+        "% Failed Phase 2": failedPhase2Percentage,
+        "Efficiency Ratio": efficiencyRatio
     }
 
 def CalculateFundedMetrics(df):
@@ -332,7 +338,8 @@ def CalculateFundedMetrics(df):
     averageMonthlyProfit = round(monthlyPnL[monthlyPnL > 0].mean(), 2) if (monthlyPnL > 0).any() else 0
     averageMonthlyLoss = round(monthlyPnL[monthlyPnL <= 0].mean(), 2) if (monthlyPnL <= 0).any() else 0
     monthlyWinLossRatio = round(winningMonths / losingMonths, 2) if losingMonths > 0 else float('inf')
-
+    profitabilityRatioPayout = round(((payoutWinrate / 100) * averageConsecutivePayoutsPerChallenge * averageProfitPerPayout) / 80, 2)
+    profitabilityRatioMonthly = round(((monthlyWinrate / 100) * averageMonthlyProfit) / (averageMonthlyLoss * -1), 2)
     return {
         "Challenge WR": challengeWinrate,
         "Failed Challenges": totalFailedChallenges,
@@ -353,7 +360,9 @@ def CalculateFundedMetrics(df):
         "Monthly Winrate": monthlyWinrate,
         "Avg Monthly Profit": averageMonthlyProfit,
         "Avg Monthly Loss": averageMonthlyLoss,
-        "Monthly W/L Ratio": monthlyWinLossRatio
+        "Monthly W/L Ratio": monthlyWinLossRatio,
+        "Profitability Ratio Payout": profitabilityRatioPayout,
+        "Profitability Ratio Monthly": profitabilityRatioMonthly
     }
 
 
