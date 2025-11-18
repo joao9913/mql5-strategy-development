@@ -17,6 +17,7 @@ input int ServerHourDifference = 2;
 input bool UseCompounding = false;
 input int StartingAccountBalance = 10000;
 input double RiskOverride = 1;
+input bool VisualMode = false;
 enum strategyChoice
 {
    HourBreakout_Strategy = 1,
@@ -106,6 +107,7 @@ int OnInit()
    CStrategy::SetServerHourDifference(ServerHourDifference);
    CStrategy::SetCompounding(UseCompounding);
    CStrategy::SetStartingBalance(StartingAccountBalance);
+   CStrategy::SetVisualMode(VisualMode);
       
    if(RunSimulation)
    {      

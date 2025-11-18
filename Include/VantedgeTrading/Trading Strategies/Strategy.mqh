@@ -16,6 +16,7 @@ protected:
    static int m_ServerHourDifference;
    static int m_startingBalance;
    static bool m_setCompounding;
+   static bool m_visualMode;
    CTrade trade;
 
    // New NTrades
@@ -129,6 +130,7 @@ public:
    // Abstract method every strategy needs to implement
    virtual void ExecuteStrategy() = 0;
    virtual bool Init(){return true;}
+   virtual void VisualMode();
 
    // Setter method to set the Server Hour Difference the same for every strategy
    static void SetServerHourDifference(int value)
@@ -150,9 +152,15 @@ public:
    {
       m_setCompounding = compounding;
    }
+   
+   static void SetVisualMode(bool visualMode)
+   {
+      m_visualMode = visualMode;
+   }
 };
 
 // Define + default value
 int CStrategy::m_ServerHourDifference = 2;
 int CStrategy::m_startingBalance = 10000;
 bool CStrategy::m_setCompounding = false;
+bool CStrategy::m_visualMode = false;

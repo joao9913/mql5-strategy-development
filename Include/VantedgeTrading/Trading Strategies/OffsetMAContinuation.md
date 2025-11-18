@@ -26,3 +26,9 @@ Trades based on a moving average upper and lower offset
 ## Pairs/Markets
 
     - To Be Optimized
+
+## Visual Mode Objects
+
+    - Normal MA
+    - Positive & Negative Offset
+    - Visual Confirmation Of Breakout

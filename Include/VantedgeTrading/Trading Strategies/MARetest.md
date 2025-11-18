@@ -27,3 +27,9 @@ Uses a Moving Average to identify direction and enters when price retests this M
 ## Pairs/Markets
 
     - To Be Optimized
+
+## Visual Mode Objects
+
+    - MA
+    - Visual Indicator Of Lookback Check
+    - Visual Indicator Of Retest

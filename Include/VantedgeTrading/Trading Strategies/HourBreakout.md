@@ -27,3 +27,8 @@ Calculates a range of candles from high to low, enters when price breaks out of 
 
     - USDJPY
     - GBPUSD
+
+## Visual Mode Objects
+
+    - Range (Start Date, End Date, High, Low)
+    - Entry Hour Line

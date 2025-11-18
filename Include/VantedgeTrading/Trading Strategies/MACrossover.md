@@ -28,3 +28,10 @@ Uses two moving averages to identify a crossover between them.
 ## Pairs/Markets
 
     - To Be Optimized
+
+## Visual Mode Objects
+
+    - Short MA
+    - Long MA
+    - Visual Indicator Of Lookback Check
+    - Visual Indicator Of Crossover

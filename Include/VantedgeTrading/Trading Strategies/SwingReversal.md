@@ -21,9 +21,15 @@ Takes advantage of extreme swing points from untested highs and lows
 
 ## Input Variables
 
-    - NeighbourCandles  - Number of candles to use for verification of swing point 
+    - NeighbourCandles  - Number of candles to use for verification of swing point
     - ATRMultiplier     - How much to multiply the area around the swing point
 
 ## Pairs/Markets
 
     - To Be Optimized
+
+## Visual Mode Objects
+
+    - High Swing
+    - Low Swing
+    - Visual Confirmation Of Retest

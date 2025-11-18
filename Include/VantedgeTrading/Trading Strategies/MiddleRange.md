@@ -28,3 +28,9 @@ Identifies a range and trades according to its middle
 ## Pairs/Markets
 
     - USDJPY
+
+## Visual Mode Objects
+
+    - Range (Start Date, End Date, High, Low)
+    - Middle Line
+    - Entry Hour Line
