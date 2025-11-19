@@ -37,6 +37,12 @@ private:
          if(OffsetRetest() != "")
             return true;
       }
+      
+      if(m_visualMode)
+      {
+         ClearVisualMode();
+         VisualMode();
+      }
       return false;
    }
 
@@ -71,10 +77,37 @@ private:
    {
       if(!m_visualMode) return;
       
-      string prefix = m_objPrefix + "_OFFSETMACONTINUATION";
+      string prefix = m_objPrefix + "_OFFSETMA";
       
+      double positiveOffset = PositiveOffset();
+      double negativeOffset = NegativeOffset();
+      
+      //Draw lines for current candle
+      DrawLine(prefix + "_PO", positiveOffset, clrAqua);
+      DrawLine(prefix + "_NO", negativeOffset, clrOrange);
       
       ChartRedraw(0); 
+   }
+   
+   void DrawLine(string name, double price, color col)
+   {
+      datetime t1 = iTime(_Symbol, PERIOD_CURRENT, 0);
+      datetime t2 = iTime(_Symbol, PERIOD_CURRENT, 5);
+      
+      if(ObjectFind(0, name) == -1) //First time
+      {
+         ObjectCreate(0, name, OBJ_TREND, 0, t1, price, t2, price);
+         ObjectSetInteger(0, name, OBJPROP_COLOR, col);
+         ObjectSetInteger(0, name, OBJPROP_WIDTH, 1);
+      }
+      else //Update Line
+      {
+         ObjectSetInteger(0, name, OBJPROP_TIME, 0, t1);
+         ObjectSetDouble(0, name, OBJPROP_PRICE, 0, price);
+         
+         ObjectSetInteger(0, name, OBJPROP_TIME, 1, t2);
+         ObjectSetDouble(0, name, OBJPROP_PRICE, 1, price);
+      }
    }
    
    //Check if price touches an offset
