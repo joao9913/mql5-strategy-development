@@ -184,8 +184,10 @@ public:
       CheckLookback();
       
       if(EntryCriteria())
+      {
          EnterTrade();
-
+         DebuggingMode();
+      }
       ResetControlVariables();
    }
 };

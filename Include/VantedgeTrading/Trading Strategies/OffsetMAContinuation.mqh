@@ -145,8 +145,11 @@ public:
    // Execute trades if all conditions are met
    void ExecuteStrategy() override
    {
-      if (EntryCriteria())
+      if(EntryCriteria())
+      {
          EnterTrade();
+         DebuggingMode();
+      }  
 
       ResetControlVariables();
    }

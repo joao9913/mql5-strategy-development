@@ -17,14 +17,11 @@ protected:
    static int m_startingBalance;
    static bool m_setCompounding;
    static bool m_visualMode;
-   CTrade trade;
+   static bool m_debuggingMode;
    
+   CTrade trade;  
    string m_objPrefix;
-
-   // New NTrades
    bool tradingAllowed;
-   
-   // Variables to define trade information
    double entryprice, stoploss, takeprofit, rr;
 
 private:
@@ -59,6 +56,16 @@ protected:
       lotSize = MathFloor(lotSize / lotStep) * lotStep;
 
       return lotSize;
+   }
+   
+   //Debugging mode - TesterStop right after entering a trade
+   void DebuggingMode()
+   {  
+      if(m_debuggingMode)
+      {
+         if(CheckOpenTrades() || CheckOpenOrders())
+            TesterStop();
+      }
    }
 
    // Check if there are any open pending orders
@@ -171,6 +178,11 @@ public:
    {
       m_visualMode = visualMode;
    }
+   
+   static void SetDebuggingMode(bool debuggingMode)
+   {
+      m_debuggingMode = debuggingMode;
+   }
 };
 
 // Define + default value
@@ -178,3 +190,4 @@ int CStrategy::m_ServerHourDifference = 2;
 int CStrategy::m_startingBalance = 10000;
 bool CStrategy::m_setCompounding = false;
 bool CStrategy::m_visualMode = false;
+bool CStrategy::m_debuggingMode = false;

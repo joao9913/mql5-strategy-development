@@ -146,8 +146,10 @@ public:
    void ExecuteStrategy() override
    {
       if (EntryCriteria())
+      {
          EnterTrade();
-
+         DebuggingMode();
+      }  
       ResetControlVariables();
    }
    

@@ -18,6 +18,7 @@ input bool UseCompounding = false;
 input int StartingAccountBalance = 10000;
 input double RiskOverride = 1;
 input bool VisualMode = false;
+input bool DebuggingMode = false;
 enum strategyChoice
 {
    HourBreakout_Strategy = 1,
@@ -108,6 +109,7 @@ int OnInit()
    CStrategy::SetCompounding(UseCompounding);
    CStrategy::SetStartingBalance(StartingAccountBalance);
    activeStrategy.SetVisualMode(VisualMode);
+   activeStrategy.SetDebuggingMode(DebuggingMode);
       
    if(RunSimulation)
    {      

@@ -167,8 +167,11 @@ public:
    void ExecuteStrategy() override
    {
       if(EntryCriteria())
+      {  
          PlacePendings();
-
+         DebuggingMode();
+      }
+      
       ResetControlVariables();
       CancelPendingOrder();
    }

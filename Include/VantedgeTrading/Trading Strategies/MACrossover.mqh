@@ -215,8 +215,10 @@ public:
    void ExecuteStrategy() override
    {
       if (EntryCriteria())
+      {
          EnterTrade(CheckMACrossover());
-         
+         DebuggingMode();
+      }         
       ResetControlVariables();
    }
 };
