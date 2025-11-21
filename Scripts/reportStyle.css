@@ -10,8 +10,11 @@
     --border-color: #323232;
     --border-color-purple: #c02ac859;
     --border-color-purple-hover: #c02ac8d0;
+    --border-color-gold: #c8bb2a48;
+    --border-color-gold-hover: #c8bb2a8c;
     --card-background-blue: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 70%, rgb(4, 23, 23) 100%);
     --card-background-purple: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 60%, rgba(15, 4, 16, 1) 100%);
+    --card-background-gold: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 60%, rgba(17, 16, 1, 1) 100%);
 }
 
 *{
@@ -205,61 +208,19 @@ h2{
 }
 
 /*------------------------------------*/
-.Phase{
-    background-image: var(--card-background-blue);
-    width: 100%;
-    border: 2px solid var(--button-border-color);
-    transition: 0.2s;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 30px 20px;
-    margin: 0px 20px;
-}
-
-.Phase a{
-    background-image: none;
-    width: 70%;
-    text-align: center;
-    margin-top: 40px;
-    transition: 0.2s;
-    border: 2px solid #3d3d3d93;
-}
-
-.Phase a:hover{
-    background-color: #3d3d3d25;
-    transition: 0.2s;
-    border: 2px solid #5e5e5e93;
-}
-
-.Phase:hover{
-    border: 2px solid var(--button-border-color-hover);
-    transition: 0.2s;
-}
-
-.MetricsDiv{
-    display: flex;
-    align-items: center;
-    gap: 30px;
-}
-
-.MetricsDiv p{
-    font-size: 11px;
-    margin: 20px 0px
-}
-
-.Values p{
-    font-weight: 700;
-    margin: 20px 0px
-}
-
-#Purple{
-    border: 2px solid var(--border-color-purple);
-    background-image: var(--card-background-purple);
+#Gold{
+    background-image: var(--card-background-gold);
+    border: 2px solid var(--border-color-gold);
     margin-top: 15px;
 }
 
-#Purple:hover{
-    border: 2px solid var(--border-color-purple-hover);
+#Gold:hover{
+    border: 2px solid var(--border-color-gold-hover);
+    transition: 0.2s;
+}
+
+.DoubleMetrics{
+    display: flex;
+    flex-direction: row;
+    gap: 120px;
 }
