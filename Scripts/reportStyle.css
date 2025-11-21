@@ -12,6 +12,10 @@
     --border-color-purple-hover: #c02ac8d0;
     --border-color-gold: #c8bb2a48;
     --border-color-gold-hover: #c8bb2a8c;
+    --button-background-purple: linear-gradient(157deg,rgba(25, 4, 26, 1) 0%, rgba(25, 4, 26, 1) 60%, rgba(62, 11, 65, 1) 100%);
+    --button-background-purple-hover: linear-gradient(157deg,rgba(30, 5, 33, 1) 0%, rgba(81, 14, 87, 1) 100%);
+    --button-background-gold: linear-gradient(157deg,rgba(26, 24, 4, 1) 0%, rgba(51, 45, 10, 1) 100%);
+    --button-background-gold-hover: linear-gradient(157deg,rgba(61, 57, 10, 1) 0%, rgba(120, 105, 24, 1) 100%);
     --card-background-blue: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 70%, rgb(4, 23, 23) 100%);
     --card-background-purple: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 60%, rgba(15, 4, 16, 1) 100%);
     --card-background-gold: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 60%, rgba(17, 16, 1, 1) 100%);
@@ -89,6 +93,7 @@ a{
     margin: 0px 10px;
     font-size: 12px;
     transition: 0.2s;
+    text-align: center;
 }
 
 a:hover{
@@ -148,6 +153,8 @@ h2{
     text-align: center;
 }
 
+/*------------------------------------*/
+
 .Phase{
     background-image: var(--card-background-blue);
     width: 100%;
@@ -164,7 +171,6 @@ h2{
 .Phase a{
     background-image: none;
     width: 70%;
-    text-align: center;
     margin-top: 40px;
     transition: 0.2s;
     border: 2px solid #3d3d3d93;
@@ -207,6 +213,10 @@ h2{
     border: 2px solid var(--border-color-purple-hover);
 }
 
+#Purple h2{
+    border-bottom: 1px solid var(--border-color-purple);
+}
+
 /*------------------------------------*/
 #Gold{
     background-image: var(--card-background-gold);
@@ -223,4 +233,98 @@ h2{
     display: flex;
     flex-direction: row;
     gap: 120px;
+}
+
+#Gold h2{
+    border-bottom: 1px solid var(--border-color-gold);
+}
+
+/*------------------------------------*/
+
+.Buttons{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+#PurpleButton{
+    background-image: var(--button-background-purple);
+    border: 2px solid var(--border-color-purple);
+}
+
+#PurpleButton:hover{
+    background-image: var(--button-background-purple-hover);
+    border: 2px solid var(--border-color-purple-hover);
+}
+
+#GoldButton{
+    background-image: var(--button-background-gold);
+    border: 2px solid var(--border-color-gold);
+}
+
+#GoldButton:hover{
+    background-image: var(--button-background-gold-hover);
+    border: 2px solid var(--border-color-gold-hover);
+}
+
+/*------------------------------------*/
+
+.inDepth{
+    gap: 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+.inDepth .Subtitle{
+    margin-bottom: 30px;
+}
+
+.InDepthMetrics h2{
+    width: auto;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.InDepthMetrics p{
+    margin: 10px 0px;
+}
+.InDepthMetrics{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 50px 20px;
+    gap: 40px;
+    transition: 0.2s;
+}
+
+#Phase1, #Phase2, #Phase3{
+    background-image: var(--card-background-blue);
+    border: 2px solid var(--button-border-color);
+}
+
+#Phase1:hover, #Phase2:hover, #Phase3:hover{
+    border: 2px solid var(--button-border-color-hover);
+    transition: 0.2s;
+}
+
+#Challenge, #Funded{
+    background-image: var(--card-background-purple);
+    border: 2px solid var(--border-color-purple);
+}
+
+#Challenge:hover, #Funded:hover{
+    border: 2px solid var(--border-color-purple-hover);
+    transition: 0.2s;
+}
+
+#Monthly{
+    background-image: var(--card-background-gold);
+    border: 2px solid var(--border-color-gold);
+}
+
+#Monthly:hover{
+    border: 2px solid var(--border-color-gold-hover);
+    transition: 0.2s;
 }
