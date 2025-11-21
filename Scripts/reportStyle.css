@@ -1,67 +1,265 @@
+:root{
+    --primary-background-color: #0b0b0b;
+    --section-background-color: #101010;
+    --primary-text-color: #f3f3f3;
+    --secondary-text-color: #aaaaaa;
+    --button-gradient-blue-hover: linear-gradient(90deg,rgba(4, 26, 26, 1) 0%, rgba(10, 51, 51, 1) 100%, rgba(10, 51, 51, 1) 83%);
+    --button-gradient-blue: linear-gradient(90deg,rgba(2, 13, 13, 1) 0%, rgba(8, 38, 38, 1) 100%, rgba(7, 33, 33, 1) 83%);
+    --button-border-color: #2ac8c83f;
+    --button-border-color-hover: #2ac8c871;
+    --border-color: #323232;
+    --border-color-purple: #c02ac859;
+    --border-color-purple-hover: #c02ac8d0;
+    --card-background-blue: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 70%, rgb(4, 23, 23) 100%);
+    --card-background-purple: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 60%, rgba(15, 4, 16, 1) 100%);
+}
+
+*{
+    border-radius: 6px;
+    margin: 0;
+    padding: 0;
+}
+
 body{
-    background-color: #0b0b0b;
-    color: #e3e3e3;
-    font-weight: 100;
-    font-family: "Poppins";
-    font-size: 11px;
-    padding: 50px;
-    margin: auto;
+    background-color: var(--primary-background-color);
+    color: var(--primary-text-color);
+    font-family: Poppins;
+    font-weight: 300;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 30px 10px;
+}
+
+.Title{
+    margin-left: 40px;
+    margin-right: 10vw;
 }
 
 h1{
-    font-size: 18px;
-    color: #45baaf;
+    margin: 0;
+    padding: 0;
     font-weight: 300;
-    text-transform: uppercase;
-    text-align: center;
-    justify-content: center;
-    background-color: #0e1518;
-    border-bottom: #45baae3d 2px solid;
-    border-radius: 5px;
-    padding: 10px 0px;
+    font-size: 28px;
 }
 
-h1 a{
-    font-weight: 500;
+.Title p{
+    margin: 0;
+    padding: 0;
+    color: var(--secondary-text-color)
+}
+
+span{
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    margin: 0;
+    padding: 0;
+}
+
+nav ul{
+    display: flex;
+    flex-wrap: wrap;
+    list-style-type: none;
+}
+
+a{
+    text-decoration: none;
+    color: var(--primary-text-color);
+    background-image: var(--button-gradient-blue);
+    padding: 6px 20px;
+    border: 2px solid var(--button-border-color);
+    margin: 0px 10px;
+    font-size: 12px;
+    transition: 0.2s;
+}
+
+a:hover{
+    background-image: var(--button-gradient-blue-hover);
+    border: 2px solid var(--button-border-color-hover);
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+section{
+    background-color: var(--section-background-color);
+    margin: 50px 100px;
+    max-width: 1000px;
+    min-width: 720px;
+    width: 80vw;
+    border: 2px solid var(--border-color);
+    padding: 15px 40px;
+    padding-bottom: 100px;
+}
+
+.Subtitle{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 70px;
+}
+
+.Subtitle p{
+    margin: 0;
+    padding: 0;
+    color: var(--secondary-text-color);
+    font-size: 11px;
+}
+
+.Subtitle h1{
+    font-size: 20px;
+}
+
+.Subtitle .Text{
+    width: 50%;
+}
+
+.SinglePhaseMetrics{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
 }
 
 h2{
-    margin: 60px 0px 20px 0px;
-    font-size: 16px;
-    font-weight: 400;
-    padding-bottom: 5px;
-    text-transform: uppercase;
+    font-size: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--button-border-color);
+    width: 80%;
+    border-radius: 0px;
+    padding-bottom: 20px;
+    text-align: center;
 }
 
-table{
-    width: 100%; /* Full width */
-    border-collapse: collapse;
-    background: #000000;
-    border-radius: 8px;
-    overflow: hidden; /* Ensure corners are rounded */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    overflow-x: auto;
+.Phase{
+    background-image: var(--card-background-blue);
+    width: 100%;
+    border: 2px solid var(--button-border-color);
+    transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 20px;
+    margin: 0px 20px;
 }
 
-th{
-    border: 1px solid #161616;
-    padding: 5px 10px;
-    text-align: left;
-    background-color: #1a1a1a;
-    font-size: 13px;
-    font-weight: 400;
+.Phase a{
+    background-image: none;
+    width: 70%;
+    text-align: center;
+    margin-top: 40px;
+    transition: 0.2s;
+    border: 2px solid #3d3d3d93;
 }
 
-td{
-    border: 1px solid #161616;
-    font-size: 12px;
-    font-weight: 400;
-    padding: 5px 10px;
-    text-align: left;
+.Phase a:hover{
+    background-color: #3d3d3d25;
+    transition: 0.2s;
+    border: 2px solid #5e5e5e93;
 }
 
-hr{
-    color: none;
-    background-color: none;
-    border: none;
+.Phase:hover{
+    border: 2px solid var(--button-border-color-hover);
+    transition: 0.2s;
+}
+
+.MetricsDiv{
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.MetricsDiv p{
+    font-size: 11px;
+    margin: 20px 0px
+}
+
+.Values p{
+    font-weight: 700;
+    margin: 20px 0px
+}
+
+#Purple{
+    border: 2px solid var(--border-color-purple);
+    background-image: var(--card-background-purple);
+    margin-top: 15px;
+}
+
+#Purple:hover{
+    border: 2px solid var(--border-color-purple-hover);
+}
+
+/*------------------------------------*/
+.Phase{
+    background-image: var(--card-background-blue);
+    width: 100%;
+    border: 2px solid var(--button-border-color);
+    transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 20px;
+    margin: 0px 20px;
+}
+
+.Phase a{
+    background-image: none;
+    width: 70%;
+    text-align: center;
+    margin-top: 40px;
+    transition: 0.2s;
+    border: 2px solid #3d3d3d93;
+}
+
+.Phase a:hover{
+    background-color: #3d3d3d25;
+    transition: 0.2s;
+    border: 2px solid #5e5e5e93;
+}
+
+.Phase:hover{
+    border: 2px solid var(--button-border-color-hover);
+    transition: 0.2s;
+}
+
+.MetricsDiv{
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.MetricsDiv p{
+    font-size: 11px;
+    margin: 20px 0px
+}
+
+.Values p{
+    font-weight: 700;
+    margin: 20px 0px
+}
+
+#Purple{
+    border: 2px solid var(--border-color-purple);
+    background-image: var(--card-background-purple);
+    margin-top: 15px;
+}
+
+#Purple:hover{
+    border: 2px solid var(--border-color-purple-hover);
 }

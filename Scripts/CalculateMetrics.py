@@ -470,24 +470,19 @@ for folder in simulationFolders:
     # Combine sections into full HTML
     fullHTML = "\n<hr>\n".join(htmlSections)
     cssContent = Path("reportStyle.css").read_text()
+    htmlContent = Path("reportHTML.html").read_text(encoding="utf-8")
 
-    htmlTemplate = f"""
-    <html>
-    <head>
-        <title>Simulation Report</title>
-        <style>{cssContent}</style>
-    </head>
-    <body>
-        <h1>Simulation Report - {folder.name}</h1>
-        {fullHTML}
-    </body>
-    </html>
-    """
+    htmlOutputContent = (
+        htmlContent
+        .replace("{{STYLE}}", cssContent)
+        .replace("{{FOLDER_NAME}}", folder.name)
+        .replace("{{SECTIONS}}", fullHTML)
+    )
 
-    # Save HTML per folder
+    # Save the result
     htmlOutput = metricsFolder / "REPORT.html"
     with open(htmlOutput, "w", encoding="utf-16") as f:
-        f.write(htmlTemplate)
+        f.write(htmlOutputContent)
 
     # Open report in browser
     #webbrowser.open(str(htmlOutput))
