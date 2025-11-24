@@ -18,6 +18,8 @@ protected:
    static bool m_setCompounding;
    static bool m_visualMode;
    static bool m_debuggingMode;
+   static int m_activeHourStart;
+   static int m_activeHourEnd;
    
    CTrade trade;  
    string m_objPrefix;
@@ -112,6 +114,17 @@ protected:
       TimeCurrent(currentTime);
       return currentTime.min;
    }
+   
+   //Check if time is within active hour range
+   bool CheckActiveTimeRange()
+   {
+      int hour = GetCurrentHour() - m_ServerHourDifference;
+      
+      if(hour >= m_activeHourStart && hour < m_activeHourEnd)
+         return true;
+         
+      return false;
+   }
 
    // Reset control variables if no trades/orders are open
    void ResetControlVariables()
@@ -191,3 +204,5 @@ int CStrategy::m_startingBalance = 10000;
 bool CStrategy::m_setCompounding = false;
 bool CStrategy::m_visualMode = false;
 bool CStrategy::m_debuggingMode = false;
+int CStrategy::m_activeHourStart = 4;
+int CStrategy::m_activeHourEnd = 20;

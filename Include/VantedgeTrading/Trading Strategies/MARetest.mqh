@@ -120,7 +120,7 @@ private:
    // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if(tradingAllowed && lookback)
+      if(tradingAllowed && lookback && CheckActiveTimeRange())
       {
          if(CheckRetest() != "")
             return true;

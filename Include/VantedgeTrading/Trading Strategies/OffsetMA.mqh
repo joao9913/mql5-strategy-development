@@ -32,7 +32,7 @@ private:
    // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if (tradingAllowed && IsNewCandle())
+      if (tradingAllowed && IsNewCandle() && CheckActiveTimeRange())
       {
          if(OffsetRetest() != "")
             return true;

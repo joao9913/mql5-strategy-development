@@ -22,7 +22,7 @@ private:
    // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if (tradingAllowed /* and any other entry criterias*/)
+      if (tradingAllowed && CheckActiveTimeRange() /* and any other entry criterias*/)
       
             return true;
       }

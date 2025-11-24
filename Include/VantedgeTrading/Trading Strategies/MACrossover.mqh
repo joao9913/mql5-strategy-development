@@ -141,7 +141,7 @@ private:
    // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if(IsNewCandle() && tradingAllowed) 
+      if(IsNewCandle() && tradingAllowed && CheckActiveTimeRange()) 
       {
          CheckMALookback();
          
