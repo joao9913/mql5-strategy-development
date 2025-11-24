@@ -1,23 +1,32 @@
 # Ignore everything by default
 /*
 
-# Allow specific folders you care about
+# Allow specific folders
 !/Experts/
 !/Include/
-!/Include/VantedgeTrading
+!/Include/VantedgeTrading/
 !/Code Library/
 !/Optimizations/
 !/README.md
 !/Scripts/
-!/R&D
-!/Optimizations
+!/R&D/
 !/.gitignore
 
 # Ignore compiled files
+*.ex5
+
+# Ignore Include except VantedgeTrading
 Include/*
 !Include/VantedgeTrading/
 !Include/VantedgeTrading/**
-*.ex5
+
+# Ignore default mql5 update folders
+Experts/Advisors/
+Experts/Examples/
+Experts/Free Robots/
+Scripts/Examples/
+Scripts/Templates/
+Scripts/UnitTests/
 
 # Ignore MetaTrader-generated files and folders
 Tester/
