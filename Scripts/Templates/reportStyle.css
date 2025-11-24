@@ -21,6 +21,19 @@
     --card-background-gold: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 60%, rgba(17, 16, 1, 1) 100%);
 }
 
+html{
+    scroll-behavior: smooth;
+}
+
+.backButton{
+    position: fixed;
+    bottom: 10px;
+    right: 5px;
+    font-size: 12px;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
 *{
     border-radius: 6px;
     margin: 0;
@@ -327,4 +340,30 @@ h2{
 #Monthly:hover{
     border: 2px solid var(--border-color-gold-hover);
     transition: 0.2s;
+}
+
+/*------------------------------------*/
+
+table{
+    width: 100%;
+    background-image: var(--card-background-blue);
+    border: 2px solid var(--button-border-color);
+    border-collapse: collapse;
+    table-layout: fixed;
+    text-align: center;
+}
+
+th{
+    font-size: 13px;
+}
+
+td{
+    font-size: 12px;
+}
+
+th, td{
+    border-left: 2px solid var(--button-border-color-hover);
+    border-right: 2px solid var(--button-border-color-hover);
+    border-radius: 0px;
+    padding: 0.8em 0.5em;
 }
