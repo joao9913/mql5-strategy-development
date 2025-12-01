@@ -1,0 +1,83 @@
+- Question/Problem
+	Is optimizing risk per phase, better than using push methodology?
+
+- Methodology
+	- Optimize risk per phase 
+	- Compare each risk with push results	
+	
+- Data Analysis
+	- PHASE 1
+		- PUSH
+			- Winrate:			64.28
+			- Avg Duration:	16.22
+			- Efficiency Ratio:	4.09
+			
+		- 2%
+			- Winrate:			68.31
+			- Avg Duration:	21.32
+			- Efficiency Ratio:	3.33
+
+		-  2.25%
+			- Winrate:			67.77
+			- Avg Duration:	17.7
+			- Efficiency Ratio:	3.99
+
+		- 2.5%
+			- Winrate:			64.79
+			- Avg Duration:	13.98
+			- Efficiency Ratio:	4.78
+
+		- 2.75%
+			- Winrate:			62.17
+			- Avg Duration:	12.12
+			- Efficiency Ratio:	5.3
+
+		- 3%
+			- Winrate:			62.31
+			- Avg Duration:	10.84
+			- Efficiency Ratio:	5.96
+			
+----------------------------------------------------------------------------------
+			
+	- PHASE 2
+		- PUSH
+			- Winrate:			75.52
+			- Avg Duration:	16.26
+			- Efficiency Ratio:	4.81
+	
+		- 1.5%
+			- Winrate:			80.76
+			- Avg Duration:	24.59
+			- Efficiency Ratio:	3.54
+			
+		- 1.75%
+			- Winrate:			76.7
+			- Avg Duration:	17.67
+			- Efficiency Ratio:	4.65
+
+		- 2%
+			- Winrate:			75.59
+			- Avg Duration:	13.56
+			- Efficiency Ratio:	5.91
+
+		- 2.25%
+			- Winrate:			73.94
+			- Avg Duration:	11.13
+			- Efficiency Ratio:	6.83
+
+		- 2.5%
+			- Winrate:			72.77
+			- Avg Duration:	8.58
+			- Efficiency Ratio:	8.81
+
+		- 2.75%
+			- Winrate:			71.7
+			- Avg Duration:	7.39
+			- Efficiency Ratio:	11.63
+
+
+
+
+			 
+- Conclusions
+	- Trailing stop, using fixed risk, affects the winrate less than 1%

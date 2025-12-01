@@ -82,7 +82,7 @@ private:
    // Check if the entry criteria are met
    bool EntryCriteria() override
    {
-      if (CheckEntryHour() && tradingAllowed && CheckActiveTimeRange())
+      if (CheckEntryHour() && tradingAllowed)
       {
          CalculateRange();
          
