@@ -9,11 +9,22 @@ import webbrowser
 # CONFIGURATION 
 # ==========================
 
+def get_deepest_folders(root_folder):
+    deepest_folders = []
+    for folder in root_folder.iterdir():
+        if folder.is_dir():
+            subfolders = [sub for sub in folder.iterdir() if sub.is_dir()]
+            if subfolders:
+                deepest_folders.extend(get_deepest_folders(folder))  # continue deeper
+            else:
+                deepest_folders.append(folder)  # no more folders → final level
+    return deepest_folders
+
 #Automatically find MT5 Common Folder
 commonFolder = Path(os.getenv("APPDATA")) / "MetaQuotes" / "Terminal" / "Common" / "Files" / "SimulationData"
 calculateMetricsFolder = commonFolder / "CalculateMetrics"
 calculateMetricsFolder.mkdir(exist_ok=True)
-simulationFolders = [f for f in calculateMetricsFolder.iterdir() if f.is_dir()]
+simulationFolders = get_deepest_folders(calculateMetricsFolder)
 if not simulationFolders:
     print("No simulation folders found inside CalculateMetrics.")
     exit()

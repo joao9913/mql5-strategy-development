@@ -125,7 +125,7 @@ int OnInit()
          case 6: strategyName = "OffsetMAContinuation"; break;
          default: strategyName = "InvalidStrategy"; break;
       }     
-      propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName, DailyDrawdownTrailing, SaveCSVFiles, RunEDGE);
+      propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName, DailyDrawdownTrailing, SaveCSVFiles, RunEDGE, RiskOverride);
    }
 
    switch (StrategyChoice)
@@ -246,7 +246,8 @@ void OnTick()
    //----------------------REGULAR SIMULATIONS----------------------   
    
    activeStrategy.SetRisk(RiskOverride);
-   activeStrategy.ExecuteStrategy();
+   if(!propFirmSimulation.GetCooldown())     
+         activeStrategy.ExecuteStrategy();
    propFirmSimulation.UpdateChallengeStatus();
 }
 

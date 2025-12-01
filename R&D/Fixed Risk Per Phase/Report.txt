@@ -75,6 +75,15 @@
 			- Avg Duration:	7.39
 			- Efficiency Ratio:	11.63
 
+----------------------------------------------------------------------------------
+			
+	- PHASE 3
+		- TARGET 2%
+			- Winrate:				
+			- Avg Duration:		
+			- Avg Cons Payouts:	
+			- Avg Payout:			
+			- Profitability Ratio:		
 
 
 
