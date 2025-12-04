@@ -46,7 +46,6 @@ private:
       return false;
    }
 
-
    // Enter market order on close direction
    void EnterTrade()
    {
@@ -118,12 +117,13 @@ private:
       double negativeOffset = NegativeOffset();
       double currentLow = iLow(_Symbol, PERIOD_CURRENT, 0);
       double currentHigh = iHigh(_Symbol, PERIOD_CURRENT, 0);
+      double lastClose = iClose(_Symbol, PERIOD_CURRENT, 1);
       
-      if(currentLow <= negativeOffset)
+      if(currentLow <= negativeOffset && lastClose >= negativeOffset)
       {
          return "Long";
       }
-      else if(currentHigh >= positiveOffset)
+      else if(currentHigh >= positiveOffset && lastClose <= positiveOffset)
       {
          return "Short";
       }
