@@ -108,8 +108,6 @@ int OnInit()
    CStrategy::SetServerHourDifference(ServerHourDifference);
    CStrategy::SetCompounding(UseCompounding);
    CStrategy::SetStartingBalance(StartingAccountBalance);
-   activeStrategy.SetVisualMode(VisualMode);
-   activeStrategy.SetDebuggingMode(DebuggingMode);
       
    if(RunSimulation)
    {      
@@ -136,6 +134,8 @@ int OnInit()
       activeStrategy = new HourBreakout(RangeBars_HourBreakout, EntryHour_HourBreakout);
       if (activeStrategy != NULL)
       {
+         activeStrategy.SetVisualMode(VisualMode);
+         activeStrategy.SetDebuggingMode(DebuggingMode);
          Print("HourBreakout Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
@@ -147,6 +147,8 @@ int OnInit()
       activeStrategy = new MiddleRange(RangeBars_MiddleRange, EntryHour_MiddleRange, EntryMinute_MiddleRange);
       if (activeStrategy != NULL)
       {
+         activeStrategy.SetVisualMode(VisualMode);
+         activeStrategy.SetDebuggingMode(DebuggingMode);
          Print("MiddleRange Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
@@ -159,6 +161,8 @@ int OnInit()
       if (activeStrategy != NULL)
       {
          activeStrategy.Init();
+         activeStrategy.SetVisualMode(VisualMode);
+         activeStrategy.SetDebuggingMode(DebuggingMode);
          Print("MARetest Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
@@ -171,6 +175,8 @@ int OnInit()
       if (activeStrategy != NULL)
       {
          activeStrategy.Init();
+         activeStrategy.SetVisualMode(VisualMode);
+         activeStrategy.SetDebuggingMode(DebuggingMode);
          Print("MACrossover Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
@@ -183,6 +189,8 @@ int OnInit()
       if (activeStrategy != NULL)
       {
          activeStrategy.Init();
+         activeStrategy.SetVisualMode(VisualMode);
+         activeStrategy.SetDebuggingMode(DebuggingMode);
          Print("Offset MA Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
@@ -194,6 +202,8 @@ int OnInit()
       if (activeStrategy != NULL)
       {
          activeStrategy.Init();
+         activeStrategy.SetVisualMode(VisualMode);
+         activeStrategy.SetDebuggingMode(DebuggingMode);
          Print("Offset MA Continuation Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
