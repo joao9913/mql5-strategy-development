@@ -26,7 +26,7 @@ if not commonFiles:
     exit()
 
 timestamp = datetime.now().strftime("_%Y-%m-%d_%H;%M;%S")
-mergedFolder = commonFolder / f"MergedSimulations{timestamp}"
+mergedFolder = joinFolder/ f"MergedSimulations{timestamp}"
 mergedFolder.mkdir(exist_ok=True)
 
 # ==========================
