@@ -1,0 +1,330 @@
+:root{
+    --primary-background-color: #0b0b0b;
+    --section-background-color: #101010;
+    --primary-text-color: #f3f3f3;
+    --secondary-text-color: #aaaaaa;
+    --button-gradient-blue-hover: linear-gradient(90deg,rgba(4, 26, 26, 1) 0%, rgba(10, 51, 51, 1) 100%, rgba(10, 51, 51, 1) 83%);
+    --button-gradient-blue: linear-gradient(90deg,rgba(2, 13, 13, 1) 0%, rgba(8, 38, 38, 1) 100%, rgba(7, 33, 33, 1) 83%);
+    --button-border-color: #2ac8c83f;
+    --button-border-color-hover: #2ac8c871;
+    --border-color: #323232;
+    --border-color-purple: #c02ac859;
+    --border-color-purple-hover: #c02ac8d0;
+    --border-color-gold: #c8bb2a48;
+    --border-color-gold-hover: #c8bb2a8c;
+    --button-background-purple: linear-gradient(157deg,rgba(25, 4, 26, 1) 0%, rgba(25, 4, 26, 1) 60%, rgba(62, 11, 65, 1) 100%);
+    --button-background-purple-hover: linear-gradient(157deg,rgba(30, 5, 33, 1) 0%, rgba(81, 14, 87, 1) 100%);
+    --button-background-gold: linear-gradient(157deg,rgba(26, 24, 4, 1) 0%, rgba(51, 45, 10, 1) 100%);
+    --button-background-gold-hover: linear-gradient(157deg,rgba(61, 57, 10, 1) 0%, rgba(120, 105, 24, 1) 100%);
+    --card-background-blue: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 70%, rgb(4, 23, 23) 100%);
+    --card-background-purple: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 60%, rgba(15, 4, 16, 1) 100%);
+    --card-background-gold: linear-gradient(157deg,rgba(11, 11, 11, 1) 0%, rgba(11, 11, 11, 1) 60%, rgba(17, 16, 1, 1) 100%);
+}
+
+*{
+    border-radius: 6px;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: var(--primary-background-color);
+    color: var(--primary-text-color);
+    font-family: Poppins;
+    font-weight: 300;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 30px 10px;
+}
+
+.Title{
+    margin-left: 40px;
+    margin-right: 10vw;
+}
+
+h1{
+    margin: 0;
+    padding: 0;
+    font-weight: 300;
+    font-size: 28px;
+}
+
+.Title p{
+    margin: 0;
+    padding: 0;
+    color: var(--secondary-text-color)
+}
+
+span{
+    font-weight: 700;
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    margin: 0;
+    padding: 0;
+}
+
+nav ul{
+    display: flex;
+    flex-wrap: wrap;
+    list-style-type: none;
+}
+
+a{
+    text-decoration: none;
+    color: var(--primary-text-color);
+    background-image: var(--button-gradient-blue);
+    padding: 6px 20px;
+    border: 2px solid var(--button-border-color);
+    margin: 0px 10px;
+    font-size: 12px;
+    transition: 0.2s;
+    text-align: center;
+}
+
+a:hover{
+    background-image: var(--button-gradient-blue-hover);
+    border: 2px solid var(--button-border-color-hover);
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+section{
+    background-color: var(--section-background-color);
+    margin: 50px 100px;
+    max-width: 1000px;
+    min-width: 720px;
+    width: 80vw;
+    border: 2px solid var(--border-color);
+    padding: 15px 40px;
+    padding-bottom: 100px;
+}
+
+.Subtitle{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 70px;
+}
+
+.Subtitle p{
+    margin: 0;
+    padding: 0;
+    color: var(--secondary-text-color);
+    font-size: 11px;
+}
+
+.Subtitle h1{
+    font-size: 20px;
+}
+
+.Subtitle .Text{
+    width: 50%;
+}
+
+.SinglePhaseMetrics{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+h2{
+    font-size: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--button-border-color);
+    width: 80%;
+    border-radius: 0px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+/*------------------------------------*/
+
+.Phase{
+    background-image: var(--card-background-blue);
+    width: 100%;
+    border: 2px solid var(--button-border-color);
+    transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 20px;
+    margin: 0px 20px;
+}
+
+.Phase a{
+    background-image: none;
+    width: 70%;
+    margin-top: 40px;
+    transition: 0.2s;
+    border: 2px solid #3d3d3d93;
+}
+
+.Phase a:hover{
+    background-color: #3d3d3d25;
+    transition: 0.2s;
+    border: 2px solid #5e5e5e93;
+}
+
+.Phase:hover{
+    border: 2px solid var(--button-border-color-hover);
+    transition: 0.2s;
+}
+
+.MetricsDiv{
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.MetricsDiv p{
+    font-size: 11px;
+    margin: 20px 0px
+}
+
+.Values p{
+    font-weight: 700;
+    margin: 20px 0px
+}
+
+#Purple{
+    border: 2px solid var(--border-color-purple);
+    background-image: var(--card-background-purple);
+    margin-top: 15px;
+}
+
+#Purple:hover{
+    border: 2px solid var(--border-color-purple-hover);
+}
+
+#Purple h2{
+    border-bottom: 1px solid var(--border-color-purple);
+}
+
+/*------------------------------------*/
+#Gold{
+    background-image: var(--card-background-gold);
+    border: 2px solid var(--border-color-gold);
+    margin-top: 15px;
+}
+
+#Gold:hover{
+    border: 2px solid var(--border-color-gold-hover);
+    transition: 0.2s;
+}
+
+.DoubleMetrics{
+    display: flex;
+    flex-direction: row;
+    gap: 120px;
+}
+
+#Gold h2{
+    border-bottom: 1px solid var(--border-color-gold);
+}
+
+/*------------------------------------*/
+
+.Buttons{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+#PurpleButton{
+    background-image: var(--button-background-purple);
+    border: 2px solid var(--border-color-purple);
+}
+
+#PurpleButton:hover{
+    background-image: var(--button-background-purple-hover);
+    border: 2px solid var(--border-color-purple-hover);
+}
+
+#GoldButton{
+    background-image: var(--button-background-gold);
+    border: 2px solid var(--border-color-gold);
+}
+
+#GoldButton:hover{
+    background-image: var(--button-background-gold-hover);
+    border: 2px solid var(--border-color-gold-hover);
+}
+
+/*------------------------------------*/
+
+.inDepth{
+    gap: 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+.inDepth .Subtitle{
+    margin-bottom: 30px;
+}
+
+.InDepthMetrics h2{
+    width: auto;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.InDepthMetrics p{
+    margin: 10px 0px;
+}
+.InDepthMetrics{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 50px 20px;
+    gap: 40px;
+    transition: 0.2s;
+}
+
+#Phase1, #Phase2, #Phase3{
+    background-image: var(--card-background-blue);
+    border: 2px solid var(--button-border-color);
+}
+
+#Phase1:hover, #Phase2:hover, #Phase3:hover{
+    border: 2px solid var(--button-border-color-hover);
+    transition: 0.2s;
+}
+
+#Challenge, #Funded{
+    background-image: var(--card-background-purple);
+    border: 2px solid var(--border-color-purple);
+}
+
+#Challenge:hover, #Funded:hover{
+    border: 2px solid var(--border-color-purple-hover);
+    transition: 0.2s;
+}
+
+#Monthly{
+    background-image: var(--card-background-gold);
+    border: 2px solid var(--border-color-gold);
+}
+
+#Monthly:hover{
+    border: 2px solid var(--border-color-gold-hover);
+    transition: 0.2s;
+}

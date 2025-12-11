@@ -117,12 +117,13 @@ private:
       double negativeOffset = NegativeOffset();
       double currentLow = iLow(_Symbol, PERIOD_CURRENT, 0);
       double currentHigh = iHigh(_Symbol, PERIOD_CURRENT, 0);
+      double lastClose = iClose(_Symbol, PERIOD_CURRENT, 1);
       
-      if(currentLow <= negativeOffset)
+      if(currentLow <= negativeOffset && lastClose >= negativeOffset)
       {
          return "Short";
       }
-      else if(currentHigh >= positiveOffset)
+      else if(currentHigh >= positiveOffset && lastClose <= positiveOffset)
       {
          return "Long";
       }
