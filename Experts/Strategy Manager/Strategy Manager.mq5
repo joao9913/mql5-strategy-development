@@ -248,14 +248,14 @@ void OnTick()
       if(!propFirmSimulation.GetCooldown())     
          activeStrategy.ExecuteStrategy();
        
-      activeStrategy.SetRisk(propFirmSimulation.GetRisk());
+      activeStrategy.SetRisk(propFirmSimulation.GetRiskEdge());
       propFirmSimulation.UpdateChallengeStatus();
       return;
    } 
    
    //----------------------REGULAR SIMULATIONS----------------------   
    
-   activeStrategy.SetRisk(RiskOverride);
+   activeStrategy.SetRisk(propFirmSimulation.GetRiskFixed());
    if(!propFirmSimulation.GetCooldown())     
          activeStrategy.ExecuteStrategy();
    propFirmSimulation.UpdateChallengeStatus();
