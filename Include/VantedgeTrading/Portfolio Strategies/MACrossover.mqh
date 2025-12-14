@@ -147,20 +147,20 @@ private:
    {
       if(direction == "Long")
       {
-         entryprice = SymbolInfoDouble(Symbol(), SYMBOL_ASK); 
+         entryprice = SymbolInfoDouble(_Symbol, SYMBOL_ASK); 
          stoploss = entryprice - GetATRValue() * m_atrMultiplier;
          takeprofit = entryprice + (entryprice - stoploss) * 2.05;
-         trade.Buy(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);  
+         trade.Buy(CalculateLots(), _Symbol, entryprice, stoploss, takeprofit);  
          
          tradingAllowed = false;
          lookback = false;
       }
       else if(direction == "Short")
       {
-         entryprice = SymbolInfoDouble(Symbol(), SYMBOL_ASK);   
+         entryprice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);   
          stoploss = entryprice + GetATRValue() * m_atrMultiplier;
          takeprofit = entryprice - (stoploss - entryprice) * 2.05;
-         trade.Sell(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
+         trade.Sell(CalculateLots(), _Symbol, entryprice, stoploss, takeprofit);
          
          tradingAllowed = false;
          lookback = false;
@@ -171,7 +171,7 @@ public:
    // Constructor for input variables
    MACrossover()
    {
-      if (Symbol() == "GBPUSD")
+      if (_Symbol == "GBPUSD")
       {
          m_shortMAPeriod = 30;
          m_longMAPeriod = 175;
@@ -180,7 +180,7 @@ public:
          SetMagic(1301001);
          return;
       }
-      else if (Symbol() == "USDJPY")
+      else if (_Symbol == "USDJPY")
       {
          m_shortMAPeriod = 15;
          m_longMAPeriod = 120;
@@ -189,7 +189,7 @@ public:
          SetMagic(1301002);
          return;
       }
-      else if (Symbol() == "XAUUSD")
+      else if (_Symbol == "XAUUSD")
       {
          m_shortMAPeriod = 90;
          m_longMAPeriod = 130;
@@ -210,15 +210,15 @@ public:
    //--- Initialization method (similar to OnInit)
    bool Init()
    {
-      shortMADefinition = iMA(Symbol(), PERIOD_CURRENT, m_shortMAPeriod, 0, MODE_SMA, PRICE_CLOSE);
+      shortMADefinition = iMA(_Symbol, PERIOD_M15, m_shortMAPeriod, 0, MODE_SMA, PRICE_CLOSE);
       if(shortMADefinition == INVALID_HANDLE)
          return false;
       
-      longMADefinition = iMA(Symbol(), PERIOD_CURRENT, m_longMAPeriod, 0, MODE_SMA, PRICE_CLOSE);
+      longMADefinition = iMA(_Symbol, PERIOD_M15, m_longMAPeriod, 0, MODE_SMA, PRICE_CLOSE);
       if(longMADefinition == INVALID_HANDLE)
          return false;
          
-      atrDefinition = iATR(Symbol(),PERIOD_CURRENT, m_longMAPeriod - m_shortMAPeriod);
+      atrDefinition = iATR(_Symbol,PERIOD_M15, m_longMAPeriod - m_shortMAPeriod);
       if(atrDefinition == INVALID_HANDLE)
          return false;
          

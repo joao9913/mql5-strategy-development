@@ -34,8 +34,8 @@ private:
       if(CheckEntryHour())
       {
          //Draw Range
-         datetime timeStart = iTime(_Symbol, PERIOD_CURRENT, m_rangeBars);
-         datetime timeEnd = iTime(_Symbol, PERIOD_CURRENT, 0);
+         datetime timeStart = iTime(_Symbol, PERIOD_H1, m_rangeBars);
+         datetime timeEnd = iTime(_Symbol, PERIOD_H1, 0);
          
          ObjectCreate(0, prefix + "Range", OBJ_RECTANGLE, 0, timeStart, rangeHigh, timeEnd, rangeLow);
          ObjectSetInteger(0, prefix + "Range", OBJPROP_COLOR, clrMediumSpringGreen);
@@ -67,16 +67,16 @@ private:
    // Calculate range
    void CalculateRange()
    {
-      double high = iHigh(Symbol(), PERIOD_CURRENT, 1);
-      double low = iLow(Symbol(), PERIOD_CURRENT, 1);
+      double high = iHigh(_Symbol, PERIOD_H1, 1);
+      double low = iLow(_Symbol, PERIOD_H1, 1);
 
       rangeHigh = high;
       rangeLow = low;
 
       for (int i = 1; i < m_rangeBars; i++)
       {
-         low = iLow(Symbol(), 0, i);
-         high = iHigh(Symbol(), 0, i);
+         low = iLow(_Symbol, 0, i);
+         high = iHigh(_Symbol, 0, i);
 
          if (low < rangeLow)
             rangeLow = low;
@@ -91,7 +91,7 @@ private:
    // Check if price closed above or below the middle of the range
    string CheckCloseMiddleRange()
    {
-      double close = iClose(Symbol(), PERIOD_M30, 1);
+      double close = iClose(_Symbol, PERIOD_M30, 1);
 
       if (close > rangeMiddle)
          return "Close Above Middle";
@@ -124,20 +124,20 @@ private:
       // Place long market order
       if (CheckCloseMiddleRange() == "Close Above Middle")
       {
-         entryprice = iClose(Symbol(), PERIOD_M30, 1);
+         entryprice = iClose(_Symbol, PERIOD_M30, 1);
          stoploss = rangeLow;
          takeprofit = NormalizeDouble(entryprice + (entryprice - stoploss) * 2.05, _Digits);
-         trade.Buy(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
+         trade.Buy(CalculateLots(), _Symbol, entryprice, stoploss, takeprofit);
 
          tradingAllowed = false;
       }
       // Place short market order
       else if (CheckCloseMiddleRange() == "Close Below Middle")
       {
-         entryprice = iClose(Symbol(), PERIOD_M30, 1);
+         entryprice = iClose(_Symbol, PERIOD_M30, 1);
          stoploss = rangeHigh;
          takeprofit = NormalizeDouble(entryprice - (stoploss - entryprice) * 2.05, _Digits);
-         trade.Sell(CalculateLots(), Symbol(), entryprice, stoploss, takeprofit);
+         trade.Sell(CalculateLots(), _Symbol, entryprice, stoploss, takeprofit);
 
          tradingAllowed = false;
       }
@@ -147,7 +147,7 @@ public:
    // Constructor for input variables
    MiddleRange()
    {
-      if (Symbol() == "USDJPY")
+      if (_Symbol == "USDJPY")
       {
          m_rangeBars = 3;
          m_entryHour = 4;
@@ -156,9 +156,9 @@ public:
          return;
       }
       
-      m_rangeBars = 3;
-      m_entryHour = 4;
-      m_entryMinute = 30;
+      m_rangeBars = 0;
+      m_entryHour = 0;
+      m_entryMinute = 0;
       SetMagic(0);
    }
 

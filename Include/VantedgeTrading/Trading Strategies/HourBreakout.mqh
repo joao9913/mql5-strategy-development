@@ -42,8 +42,8 @@ private:
       if(CheckEntryHour())
       {
          //Draw Range
-         datetime timeStart = iTime(_Symbol, PERIOD_CURRENT, m_rangeBars);
-         datetime timeEnd = iTime(_Symbol, PERIOD_CURRENT, 0);
+         datetime timeStart = iTime(_Symbol, PERIOD_H1, m_rangeBars);
+         datetime timeEnd = iTime(_Symbol, PERIOD_H1, 0);
          
          ObjectCreate(0, prefix + "Range", OBJ_RECTANGLE, 0, timeStart, rangeHigh, timeEnd, rangeLow);
          ObjectSetInteger(0, prefix + "Range", OBJPROP_COLOR, clrMediumSpringGreen);
@@ -60,16 +60,16 @@ private:
    // Calculate range
    void CalculateRange()
    {
-      double high = iHigh(Symbol(), PERIOD_CURRENT, 1);
-      double low = iLow(Symbol(), PERIOD_CURRENT, 1);
+      double high = iHigh(_Symbol, PERIOD_H1, 1);
+      double low = iLow(_Symbol, PERIOD_H1, 1);
 
       rangeHigh = high;
       rangeLow = low;
 
       for (int i = 1; i < m_rangeBars; i++)
       {
-         low = iLow(Symbol(), 0, i);
-         high = iHigh(Symbol(), 0, i);
+         low = iLow(_Symbol, 0, i);
+         high = iHigh(_Symbol, 0, i);
 
          if (low < rangeLow)
             rangeLow = low;
@@ -119,7 +119,7 @@ private:
       if (entryprice - ask < stopLevelPrice)
          entryprice = NormalizeDouble(ask + stopLevelPrice, _Digits);
 
-      trade.BuyStop(CalculateLots(), entryprice, Symbol(), stoploss, takeprofit);
+      trade.BuyStop(CalculateLots(), entryprice, _Symbol, stoploss, takeprofit);
 
       // Place short pending order
       entryprice = rangeLow;
@@ -129,7 +129,7 @@ private:
       if (bid - entryprice < stopLevelPrice)
          entryprice = NormalizeDouble(bid - stopLevelPrice, _Digits);
 
-      trade.SellStop(CalculateLots(), entryprice, Symbol(), stoploss, takeprofit);
+      trade.SellStop(CalculateLots(), entryprice, _Symbol, stoploss, takeprofit);
 
       // Set boolean control variable to false
       tradingAllowed = false;
@@ -146,13 +146,13 @@ public:
    // Constructor for input variables
    HourBreakout(int rangeBars, int entryHour)
    {
-      if (Symbol() == "USDJPY")
+      if (_Symbol == "USDJPY")
       {
          m_rangeBars = 3;
          m_entryHour = 3;
          return;
       }
-      else if (Symbol() == "GBPUSD")
+      else if (_Symbol == "GBPUSD")
       {
          m_rangeBars = 5;
          m_entryHour = 9;

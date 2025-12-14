@@ -10,8 +10,6 @@
 
 class CStrategy
 {
-   //--------VARIABLES
-
 protected:
    static int m_ServerHourDifference;
    static int m_activeHourStart;
@@ -20,7 +18,7 @@ protected:
    CTrade trade;  
    string m_objPrefix;
    bool tradingAllowed;
-   double entryprice, stoploss, takeprofit, rr;
+   double entryprice, stoploss, takeprofit;
 
 private:
    MqlRates priceData[];
@@ -29,19 +27,18 @@ private:
    long m_magic;
    double currentBalance;
    datetime lastTime;
-   //--------METHODS
 
 protected:
-   // Abstract method every strategy needs to implement
    virtual bool EntryCriteria() = 0;
 
-   // Calculate lots depending on stoploss, entryprice, risk, balance, symbol
    double CalculateLots()
    {  
       double accountBalance = 10000;
+      //double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+      
       double slDistance = MathAbs(stoploss - entryprice);
-      double pointSize = SymbolInfoDouble(_Symbol, SYMBOL_POINT);            // Point size instead of tick size
-      double tickValue = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE); // Tick value
+      double pointSize = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
+      double tickValue = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
       double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
       double lotSize = (m_riskPercentage / 100.0) * accountBalance / (slDistance * tickValue / pointSize);
       lotSize = MathMax(lotSize, SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN));
@@ -95,11 +92,26 @@ protected:
 
    // Check if there are any open pending orders
    bool CheckOpenOrders()
+   {      
+      for (int k = OrdersTotal() - 1; k >= 0; k--)
+      {
+         ulong ticket = OrderGetTicket(k);
+         if(OrderGetString(ORDER_SYMBOL) == _Symbol)
+           return true;
+      }
+      
+      return false;
+   }
+   
+   // Cancel all open pending orders
+   void CancelOpenOrders()
    {
-      if (OrdersTotal() == 0)
-         return false;
-
-      return true;
+      for (int k = OrdersTotal() - 1; k >= 0; k--)
+      {
+         ulong ticket = OrderGetTicket(k);
+         if(OrderGetString(ORDER_SYMBOL) == _Symbol)
+            trade.OrderDelete(ticket);
+      }
    }
 
    // Check if there are any open active trades
@@ -114,7 +126,7 @@ protected:
    //Check if current candle is new
    bool IsNewCandle()
    {
-      datetime time = iTime(Symbol(), PERIOD_CURRENT, 0);
+      datetime time = iTime(_Symbol, PERIOD_CURRENT, 0);
       
       if(time != lastTime)
       {
@@ -161,16 +173,6 @@ protected:
       }
    }
 
-   // Cancel all open pending orders
-   void CancelOpenOrders()
-   {
-      for (int k = OrdersTotal() - 1; k >= 0; k--)
-      {
-         ulong ticket = OrderGetTicket(k);
-         trade.OrderDelete(ticket);
-      }
-   }
-   
    //Remove old objects from visual mode
    virtual void ClearVisualMode()
    {
