@@ -201,6 +201,7 @@ public:
       return true;
    }
    virtual void VisualMode() = 0;
+   virtual ENUM_TIMEFRAMES RequiredTimeframe() = 0;
    
    CStrategy()
    {
@@ -221,6 +222,11 @@ public:
    void SetMagic(long magic)
    {
       m_magic = magic;
+   }
+   
+   bool IsCorrectTimeframe()
+   {
+      return _Period == RequiredTimeframe();
    }
 };
 

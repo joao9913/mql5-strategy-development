@@ -228,6 +228,11 @@ public:
       
       return true;
    }
+   
+   ENUM_TIMEFRAMES RequiredTimeframe() override
+   {
+      return PERIOD_M15;
+   }
 
    // Execute trades if all conditions are met
    void ExecuteStrategy() override

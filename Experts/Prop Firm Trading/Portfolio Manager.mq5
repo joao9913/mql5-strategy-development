@@ -49,41 +49,40 @@ int OnInit()
    {
       case 1:
          activeStrategy = new HourBreakout();
-         activeStrategy.Init();
-         if (activeStrategy != NULL)
-         {
-            Print("HourBreakout creation successfull.");
-            return (INIT_SUCCEEDED);
-         }
          break;
          
       case 2:
          activeStrategy = new MiddleRange();
-         activeStrategy.Init();
-         if (activeStrategy != NULL)
-         {
-            Print("MiddleRange creation successfull.");
-            return (INIT_SUCCEEDED);
-         }
          break;
          
       case 3:
          activeStrategy = new MACrossover();
-         activeStrategy.Init();
-         if (activeStrategy != NULL)
-         {
-            Print("MACrossover creation successfull.");
-            return (INIT_SUCCEEDED);
-         }
          break;
 
       default:
          Print("Strategy initialization failed.");
-         return (INIT_FAILED);
+         return INIT_FAILED;
          break;
    }
-
-   return (INIT_FAILED);
+   
+   if(activeStrategy == NULL)
+      return INIT_FAILED;
+   
+   if(!activeStrategy.Init())
+      return INIT_FAILED;
+      
+   if(!activeStrategy.IsCorrectTimeframe())
+   {
+      PrintFormat(
+      "Strategy requires %s timeframe, but chart is %s", 
+      EnumToString(activeStrategy.RequiredTimeframe()),
+      EnumToString(_Period)
+      );
+      
+      return INIT_FAILED;
+   }
+   
+   return INIT_SUCCEEDED;
 }
 
 void OnDeinit(const int reason)

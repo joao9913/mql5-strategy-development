@@ -154,6 +154,11 @@ public:
       m_entryHour = 0;
       return;
    }
+   
+   ENUM_TIMEFRAMES RequiredTimeframe() override
+   {
+      return PERIOD_H1;
+   }
 
    // Execute trades if all conditions are met
    void ExecuteStrategy() override

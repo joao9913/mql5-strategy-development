@@ -161,6 +161,11 @@ public:
       m_entryMinute = 0;
       SetMagic(0);
    }
+   
+   ENUM_TIMEFRAMES RequiredTimeframe() override
+   {
+      return PERIOD_H1;
+   }
 
    // Execute trades if all conditions are met
    void ExecuteStrategy() override
