@@ -116,11 +116,15 @@ protected:
 
    // Check if there are any open active trades
    bool CheckOpenTrades()
-   {
-      if (PositionsTotal() == 0)
-         return false;
-
-      return true;
+   {      
+      for (int k = PositionsTotal() - 1; k >= 0; k--)
+      {
+         ulong ticket = PositionGetTicket(k);
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol)
+           return true;
+      }
+      
+      return false;
    }
    
    //Check if current candle is new
