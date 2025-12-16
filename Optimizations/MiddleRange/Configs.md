@@ -1,3 +1,15 @@
+# USDJPY
+
+## Timeframe
+
+    H1
+
+## Inputs
+
+    - RangeBars   - 3
+    - EntryHour   - 4
+    - EntryMinute - 30
+
 # GBPUSD
 
 ## Timeframe
