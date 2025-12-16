@@ -47,20 +47,23 @@ int OnInit()
 {
    // Set the static variable for all strategies
    CStrategy::SetServerHourDifference(ServerHourDifference);
-   propFirmTracker = new CPropFirmTracker(AccountPhase, AccountBalance, RiskOverride);
+   int numberOfStrategies = 0;
 
    switch (StrategyChoice)
    {
       case 1:
          activeStrategy = new HourBreakout();
+         numberOfStrategies = 2;
          break;
          
       case 2:
          activeStrategy = new MiddleRange();
+         numberOfStrategies = 1;
          break;
          
       case 3:
          activeStrategy = new MACrossover();
+         numberOfStrategies = 3;
          break;
 
       default:
@@ -86,6 +89,7 @@ int OnInit()
       return INIT_FAILED;
    }
    
+   propFirmTracker = new CPropFirmTracker(AccountPhase, AccountBalance, RiskOverride, numberOfStrategies);
    activeStrategy.SetRisk(propFirmTracker.GetRisk());
       
    return INIT_SUCCEEDED;
