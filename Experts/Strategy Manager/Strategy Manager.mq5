@@ -8,8 +8,8 @@
 #property version "1.00"
 
 #include "../../Include/VantedgeTrading/Trading Strategies/Strategy.mqh";
-#include "../../Include/VantedgeTrading/Risk Management/PropFirm Simulation.mqh";
-#include "../../Include/VantedgeTrading/Risk Management/Edge Risk Scaling.mqh";
+#include "../../Include/VantedgeTrading/PropFirm Simulations/PropFirm Simulation.mqh";
+#include "../../Include/VantedgeTrading/PropFirm Simulations/Edge Risk Scaling.mqh";
 
 //------------ GLOBAL INPUTS ------------
 input group "Global Settings";
