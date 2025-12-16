@@ -107,5 +107,5 @@ void OnTick()
    if(propFirmTracker.RunTracking())
       activeStrategy.ExecuteStrategy();
    else
-      Comment("Trading disabled by PropFirm Tracker.");
+      Print("Trading disabled by PropFirm Tracker.");
 }
