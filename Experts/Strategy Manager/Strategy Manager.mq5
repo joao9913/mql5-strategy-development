@@ -26,7 +26,8 @@ enum strategyChoice
    MARetest_Strategy = 3,
    MACrossover_Strategy = 4,
    OffsetMA_Strategy = 5,
-   OffsetMAContinuation_Strategy = 6
+   OffsetMAContinuation_Strategy = 6,
+   SwingReversal_Strategy = 7
 };
 input strategyChoice StrategyChoice = HourBreakout_Strategy;
 
@@ -37,6 +38,7 @@ input SimulationMode PhaseRun = MODE_PHASE_1;
 input bool DailyDrawdownTrailing = true;
 input bool SaveCSVFiles = true;
 input bool RunEDGE = true;
+
 
 //+------------------------------------------------------------------+
 //|                     HourBreakout Initialization                  |
@@ -98,6 +100,15 @@ input int MAPeriod_OffsetMAContinuation = 3;
 input double OffsetPercentage_OffsetMAContinuation = 1;
 input double ATRMultiplier_OffsetMAContinuation = 1;
 
+//+------------------------------------------------------------------+
+//|                     Swing Reversal Initialization                |
+//+------------------------------------------------------------------+
+#include "../../Include/VantedgeTrading/Trading Strategies/SwingReversal.mqh"
+CStrategy *SwingReversalStrategy;
+input group "Swing Reversal Strategy Settings";
+input int Lookback_SwingReversal = 1;
+input int Neighbours_SwingReversal = 1;
+
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
 CPropFirmSimulation *propFirmSimulation;
@@ -121,6 +132,7 @@ int OnInit()
          case 4: strategyName = "MACrossover"; break;
          case 5: strategyName = "OffsetMA"; break;
          case 6: strategyName = "OffsetMAContinuation"; break;
+         case 7: strategyName = "SwingReversal"; break;
          default: strategyName = "InvalidStrategy"; break;
       }     
       propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName, DailyDrawdownTrailing, SaveCSVFiles, RunEDGE, RiskOverride);
@@ -205,6 +217,18 @@ int OnInit()
          activeStrategy.SetVisualMode(VisualMode);
          activeStrategy.SetDebuggingMode(DebuggingMode);
          Print("Offset MA Continuation Strategy creation successfull.");
+         return (INIT_SUCCEEDED);
+      }
+      break;
+   // SWING REVERSAL INITIALIZATION
+   case 7:
+      activeStrategy = new SwingReversal(Lookback_SwingReversal, Neighbours_SwingReversal);
+      if (activeStrategy != NULL)
+      {
+         activeStrategy.Init();
+         activeStrategy.SetVisualMode(VisualMode);
+         activeStrategy.SetDebuggingMode(DebuggingMode);
+         Print("Swing Reversal Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
       break;
