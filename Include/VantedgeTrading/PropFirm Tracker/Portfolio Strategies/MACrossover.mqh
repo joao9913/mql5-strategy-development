@@ -222,6 +222,9 @@ public:
       if(atrDefinition == INVALID_HANDLE)
          return false;
          
+      ChartIndicatorAdd(0, 0, shortMADefinition);
+      ChartIndicatorAdd(0, 0, longMADefinition);
+         
       ArraySetAsSeries(shortMAArray, true);
       ArraySetAsSeries(longMAArray, true);
       ArraySetAsSeries(priceArray, true);
