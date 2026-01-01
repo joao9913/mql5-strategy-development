@@ -31,6 +31,7 @@ input strategyChoice StrategyChoice = HourBreakout_Strategy;
 input int AccountBalance = 10000;
 input int ServerHourDifference = 2;
 input double RiskOverride = 0.0;
+input int RiskDivisionOverride = 0;
 
 #include "../../Include/VantedgeTrading/PropFirm Tracker/Portfolio Strategies/HourBreakout.mqh";
 CStrategy *HourBreakoutStrategy;
@@ -53,17 +54,17 @@ int OnInit()
    {
       case 1:
          activeStrategy = new HourBreakout();
-         numberOfStrategies = 2;
+         numberOfStrategies = 3;
          break;
          
       case 2:
          activeStrategy = new MiddleRange();
-         numberOfStrategies = 1;
+         numberOfStrategies = 3;
          break;
          
       case 3:
          activeStrategy = new MACrossover();
-         numberOfStrategies = 3;
+         numberOfStrategies = 2;
          break;
 
       default:
@@ -88,6 +89,12 @@ int OnInit()
       
       return INIT_FAILED;
    }
+   
+   if(RiskDivisionOverride != 0)
+      numberOfStrategies = RiskDivisionOverride;
+   
+   if(RiskOverride != 0)
+      numberOfStrategies = 1;
    
    propFirmTracker = new CPropFirmTracker(AccountPhase, AccountBalance, RiskOverride, numberOfStrategies);
    activeStrategy.SetRisk(propFirmTracker.GetRisk());
