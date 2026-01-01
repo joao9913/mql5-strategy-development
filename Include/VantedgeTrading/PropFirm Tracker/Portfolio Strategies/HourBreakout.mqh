@@ -139,6 +139,7 @@ public:
          m_rangeBars = 3;
          m_entryHour = 3;
          SetMagic(1101001);
+         m_period = PERIOD_H1;
          return;
       }
       else if (_Symbol == "GBPUSD")
@@ -146,18 +147,23 @@ public:
          m_rangeBars = 5;
          m_entryHour = 9;
          SetMagic(1101002);
+         m_period = PERIOD_H1;
+         return;
+      }
+      else if (_Symbol == "US30")
+      {
+         m_rangeBars = 16;
+         m_entryHour = 12;
+         SetMagic(1101003);
+         m_period = PERIOD_M15;
          return;
       }
       
       SetMagic(0);
       m_rangeBars = 0;
       m_entryHour = 0;
+      m_period = PERIOD_D1;
       return;
-   }
-   
-   ENUM_TIMEFRAMES RequiredTimeframe() override
-   {
-      return PERIOD_H1;
    }
 
    // Execute trades if all conditions are met

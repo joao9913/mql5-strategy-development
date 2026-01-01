@@ -178,6 +178,7 @@ public:
          m_lookbackBars = 55;
          m_atrMultiplier = 4;
          SetMagic(1301001);
+         m_period = PERIOD_M15;         
          return;
       }
       else if (_Symbol == "USDJPY")
@@ -187,6 +188,7 @@ public:
          m_lookbackBars = 5;
          m_atrMultiplier = 5;
          SetMagic(1301002);
+         m_period = PERIOD_M15; 
          return;
       }
       else if (_Symbol == "XAUUSD")
@@ -196,6 +198,7 @@ public:
          m_lookbackBars = 10;
          m_atrMultiplier = 4;
          SetMagic(1301003);
+         m_period = PERIOD_M15; 
          return;
       }
       
@@ -204,6 +207,7 @@ public:
       m_lookbackBars = 0;
       m_atrMultiplier = 0;
       SetMagic(0);
+      m_period = PERIOD_D1; 
       return;
    }
    
@@ -230,11 +234,6 @@ public:
       ArraySetAsSeries(priceArray, true);
       
       return true;
-   }
-   
-   ENUM_TIMEFRAMES RequiredTimeframe() override
-   {
-      return PERIOD_M15;
    }
 
    // Execute trades if all conditions are met

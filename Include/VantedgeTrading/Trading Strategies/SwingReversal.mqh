@@ -14,15 +14,14 @@ class SwingReversal : public CStrategy
 
 private:
    // Member input variables
-   int m_lookback;
    int m_neighbours;
+   int m_lookback;
    
    //--------METHODS
 
 private:
    
    double highestHigh;
-   int highIndex;
    
    // Check if the entry criteria are met
    bool EntryCriteria() override
@@ -36,20 +35,17 @@ private:
    }
    
    void GetLastSwingHigh()
-   {
-      double high = iHigh(_Symbol, PERIOD_CURRENT, 1);
-      
-      highestHigh = high;
-      highIndex = 1;
-      
-      for(int i = 2; i < m_lookback; i++)
-      {
-         high = iHigh(_Symbol, PERIOD_CURRENT, i);
+   {  
+      for(int i = m_neighbours; i <= m_lookback; i++)
+      {         
+         double currentHigh = iHigh(_Symbol, PERIOD_CURRENT, i);
          
-         if(high > highestHigh)
+         for(int k = i - 5; k <= i + 5; k++)
          {
-            highestHigh = high;
-            highIndex = i;
+            double high = iHigh(_Symbol, PERIOD_CURRENT, k);
+            
+            if(high > currentHigh)
+               break;
          }
       }
    }
@@ -67,17 +63,17 @@ private:
       if(!m_visualMode) return;
       
       string prefix = m_objPrefix + "_SWINGREVERSAL";
-      ObjectCreate(0, prefix + "HLine", OBJ_HLINE, 0, TimeCurrent(), highestHigh);
+      //ObjectCreate(0, prefix + "HLine", OBJ_HLINE, 0, TimeCurrent(), highestHigh);
       
       ChartRedraw(0); 
    }
 
 public:
    // Constructor for input variables
-   SwingReversal(int lookback, int neighbours)
+   SwingReversal(int neighbours, int lookback)
    { 
-      m_lookback = lookback;
       m_neighbours = neighbours;
+      m_lookback = lookback;
    }
 
    // Execute trades if all conditions are met

@@ -18,6 +18,7 @@ protected:
    CTrade trade;  
    string m_objPrefix;
    bool tradingAllowed;
+   ENUM_TIMEFRAMES m_period;
    double entryprice, stoploss, takeprofit;
 
 private:
@@ -201,7 +202,10 @@ public:
       return true;
    }
    virtual void VisualMode() = 0;
-   virtual ENUM_TIMEFRAMES RequiredTimeframe() = 0;
+   virtual ENUM_TIMEFRAMES RequiredTimeframe()
+   {
+      return m_period;
+   }
    
    CStrategy()
    {

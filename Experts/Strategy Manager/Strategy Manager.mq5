@@ -106,8 +106,8 @@ input double ATRMultiplier_OffsetMAContinuation = 1;
 #include "../../Include/VantedgeTrading/Trading Strategies/SwingReversal.mqh"
 CStrategy *SwingReversalStrategy;
 input group "Swing Reversal Strategy Settings";
-input int Lookback_SwingReversal = 1;
 input int Neighbours_SwingReversal = 1;
+input int Lookback_SwingReversal = 1;
 
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
@@ -222,7 +222,7 @@ int OnInit()
       break;
    // SWING REVERSAL INITIALIZATION
    case 7:
-      activeStrategy = new SwingReversal(Lookback_SwingReversal, Neighbours_SwingReversal);
+      activeStrategy = new SwingReversal(Neighbours_SwingReversal, Lookback_SwingReversal);
       if (activeStrategy != NULL)
       {
          activeStrategy.Init();
