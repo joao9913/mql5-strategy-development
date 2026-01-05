@@ -33,9 +33,8 @@ protected:
    virtual bool EntryCriteria() = 0;
 
    double CalculateLots()
-   {  
-      double accountBalance = 10000;
-      //double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+   { 
+      double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
       
       double slDistance = MathAbs(stoploss - entryprice);
       double pointSize = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
