@@ -14,6 +14,7 @@ protected:
    static int m_ServerHourDifference;
    static int m_activeHourStart;
    static int m_activeHourEnd;
+   int m_startingBalance;
    
    CTrade trade;  
    string m_objPrefix;
@@ -33,14 +34,12 @@ protected:
    virtual bool EntryCriteria() = 0;
 
    double CalculateLots()
-   { 
-      double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
-      
+   {       
       double slDistance = MathAbs(stoploss - entryprice);
       double pointSize = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
       double tickValue = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
       double lotStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
-      double lotSize = (m_riskPercentage / 100.0) * accountBalance / (slDistance * tickValue / pointSize);
+      double lotSize = (m_riskPercentage / 100.0) * m_startingBalance / (slDistance * tickValue / pointSize);
       lotSize = MathMax(lotSize, SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN));
       lotSize = MathMin(lotSize, SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX));
       lotSize = MathFloor(lotSize / lotStep) * lotStep;
@@ -215,6 +214,11 @@ public:
    static void SetServerHourDifference(int value)
    {
       m_ServerHourDifference = value;
+   }
+   
+   void SetStartingBalance(int startingBalance)
+   {
+      m_startingBalance = startingBalance;
    }
 
    void SetRisk(double riskPercentage)

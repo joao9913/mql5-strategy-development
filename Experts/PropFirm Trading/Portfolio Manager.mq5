@@ -90,6 +90,8 @@ int OnInit()
       return INIT_FAILED;
    }
    
+   activeStrategy.SetStartingBalance(AccountBalance);
+   
    if(RiskDivisionOverride != 0)
       numberOfStrategies = RiskDivisionOverride;
    
