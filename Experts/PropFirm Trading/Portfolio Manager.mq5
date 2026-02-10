@@ -120,3 +120,23 @@ void OnTick()
    if(propFirmTracker.RunTracking())
       activeStrategy.ExecuteStrategy();
 }
+
+//Send information to Account_Tracker web app on trade close
+void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
+{
+   if(trans.type == TRADE_TRANSACTION_DEAL_ADD)
+   {
+      ulong dealTicket = trans.deal;
+      
+      if(HistoryDealSelect(dealTicket))
+      {
+         double profit = HistoryDealGetDouble(dealTicket, DEAL_PROFIT);
+         double commission = HistoryDealGetDouble(dealTicket, DEAL_COMMISSION);
+         double swap = HistoryDealGetDouble(dealTicket, DEAL_SWAP);
+         long reason = HistoryDealGetInteger(dealTicket, DEAL_REASON);
+         double netProfit = NormalizeDouble(profit + commission + swap, 2);
+         
+         propFirmTracker.updateHTTP();
+      }
+   }
+}
