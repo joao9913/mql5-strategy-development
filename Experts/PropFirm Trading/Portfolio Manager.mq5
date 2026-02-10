@@ -130,13 +130,24 @@ void OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest 
       
       if(HistoryDealSelect(dealTicket))
       {
-         double profit = HistoryDealGetDouble(dealTicket, DEAL_PROFIT);
-         double commission = HistoryDealGetDouble(dealTicket, DEAL_COMMISSION);
-         double swap = HistoryDealGetDouble(dealTicket, DEAL_SWAP);
          long reason = HistoryDealGetInteger(dealTicket, DEAL_REASON);
-         double netProfit = NormalizeDouble(profit + commission + swap, 2);
          
-         propFirmTracker.updateHTTP();
+         if(reason == DEAL_ENTRY_OUT)
+         {
+            string symbol = HistoryDealGetString(dealTicket, DEAL_SYMBOL);
+            datetime close_datetime = HistoryDealGetInteger(dealTicket, DEAL_TIME);
+            double pnl = HistoryDealGetDouble(dealTicket, DEAL_PROFIT);
+            double balance = AccountInfoDouble(ACCOUNT_BALANCE);
+            int strategyID = StrategyChoice;
+            
+            ulong orderTicket = HistoryDealGetInteger(dealTicket, DEAL_ORDER);
+            datetime open_datetime = 0;
+            if(HistoryOrderSelect(orderTicket))
+               open_datetime = HistoryOrderGetInteger(orderTicket, ORDER_TIME_SETUP);
+            
+            
+            propFirmTracker.updateTrackerApp(symbol, open_datetime, close_datetime, dealTicket, pnl, strategyID, balance);
+         }
       }
    }
 }
