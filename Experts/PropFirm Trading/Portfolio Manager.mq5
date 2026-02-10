@@ -100,6 +100,17 @@ int OnInit()
    
    propFirmTracker = new CPropFirmTracker(AccountPhase, AccountBalance, RiskOverride, numberOfStrategies);
    activeStrategy.SetRisk(propFirmTracker.GetRisk());
+   
+   
+   string symbol = "EURUSD";
+   datetime open_time = TimeCurrent();
+   datetime close_time = TimeCurrent();
+   long ticket_id = 123456;
+   double pnl = 50.25;
+   int strategy_id = 1;
+   double balance = 10500.00;
+   
+   propFirmTracker.updateTrackerApp(symbol, open_time, close_time, ticket_id, pnl, strategy_id, balance);
       
    return INIT_SUCCEEDED;
 }
