@@ -158,6 +158,12 @@ public:
          m_entryHour = 9;
          return;
       }
+      else if (_Symbol == "US30")
+      {
+         m_rangeBars = 4;
+         m_entryHour = 12;
+         return;
+      }
 
       m_rangeBars = rangeBars;
       m_entryHour = entryHour;

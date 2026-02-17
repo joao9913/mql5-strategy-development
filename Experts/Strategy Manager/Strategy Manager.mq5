@@ -269,10 +269,13 @@ void OnTick()
    
    if(RunEDGE)
    {
+      double edgeRisk = propFirmSimulation.GetRiskEdge();
+      
+      activeStrategy.SetRisk(edgeRisk);
+      
       if(!propFirmSimulation.GetCooldown())     
          activeStrategy.ExecuteStrategy();
        
-      activeStrategy.SetRisk(propFirmSimulation.GetRiskEdge());
       propFirmSimulation.UpdateChallengeStatus();
       return;
    } 
