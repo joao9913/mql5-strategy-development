@@ -27,7 +27,8 @@ enum strategyChoice
    MACrossover_Strategy = 4,
    OffsetMA_Strategy = 5,
    OffsetMAContinuation_Strategy = 6,
-   SwingReversal_Strategy = 7
+   SwingReversal_Strategy = 7,
+   DynamicRangeBreakout_Strategy = 8
 };
 input strategyChoice StrategyChoice = HourBreakout_Strategy;
 
@@ -109,6 +110,16 @@ input group "Swing Reversal Strategy Settings";
 input int Neighbours_SwingReversal = 1;
 input int Lookback_SwingReversal = 1;
 
+//+------------------------------------------------------------------+
+//|              Dynamic Range Breakout Initialization               |
+//+------------------------------------------------------------------+
+#include "../../Include/VantedgeTrading/Trading Strategies/DynamicRangeBreakout.mqh"
+CStrategy *DynamicRangeBreakoutStrategy;
+input group "Dynamic Range Breakout Settings";
+input int RangeBars_DynamicRangeBreakout = 1;
+input int ATRPeriod_DynamicRangeBreakout = 1;
+input double ATRMultiplier_DynamicRangeBreakout = 1;
+
 // Create pointer to the selected strategy
 CStrategy *activeStrategy;
 CPropFirmSimulation *propFirmSimulation;
@@ -133,6 +144,7 @@ int OnInit()
          case 5: strategyName = "OffsetMA"; break;
          case 6: strategyName = "OffsetMAContinuation"; break;
          case 7: strategyName = "SwingReversal"; break;
+         case 8: strategyName = "DynamicRangeBreakout"; break;
          default: strategyName = "InvalidStrategy"; break;
       }     
       propFirmSimulation = new CPropFirmSimulation(PhaseRun, StartingAccountBalance, strategyName, DailyDrawdownTrailing, SaveCSVFiles, RunEDGE, RiskOverride);
@@ -229,6 +241,17 @@ int OnInit()
          activeStrategy.SetVisualMode(VisualMode);
          activeStrategy.SetDebuggingMode(DebuggingMode);
          Print("Swing Reversal Strategy creation successfull.");
+         return (INIT_SUCCEEDED);
+      }
+   // DYNAMIC RANGE BREAKOUT INITIALIZATION
+   case 8:
+      activeStrategy = new DynamicRangeBreakout(RangeBars_DynamicRangeBreakout, ATRPeriod_DynamicRangeBreakout, ATRMultiplier_DynamicRangeBreakout);
+      if (activeStrategy != NULL)
+      {
+         activeStrategy.Init();
+         activeStrategy.SetVisualMode(VisualMode);
+         activeStrategy.SetDebuggingMode(DebuggingMode);
+         Print("Dynamic Range Breakout Strategy creation successfull.");
          return (INIT_SUCCEEDED);
       }
       break;

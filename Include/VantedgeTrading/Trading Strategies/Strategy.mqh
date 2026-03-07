@@ -34,7 +34,7 @@ private:
    double currentBalance;
    datetime lastTime;
    //--------METHODS
-
+\
 protected:
    // Abstract method every strategy needs to implement
    virtual bool EntryCriteria() = 0;
@@ -163,6 +163,7 @@ public:
    CStrategy()
    {
       m_visualMode = true;
+      tradingAllowed = true;
       m_objPrefix = __FUNCTION__;
    }
 
